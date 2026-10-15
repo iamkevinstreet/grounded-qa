@@ -1,5 +1,7 @@
 # Grounded Q&A over approved sources, with abstention
 
+[![ci](https://github.com/iamkevinstreet/grounded-qa/actions/workflows/ci.yml/badge.svg)](https://github.com/iamkevinstreet/grounded-qa/actions/workflows/ci.yml) [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+
 An assistant that answers only from an approved set of documents and cites the passage it used. When the
 documents do not cover the question, it says so. A claim without a real citation never reaches the user: the
 service replaces it with the refusal and records that it did.
