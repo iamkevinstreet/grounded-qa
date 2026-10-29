@@ -19,6 +19,7 @@ import { useState, type SubmitEvent } from 'react';
 // Local
 import { required } from '../lib/required';
 import type { NewSource } from '../types';
+import { SourceFields } from './SourceFields';
 
 // ########################################################################
 // #                           Local constants                            #
@@ -33,20 +34,6 @@ const EMPTY: NewSource = {
   license: '',
   body: '',
 };
-// log.debug('Lists the one-line fields with their labels and hints')
-const FIELDS: readonly { name: Exclude<keyof NewSource, 'body'>; label: string; hint: string }[] =
-  [
-    {
-      name: 'id',
-      label: 'Id',
-      hint: 'Lowercase letters, digits and dashes, such as dol-whd-fs28',
-    },
-    { name: 'title', label: 'Title', hint: 'As the publisher gives it' },
-    { name: 'publisher', label: 'Publisher', hint: 'Who published it' },
-    { name: 'source', label: 'Address', hint: 'The https address it was copied from' },
-    { name: 'revised', label: 'Revised', hint: 'The revision date the document states' },
-    { name: 'license', label: 'Licence', hint: 'The terms it may be used under' },
-  ];
 
 // ########################################################################
 // #                           Add-source form                            #
@@ -116,31 +103,7 @@ export function AddSourceForm({ onAdd = null }: Props = {}): React.JSX.Element {
   // log.debug('Returns the form')
   return (
     <form className="gq-form" onSubmit={(event) => void submit(event)}>
-      {FIELDS.map((field) => (
-        <p key={field.name} className="gq-form__field">
-          <label htmlFor={`new-${field.name}`}>{field.label}</label>
-          <input
-            id={`new-${field.name}`}
-            required
-            value={values[field.name]}
-            aria-describedby={`new-${field.name}-hint`}
-            onChange={(event) => change(field.name, event.target.value)}
-          />
-          <span id={`new-${field.name}-hint`} className="gq-form__hint">
-            {field.hint}
-          </span>
-        </p>
-      ))}
-      <p className="gq-form__field">
-        <label htmlFor="new-body">Text, as Markdown</label>
-        <textarea
-          id="new-body"
-          required
-          rows={10}
-          value={values.body}
-          onChange={(event) => change('body', event.target.value)}
-        />
-      </p>
+      <SourceFields values={values} onChange={change} />
       <button className="gq-button" type="submit" disabled={busy}>
         {busy ? 'Adding source' : 'Add source'}
       </button>

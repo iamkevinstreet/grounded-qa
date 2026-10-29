@@ -18,6 +18,7 @@ import { useEffect, useState } from 'react';
 
 // Local
 import { api, describeError } from './api';
+import { TopBar } from './components/TopBar';
 import { required } from './lib/required';
 import { ApproverPage } from './pages/ApproverPage';
 import { AskPage } from './pages/AskPage';
@@ -53,24 +54,15 @@ function viewFor(hash: string | null = null): View {
   return VIEWS.find((view) => `#/${view.id}` === hash)?.id ?? 'ask';
 }
 
-// log.debug('Defines the app')
+// log.debug('Defines the hook that follows the view the address names')
 /**
- * Renders the app: the top bar, the view the address names, the footer.
+ * Returns the view the address names, following it as it changes.
  *
- * @returns The page.
+ * @returns The view the address names now.
  */
-export function App(): React.JSX.Element {
+function useHashView(): View {
   // log.debug('Keeps the view the address names')
   const [view, setView] = useState<View>(() => viewFor(window.location.hash));
-  // log.debug('Keeps the health report')
-  const [health, setHealth] = useState<Health | null>(null);
-  // log.debug('Keeps the approved sources')
-  const [sources, setSources] = useState<SourceSummary[]>([]);
-  // log.debug('Keeps a problem reaching the service')
-  const [problem, setProblem] = useState<string | null>(null);
-  // log.debug('Keeps a counter that reloads the sources when it changes')
-  const [version, setVersion] = useState(0);
-
   // log.debug('Follows the address as the view changes')
   useEffect(() => {
     // log.debug('Defines the listener')
@@ -84,6 +76,27 @@ export function App(): React.JSX.Element {
     // log.debug('Stops listening when the app closes')
     return () => window.removeEventListener('hashchange', follow);
   }, []);
+  // log.debug('Returns the view')
+  return view;
+}
+
+// log.debug('Defines the app')
+/**
+ * Renders the app: the top bar, the view the address names, the footer.
+ *
+ * @returns The page.
+ */
+export function App(): React.JSX.Element {
+  // log.debug('Follows the view the address names')
+  const view = useHashView();
+  // log.debug('Keeps the health report')
+  const [health, setHealth] = useState<Health | null>(null);
+  // log.debug('Keeps the approved sources')
+  const [sources, setSources] = useState<SourceSummary[]>([]);
+  // log.debug('Keeps a problem reaching the service')
+  const [problem, setProblem] = useState<string | null>(null);
+  // log.debug('Keeps a counter that reloads the sources when it changes')
+  const [version, setVersion] = useState(0);
 
   // log.debug('Loads the health report and the sources, again after changes')
   useEffect(() => {
@@ -106,23 +119,7 @@ export function App(): React.JSX.Element {
       <a className="gq-skip" href="#main">
         Skip to content
       </a>
-      <header className="gq-bar">
-        <a className="gq-bar__name" href="#/ask">
-          Grounded Q&amp;A
-        </a>
-        <nav className="gq-bar__nav" aria-label="Views">
-          {VIEWS.map((item) => (
-            <a
-              key={item.id}
-              className="gq-bar__link"
-              href={`#/${item.id}`}
-              aria-current={view === item.id ? 'page' : undefined}
-            >
-              {item.label}
-            </a>
-          ))}
-        </nav>
-      </header>
+      <TopBar views={VIEWS} current={view} />
       <main id="main" className="gq-main">
         {problem && (
           <p className="gq-status gq-status--error" role="alert">

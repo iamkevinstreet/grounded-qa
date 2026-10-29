@@ -23,6 +23,10 @@ evaluation's numbers are unchanged; the health report and the API schema now say
   `required()`, which names the missing argument the way Python does; and every function's doc
   block says what each argument is for and what comes back. ESLint now checks the TypeScript's
   doc blocks, defaults and return types.
+- **Shorter functions:** no function runs past 60 lines. The web app's longer components are split
+  into smaller ones (the top bar, the result under the question, the question box and its examples,
+  the sources table and reader, the add-source fields, the approver's token form and tools), and
+  the approver's session moves to `src/approver.ts`. Every page renders exactly as before.
 - **Utils:** the shared packages are pinned to utils v0.4.1, commit
   `a8e96e31d30b98415cd842a5fa4bbc96f259bc07`, which adds `kds-args`. They passed through v0.3.0,
   whose checker limits a repository's published docs to README.md files, CHANGELOG.md and

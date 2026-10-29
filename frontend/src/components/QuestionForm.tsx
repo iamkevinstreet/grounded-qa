@@ -6,37 +6,27 @@
  * Created on:        2026-10-29
  * Last modified on:  2026-10-29
  *
- * The question box, its Ask button, and example questions to try.
+ * The question form on the ask page: the box, its Ask button and the
+ * example questions, asking a question once it is long enough.
  */
 
 // ########################################################################
 // #                               Imports                                #
 // ########################################################################
 // Third-party
-import { useState, type SubmitEvent, type KeyboardEvent } from 'react';
+import { useState, type SubmitEvent } from 'react';
 
 // Local
 import { CONFIG } from '../config';
 import { required } from '../lib/required';
+import { ExampleQuestions } from './ExampleQuestions';
+import { QuestionBox } from './QuestionBox';
 
 // ########################################################################
 // #                           Global constants                           #
 // ########################################################################
 // log.debug('Takes the shortest question the API accepts from the config')
 const MIN_QUESTION_CHARS = CONFIG.api.min_question_chars;
-// log.debug('Takes the longest question the API accepts from the config')
-const MAX_QUESTION_CHARS = CONFIG.api.max_question_chars;
-
-// ########################################################################
-// #                           Local constants                            #
-// ########################################################################
-// log.debug('Lists the example questions the ask page offers')
-const EXAMPLES: readonly string[] = [
-  'How many weeks of FMLA leave can I take?',
-  'Can my supervisor call my doctor about my leave?',
-  'Do short breaks count as hours worked?',
-  'Can I take FMLA leave to care for my mother-in-law?',
-];
 
 // ########################################################################
 // #                            Question form                             #
@@ -82,24 +72,6 @@ export function QuestionForm({ busy = false, onAsk = null }: Props = {}): React.
     }
   }
 
-  // log.debug('Defines Enter to ask and Shift+Enter for a new line')
-  /**
-   * Asks on a plain Enter; Shift+Enter starts a new line.
-   *
-   * @param event - The key press in the question box. Required.
-   */
-  function keyDown(event: KeyboardEvent<HTMLTextAreaElement> | null = null): void {
-    // log.debug('Takes the event, which the caller must give')
-    event = required({ event });
-    // log.debug('Asks on a plain Enter')
-    if (event.key === 'Enter' && !event.shiftKey) {
-      // log.debug('Keeps the newline out of the question')
-      event.preventDefault();
-      // log.debug('Submits the form as Ask would')
-      event.currentTarget.form?.requestSubmit();
-    }
-  }
-
   // log.debug('Defines what choosing an example does')
   /**
    * Shows an example in the box and asks it.
@@ -118,43 +90,8 @@ export function QuestionForm({ busy = false, onAsk = null }: Props = {}): React.
   // log.debug('Returns the form')
   return (
     <form className="gq-ask" onSubmit={submit}>
-      <label className="gq-ask__label" htmlFor="question">
-        Your question
-      </label>
-      <div className="gq-ask__row">
-        <textarea
-          id="question"
-          className="gq-ask__box"
-          rows={2}
-          maxLength={MAX_QUESTION_CHARS}
-          value={text}
-          placeholder="For example: how much notice do I give before FMLA leave?"
-          onChange={(event) => setText(event.target.value)}
-          onKeyDown={keyDown}
-        />
-        <button className="gq-button" type="submit" disabled={busy}>
-          {busy ? 'Asking' : 'Ask'}
-        </button>
-      </div>
-      <div className="gq-examples">
-        <p className="gq-examples__label" id="examples">
-          Or try one of these:
-        </p>
-        <ul className="gq-examples__list" aria-labelledby="examples">
-          {EXAMPLES.map((example) => (
-            <li key={example}>
-              <button
-                className="gq-chip"
-                type="button"
-                disabled={busy}
-                onClick={() => choose(example)}
-              >
-                {example}
-              </button>
-            </li>
-          ))}
-        </ul>
-      </div>
+      <QuestionBox text={text} busy={busy} onChange={setText} />
+      <ExampleQuestions busy={busy} onChoose={choose} />
     </form>
   );
 }

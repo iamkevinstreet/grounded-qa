@@ -18,9 +18,10 @@ Start the API too (`make api`), or both at once with `make run` from the reposit
 | Path | What it holds |
 | --- | --- |
 | `src/pages/` | The three views: `AskPage`, `SourcesPage`, `ApproverPage` |
-| `src/components/` | One component per file: the question form, the answer and its markers, the citation list, the source sheet and its highlight, the document reader, the approver's form and audit table |
+| `src/components/` | One component per file: the top bar, the question form with its box and examples, the result under the question, the answer and its markers, the citation list, the source sheet and its highlight, the sources table and the document reader, and the approver's token form, tools, add-source form and audit table |
 | `src/styles/` | `tokens.css` (colour, type, space, shape), `base.css`, `ask.css`, `library.css` |
 | `src/api.ts`, `src/types.ts` | The API client and the API's shapes, mirroring the backend's models |
+| `src/approver.ts` | The approver's session, with the token held in memory only, and what it asks of the service: unlock, add a source, remove one |
 | `src/citations.ts`, `src/markdown.ts`, `src/labels.ts` | Answer markers and highlight ranges, Markdown blocks, display labels |
 | `src/config.ts` | The config module: the keys the browser needs from `config/config.toml`, frozen as `CONFIG`, and the `VITE_API_BASE` override; the only module that reads the build's settings |
 | `src/lib/required.ts` | `required()`, which takes an argument a function cannot do without |

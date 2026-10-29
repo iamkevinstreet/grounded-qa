@@ -18,16 +18,10 @@ import { useRef, useState } from 'react';
 
 // Local
 import { api, describeError } from '../api';
-import { SourceText } from '../components/SourceText';
-import { CONFIG } from '../config';
+import { SourceReader } from '../components/SourceReader';
+import { SourcesTable } from '../components/SourcesTable';
 import { required } from '../lib/required';
 import type { SourceDetail, SourceSummary } from '../types';
-
-// ########################################################################
-// #                           Global constants                           #
-// ########################################################################
-// log.debug('Takes how many characters of a hash are shown from the config')
-const HASH_CHARS = CONFIG.web.hash_chars;
 
 // ########################################################################
 // #                             Sources page                             #
@@ -90,65 +84,8 @@ export function SourcesPage({
         matches it.
       </p>
       <div className="gq-library">
-        <table className="gq-table">
-          <caption className="gq-visually-hidden">Approved sources</caption>
-          <thead>
-            <tr>
-              <th scope="col">Fact sheet</th>
-              <th scope="col">Revised</th>
-              <th scope="col" className="gq-table__num">
-                Words
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {sources.map((source) => (
-              <tr key={source.id} aria-current={doc?.id === source.id ? 'true' : undefined}>
-                <td>
-                  <button className="gq-link" type="button" onClick={() => void open(source.id)}>
-                    {source.title}
-                  </button>
-                  {source.held_back && <span className="gq-flag">Held back from answers</span>}
-                </td>
-                <td>{source.revised}</td>
-                <td className="gq-table__num">{source.words.toLocaleString()}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <div className="gq-reader" aria-live="polite">
-          {problem && (
-            <p className="gq-status gq-status--error" role="alert">
-              {problem}
-            </p>
-          )}
-          {!doc && !problem && <p className="gq-reader__empty">Choose a fact sheet to read it.</p>}
-          {doc && (
-            <article aria-labelledby="doc-title">
-              <h2 id="doc-title" className="gq-reader__title">
-                {doc.title}
-              </h2>
-              <dl className="gq-reader__meta">
-                <dt>Publisher</dt>
-                <dd>{doc.publisher}</dd>
-                <dt>Revised</dt>
-                <dd>{doc.revised}</dd>
-                <dt>Copied</dt>
-                <dd>{doc.retrieved}</dd>
-                <dt>SHA-256</dt>
-                <dd>
-                  <code title={doc.sha256}>{doc.sha256.slice(0, HASH_CHARS)}</code>
-                </dd>
-              </dl>
-              <p className="gq-reader__link">
-                <a href={doc.source} target="_blank" rel="noreferrer noopener">
-                  Open the original on dol.gov
-                </a>
-              </p>
-              <SourceText body={doc.body} />
-            </article>
-          )}
-        </div>
+        <SourcesTable sources={sources} current={doc?.id ?? null} onOpen={(id) => void open(id)} />
+        <SourceReader doc={doc} problem={problem} />
       </div>
     </div>
   );
