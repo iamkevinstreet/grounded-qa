@@ -65,6 +65,8 @@ export default defineConfig(
       // One blank line between a doc block's description and its first tag, as the standard writes it.
       'jsdoc/tag-lines': ['error', 'never', { startLines: 1 }],
       'kds/param-defaults': 'error',
+      // A function fits on one screen: at most 60 lines below its doc block, every line counted.
+      'max-lines-per-function': ['error', { max: 60, skipBlankLines: false, skipComments: false }],
       '@typescript-eslint/explicit-function-return-type': [
         'error',
         {

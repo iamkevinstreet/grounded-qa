@@ -27,8 +27,9 @@ evaluation's numbers are unchanged; the health report and the API schema now say
   into smaller ones (the top bar, the result under the question, the question box and its examples,
   the sources table and reader, the add-source fields, the approver's token form and tools), and
   the approver's session moves to `src/approver.ts`. Every page renders exactly as before.
-- **Utils:** the shared packages are pinned to utils v0.4.1, commit
-  `a8e96e31d30b98415cd842a5fa4bbc96f259bc07`, which adds `kds-args`. They passed through v0.3.0,
+- **Utils:** the shared packages are pinned to utils v0.4.2, commit
+  `62a38c5a3ecf667e3e227b18412abd77759c38d5`, which adds `kds-args` and checks that no function
+  runs past 60 lines; ESLint checks the same in the web app. They passed through v0.3.0,
   whose checker limits a repository's published docs to README.md files, CHANGELOG.md and
   SECURITY.md, and checks that every link in them resolves.
 - **Live results:** `claude-sonnet-5-5` answered 88.9% of answerable cases correctly in hybrid

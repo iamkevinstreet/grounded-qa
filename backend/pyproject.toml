@@ -44,13 +44,13 @@ dev = [
 # Our own packages come from the utils repository at one reviewed commit; none
 # of them is on PyPI, so a same-named public package can never be installed.
 [tool.uv.sources]
-kds-args = { git = "https://github.com/iamkevinstreet/utils", subdirectory = "args", rev = "a8e96e31d30b98415cd842a5fa4bbc96f259bc07" }
-kds-settings = { git = "https://github.com/iamkevinstreet/utils", subdirectory = "settings", rev = "a8e96e31d30b98415cd842a5fa4bbc96f259bc07" }
-kds-logs = { git = "https://github.com/iamkevinstreet/utils", subdirectory = "logs", rev = "a8e96e31d30b98415cd842a5fa4bbc96f259bc07" }
-kds-llm = { git = "https://github.com/iamkevinstreet/utils", subdirectory = "llm", rev = "a8e96e31d30b98415cd842a5fa4bbc96f259bc07" }
-kds-evals = { git = "https://github.com/iamkevinstreet/utils", subdirectory = "evals", rev = "a8e96e31d30b98415cd842a5fa4bbc96f259bc07" }
-kds-standards = { git = "https://github.com/iamkevinstreet/utils", subdirectory = "standards", rev = "a8e96e31d30b98415cd842a5fa4bbc96f259bc07" }
-kds-diagrams = { git = "https://github.com/iamkevinstreet/utils", subdirectory = "diagrams", rev = "a8e96e31d30b98415cd842a5fa4bbc96f259bc07" }
+kds-args = { git = "https://github.com/iamkevinstreet/utils", subdirectory = "args", rev = "62a38c5a3ecf667e3e227b18412abd77759c38d5" }
+kds-settings = { git = "https://github.com/iamkevinstreet/utils", subdirectory = "settings", rev = "62a38c5a3ecf667e3e227b18412abd77759c38d5" }
+kds-logs = { git = "https://github.com/iamkevinstreet/utils", subdirectory = "logs", rev = "62a38c5a3ecf667e3e227b18412abd77759c38d5" }
+kds-llm = { git = "https://github.com/iamkevinstreet/utils", subdirectory = "llm", rev = "62a38c5a3ecf667e3e227b18412abd77759c38d5" }
+kds-evals = { git = "https://github.com/iamkevinstreet/utils", subdirectory = "evals", rev = "62a38c5a3ecf667e3e227b18412abd77759c38d5" }
+kds-standards = { git = "https://github.com/iamkevinstreet/utils", subdirectory = "standards", rev = "62a38c5a3ecf667e3e227b18412abd77759c38d5" }
+kds-diagrams = { git = "https://github.com/iamkevinstreet/utils", subdirectory = "diagrams", rev = "62a38c5a3ecf667e3e227b18412abd77759c38d5" }
 
 [build-system]
 requires = ["setuptools>=69", "wheel"]
