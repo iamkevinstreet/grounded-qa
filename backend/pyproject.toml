@@ -54,11 +54,14 @@ requires = ["setuptools>=69", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
+where = ["src"]
 include = ["grounded_qa*"]
 
 [tool.ruff]
 line-length = 99
 target-version = "py312"
+# isort finds first-party code in src/ (the package) and tests/ (the tests' helpers).
+src = ["src", "tests"]
 
 [tool.ruff.lint]
 select = ["E", "W", "F", "I", "N", "UP", "B", "BLE", "S", "C90", "PL", "RUF", "G", "D"]
@@ -88,6 +91,7 @@ addopts = "-q"
 [tool.mypy]
 python_version = "3.12"
 strict = true
+mypy_path = "src"
 packages = ["grounded_qa"]
 
 # fastembed is the optional `local` extra. Where it is installed (CI, and

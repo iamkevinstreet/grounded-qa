@@ -19,10 +19,10 @@ provider and its key (see [config/README.md](../config/README.md)) for real answ
 
 | Path | What it holds |
 | --- | --- |
-| `grounded_qa/config.py` | The one place settings are read |
-| `grounded_qa/core/` | The logic, free of HTTP: sources, the guard, passages, retrieval, the prompt, the quote check, the answerer, the library and the audit log |
-| `grounded_qa/api/` | The FastAPI app: routes, the approver check, rate and size limits, headers, request ids |
-| `grounded_qa/evals/` | The scorers and `python -m grounded_qa.evals.run answers\|retrieval` |
+| `src/grounded_qa/config.py` | The one place settings are read |
+| `src/grounded_qa/core/` | The logic, free of HTTP: sources, the guard, passages, retrieval, the prompt, the quote check, the answerer, the library and the audit log |
+| `src/grounded_qa/api/` | The FastAPI app: routes, the approver check, rate and size limits, headers, request ids |
+| `src/grounded_qa/evals/` | The scorers and `python -m grounded_qa.evals.run answers\|retrieval` |
 | `tests/` | 109 tests, offline; `support.py` holds shared helpers, `conftest.py` the fixtures |
 
 The core depends on interfaces, not libraries: the answerer takes anything that can `search`, and

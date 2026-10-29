@@ -7,7 +7,7 @@ start if a secret is written here.
 ## How a value is chosen
 
 Highest first: an environment variable, then `.env`, then this file, then the default in
-[`backend/grounded_qa/config.py`](../backend/grounded_qa/config.py). Each key's environment name is
+[`backend/src/grounded_qa/config.py`](../backend/src/grounded_qa/config.py). Each key's environment name is
 its section and key joined by an underscore, in capitals: `[retrieval] mode` is `RETRIEVAL_MODE`.
 `SETTINGS_FILE` points the service at a different file. Every setting is logged at startup, secrets
 masked, in the `service.start` event.

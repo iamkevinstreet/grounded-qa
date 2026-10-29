@@ -190,16 +190,16 @@ which also lists every control.
 
 ```text
 grounded-qa/
-├── backend/            the service and the evaluation (Python 3.12, uv)
-│   ├── grounded_qa/    config.py, core/ (the logic), api/ (FastAPI), evals/ (scorers, runner)
-│   └── tests/          109 tests, offline
-├── frontend/           the web app (React, TypeScript, Vite)
-│   ├── src/            pages/, components/, styles/, the API client
-│   └── tests/          14 tests
-├── config/             settings.toml: every setting at its default
-├── data/               sources/ (22 fact sheets), samples/ (2 synthetic), evals/ (cases, results)
-├── docs/               diagrams.toml and the two SVGs it draws
-└── .github/            CI, CodeQL, the live evaluation, Dependabot
+├── backend/              the service and the evaluation (Python 3.12, uv)
+│   ├── src/grounded_qa/  config.py, core/ (the logic), api/ (FastAPI), evals/ (scorers, runner)
+│   └── tests/            109 tests, offline
+├── frontend/             the web app (React, TypeScript, Vite)
+│   ├── src/              pages/, components/, styles/, the API client
+│   └── tests/            14 tests
+├── config/               settings.toml: every setting at its default
+├── data/                 sources/ (22 fact sheets), samples/ (2 synthetic), evals/ (cases, results)
+├── docs/                 diagrams.toml and the two SVGs it draws
+└── .github/              CI, CodeQL, the live evaluation, Dependabot
 ```
 
 ## Changelog and license
