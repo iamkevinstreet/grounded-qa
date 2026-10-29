@@ -1,0 +1,227 @@
+/*
+########################################################################
+#                     frontend/src/styles/base.css                     #
+########################################################################
+#  Author:            Kevin Street                                     #
+#  Created on:        2026-10-29                                       #
+#  Last modified on:  2026-10-29                                       #
+#  Purpose:           The frame every page shares: page, bar, footer,  #
+#                     controls, tables and focus.                      #
+########################################################################
+*/
+
+/* The frame every page shares: page, top bar, footer, controls, tables,
+   focus, and the screen-reader helpers. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--gq-paper);
+  color: var(--gq-ink);
+  font-family: var(--gq-sans);
+  font-size: var(--gq-text-base);
+  line-height: 1.55;
+}
+
+a {
+  color: var(--gq-action);
+  text-underline-offset: 0.18em;
+}
+
+code {
+  font-family: var(--gq-mono);
+  font-size: 0.85em;
+}
+
+:focus-visible {
+  outline: 2px solid var(--gq-action);
+  outline-offset: 2px;
+}
+
+.gq-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.gq-skip {
+  position: absolute;
+  top: var(--gq-space-2);
+  left: -100vw;
+  padding: var(--gq-space-2) var(--gq-space-4);
+  background: var(--gq-sheet);
+}
+
+.gq-skip:focus {
+  left: var(--gq-space-4);
+}
+
+.gq-app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.gq-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gq-space-4) var(--gq-space-8);
+  align-items: baseline;
+  justify-content: space-between;
+  width: 100%;
+  max-width: var(--gq-width);
+  margin: 0 auto;
+  padding: var(--gq-space-6);
+  border-bottom: 1px solid var(--gq-rule);
+}
+
+.gq-bar__name {
+  color: var(--gq-ink);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+}
+
+.gq-bar__nav {
+  display: flex;
+  gap: var(--gq-space-6);
+}
+
+.gq-bar__link {
+  color: var(--gq-slate);
+  text-decoration: none;
+}
+
+.gq-bar__link[aria-current='page'] {
+  color: var(--gq-ink);
+  text-decoration: underline 2px;
+  text-underline-offset: 0.45em;
+}
+
+.gq-main {
+  flex: 1;
+  width: 100%;
+  max-width: var(--gq-width);
+  margin: 0 auto;
+  padding: var(--gq-space-12) var(--gq-space-6) var(--gq-space-16);
+}
+
+.gq-foot {
+  width: 100%;
+  max-width: var(--gq-width);
+  margin: 0 auto;
+  padding: var(--gq-space-6);
+  border-top: 1px solid var(--gq-rule);
+  color: var(--gq-slate);
+  font-size: var(--gq-text-sm);
+}
+
+.gq-intro__title {
+  max-width: 22ch;
+  margin: 0 0 var(--gq-space-3);
+  font-size: var(--gq-text-2xl);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.gq-intro__lede {
+  max-width: 52ch;
+  margin: 0 0 var(--gq-space-6);
+  color: var(--gq-slate);
+  font-size: var(--gq-text-lg);
+  line-height: 1.45;
+}
+
+.gq-section__title {
+  margin: 0 0 var(--gq-space-4);
+  font-size: var(--gq-text-lg);
+}
+
+.gq-button {
+  padding: 0.7rem 1.25rem;
+  border: 0;
+  border-radius: var(--gq-radius-control);
+  background: var(--gq-action);
+  color: var(--gq-on-action);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.gq-button:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.gq-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--gq-action);
+  font: inherit;
+  text-align: left;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+  cursor: pointer;
+}
+
+.gq-status {
+  max-width: 52rem;
+  margin: 0 0 var(--gq-space-6);
+  padding: var(--gq-space-3) var(--gq-space-4);
+  border-left: 3px solid var(--gq-edge);
+  color: var(--gq-slate);
+}
+
+.gq-status--error {
+  border-left-color: var(--gq-alert);
+  color: var(--gq-alert);
+}
+
+.gq-notice {
+  max-width: 46rem;
+  margin: 0 0 var(--gq-space-6);
+  padding: var(--gq-space-3) var(--gq-space-4);
+  border: 1px solid var(--gq-rule);
+  border-radius: var(--gq-radius-control);
+  background: var(--gq-sheet);
+  color: var(--gq-slate);
+  font-size: var(--gq-text-sm);
+}
+
+.gq-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--gq-text-sm);
+}
+
+.gq-table th {
+  padding: var(--gq-space-2) var(--gq-space-3) var(--gq-space-2) 0;
+  border-bottom: 2px solid var(--gq-rule);
+  font-weight: 600;
+  text-align: left;
+}
+
+.gq-table td {
+  padding: var(--gq-space-3) var(--gq-space-3) var(--gq-space-3) 0;
+  border-bottom: 1px solid var(--gq-rule);
+  vertical-align: top;
+}
+
+.gq-table__num {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}

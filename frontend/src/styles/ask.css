@@ -1,0 +1,313 @@
+/*
+########################################################################
+#                     frontend/src/styles/ask.css                      #
+########################################################################
+#  Author:            Kevin Street                                     #
+#  Created on:        2026-10-29                                       #
+#  Last modified on:  2026-10-29                                       #
+#  Purpose:           The ask page: question, answer, markers,         #
+#                     citations, and the highlighted source sheet.     #
+########################################################################
+*/
+
+/* The ask page: the question, the answer with its markers, and the source
+   sheet whose highlighter sweep is the page's one moment of motion. */
+
+.gq-intro {
+  max-width: 46rem;
+}
+
+.gq-ask__label {
+  display: block;
+  margin-bottom: var(--gq-space-2);
+  font-weight: 600;
+}
+
+.gq-ask__row {
+  display: flex;
+  gap: var(--gq-space-3);
+  align-items: stretch;
+}
+
+.gq-ask__box {
+  flex: 1;
+  min-height: 3.5rem;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--gq-edge);
+  border-radius: var(--gq-radius-control);
+  background: var(--gq-sheet);
+  color: var(--gq-ink);
+  font: inherit;
+  font-size: var(--gq-text-lg);
+  line-height: 1.4;
+  resize: vertical;
+}
+
+.gq-examples {
+  margin-top: var(--gq-space-4);
+}
+
+.gq-examples__label {
+  margin: 0 0 var(--gq-space-2);
+  color: var(--gq-slate);
+  font-size: var(--gq-text-sm);
+}
+
+.gq-examples__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gq-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.gq-chip {
+  padding: 0.35rem 0.85rem;
+  border: 1px solid var(--gq-edge);
+  border-radius: var(--gq-radius-chip);
+  background: transparent;
+  color: var(--gq-ink);
+  font: inherit;
+  font-size: var(--gq-text-sm);
+  cursor: pointer;
+}
+
+.gq-result {
+  margin-top: var(--gq-space-12);
+}
+
+.gq-result__grid {
+  display: grid;
+  gap: var(--gq-space-8);
+}
+
+.gq-answer__text {
+  max-width: 38em;
+  margin: 0;
+  font-size: var(--gq-text-lg);
+  line-height: 1.6;
+}
+
+.gq-markers {
+  white-space: nowrap;
+}
+
+.gq-marker {
+  min-width: 1.7em;
+  margin-left: 0.2em;
+  padding: 0.15em 0.35em;
+  border: 1px solid currentcolor;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--gq-action);
+  font: inherit;
+  font-size: 0.72em;
+  font-weight: 700;
+  line-height: 1;
+  vertical-align: 0.35em;
+  cursor: pointer;
+}
+
+.gq-marker[aria-pressed='true'] {
+  border-color: var(--gq-mark);
+  background: var(--gq-mark);
+  color: var(--gq-on-mark);
+}
+
+.gq-cites {
+  margin: var(--gq-space-6) 0 0;
+  padding: 0;
+  border-top: 1px solid var(--gq-rule);
+  list-style: none;
+}
+
+.gq-cite {
+  display: grid;
+  grid-template-columns: 2rem 1fr;
+  gap: 0 var(--gq-space-3);
+  width: 100%;
+  padding: var(--gq-space-3) 0;
+  border: 0;
+  border-bottom: 1px solid var(--gq-rule);
+  background: none;
+  color: var(--gq-ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.gq-cite__n {
+  grid-row: span 2;
+  align-self: start;
+  padding: 0.05em 0;
+  border-radius: 3px;
+  color: var(--gq-action);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  text-align: center;
+}
+
+.gq-cite[aria-pressed='true'] .gq-cite__n {
+  background: var(--gq-mark);
+  color: var(--gq-on-mark);
+}
+
+.gq-cite__title {
+  font-weight: 600;
+}
+
+.gq-cite__section {
+  color: var(--gq-slate);
+  font-size: var(--gq-text-sm);
+}
+
+.gq-check {
+  margin-top: var(--gq-space-6);
+  color: var(--gq-slate);
+  font-size: var(--gq-text-sm);
+}
+
+.gq-check summary {
+  color: var(--gq-action);
+  cursor: pointer;
+}
+
+.gq-check__list {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: var(--gq-space-1) var(--gq-space-4);
+  margin: var(--gq-space-3) 0 0;
+}
+
+.gq-check__list dt {
+  color: var(--gq-ink);
+  font-weight: 600;
+}
+
+.gq-check__list dd {
+  margin: 0;
+}
+
+.gq-sheet {
+  padding: var(--gq-space-8) var(--gq-space-8) var(--gq-space-6);
+  border: 1px solid var(--gq-rule);
+  border-radius: var(--gq-radius-sheet);
+  background: var(--gq-sheet);
+  box-shadow: 0 18px 40px -24px var(--gq-shadow);
+}
+
+.gq-sheet__n {
+  margin: 0 0 var(--gq-space-2);
+  color: var(--gq-slate);
+  font-size: var(--gq-text-sm);
+}
+
+.gq-sheet__title {
+  margin: 0 0 var(--gq-space-2);
+  font-family: var(--gq-serif);
+  font-size: var(--gq-text-xl);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.gq-sheet__where {
+  margin: 0 0 var(--gq-space-6);
+  color: var(--gq-slate);
+  font-size: var(--gq-text-sm);
+}
+
+.gq-passage {
+  max-width: 60ch;
+  margin: 0;
+  font-family: var(--gq-serif);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  white-space: pre-line;
+}
+
+.gq-mark {
+  padding: 0 0.08em;
+  background-color: transparent;
+  background-image: linear-gradient(var(--gq-mark), var(--gq-mark));
+  background-position: 0 70%;
+  background-repeat: no-repeat;
+  background-size: 100% 88%;
+  color: var(--gq-on-mark);
+  box-decoration-break: clone;
+  animation: gq-sweep 700ms cubic-bezier(0.2, 0.7, 0.2, 1) 120ms both;
+}
+
+@keyframes gq-sweep {
+  from {
+    background-size: 0% 88%;
+  }
+}
+
+.gq-sheet__link {
+  margin: var(--gq-space-6) 0 0;
+  font-size: var(--gq-text-sm);
+}
+
+.gq-abstain {
+  max-width: 44rem;
+  padding-left: var(--gq-space-6);
+  border-left: 3px solid var(--gq-edge);
+}
+
+.gq-abstain__title {
+  margin: 0 0 var(--gq-space-3);
+  font-size: var(--gq-text-xl);
+  line-height: 1.2;
+}
+
+.gq-abstain__label {
+  margin-bottom: var(--gq-space-1);
+  font-weight: 600;
+}
+
+.gq-abstain__list {
+  margin-top: 0;
+}
+
+.gq-abstain__hint {
+  color: var(--gq-slate);
+}
+
+@media (width >= 60rem) {
+  .gq-result__grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    align-items: start;
+  }
+
+  .gq-sheet {
+    position: sticky;
+    top: var(--gq-space-6);
+  }
+}
+
+@media (width < 36rem) {
+  .gq-ask__row {
+    flex-direction: column;
+  }
+
+  .gq-examples__list {
+    flex-direction: column;
+  }
+
+  .gq-chip {
+    width: 100%;
+    border-radius: var(--gq-radius-control);
+    text-align: left;
+  }
+
+  .gq-sheet {
+    padding: var(--gq-space-6) var(--gq-space-4);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gq-mark {
+    animation: none;
+  }
+}

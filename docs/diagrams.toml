@@ -1,0 +1,200 @@
+########################################################################
+#                          docs/diagrams.toml                          #
+########################################################################
+#  Author:            Kevin Street                                     #
+#  Created on:        2026-10-29                                       #
+#  Last modified on:  2026-10-29                                       #
+#  Purpose:           The README diagrams as data. Redraw them with    #
+#                     make diagrams; never edit the SVGs by hand.      #
+########################################################################
+# Boxes are [left, top, width, height] in pixels; arrow points are [x, y].
+
+[[diagram]]
+file = "architecture.svg"
+width = 1000
+height = 800
+title = "Grounded Q&A at a glance"
+subtitle = "The model sees only approved passages; the reader sees only claims whose quotes were checked."
+caption = "Grey arrows: what moves between parts. Blue: the one path that leaves your machine. Dashed boxes: where each part runs and who may change it."
+
+[[diagram.zone]]
+box = [28, 150, 420, 132]
+title = "Browser"
+rule = "readers and approvers"
+
+[[diagram.component]]
+box = [48, 190, 380, 76]
+name = "Web app"
+details = ["React and TypeScript: ask, sources, approver", "each checked quote highlighted in its passage"]
+
+[[diagram.component]]
+box = [612, 170, 360, 80]
+name = "Model provider"
+details = ["outside your machine: Anthropic by default", "sees the rules, fenced passages, the question"]
+
+[[diagram.zone]]
+box = [28, 320, 944, 168]
+title = "Service"
+rule = "your machine, localhost by default"
+
+[[diagram.component]]
+box = [48, 360, 208, 108]
+name = "API"
+details = ["FastAPI, /api/v1", "request ids and limits", "approver routes: token"]
+note = "SSO to build"
+
+[[diagram.component]]
+box = [280, 360, 208, 108]
+name = "Answerer"
+details = ["retrieve, draft, check", "abstains if not covered", "stand-in when offline"]
+
+[[diagram.component]]
+box = [512, 360, 208, 108]
+name = "Retriever"
+details = ["BM25 keyword, default", "bge-small, on the CPU", "hybrid: rank fusion"]
+
+[[diagram.component]]
+box = [744, 360, 208, 108]
+name = "Library"
+details = ["sources and passages", "injections held back", "every change audited"]
+
+[[diagram.arrow]]
+points = [[256, 414], [280, 414]]
+
+[[diagram.arrow]]
+points = [[488, 414], [512, 414]]
+
+[[diagram.arrow]]
+points = [[720, 414], [744, 414]]
+
+[[diagram.arrow]]
+points = [[238, 266], [238, 316]]
+label = "questions, answers"
+at = [246, 296]
+
+[[diagram.arrow]]
+points = [[440, 358], [440, 302], [792, 302], [792, 252]]
+label = "prompt out, draft back"
+at = [600, 294]
+accent = true
+
+[[diagram.zone]]
+box = [512, 520, 460, 130]
+title = "Approved data"
+rule = "changed only by an approver"
+
+[[diagram.component]]
+box = [532, 560, 208, 74]
+name = "data/sources"
+details = ["22 DOL fact sheets", "SHA-256 of each text"]
+
+[[diagram.component]]
+box = [752, 560, 200, 74]
+name = "Audit log"
+details = ["SQLite, append-only", "time, change, hash"]
+
+[[diagram.arrow]]
+points = [[848, 468], [848, 516]]
+label = "reads, records"
+at = [858, 500]
+
+[[diagram.zone]]
+box = [28, 520, 460, 130]
+title = "Evaluation"
+rule = "offline in CI, live by hand"
+
+[[diagram.component]]
+box = [48, 560, 208, 74]
+name = "56 gold cases"
+details = ["evidence in the sources", "11 to refuse, 6 traps"]
+
+[[diagram.component]]
+box = [268, 560, 200, 74]
+name = "Scorers"
+details = ["facts, quotes, refusals", "retrieval, three modes"]
+
+[[diagram.arrow]]
+points = [[384, 518], [384, 490]]
+label = "asks every case"
+at = [392, 508]
+
+[[diagram.band]]
+box = [28, 680, 944, 92]
+title = "Foundation"
+lines = [
+  "config/settings.toml holds every setting, .env holds secrets only · kds settings, logs, llm, evals",
+  "JSON logs with request ids, never question text · CI: tests, offline eval, CodeQL, gitleaks, audits",
+]
+
+[[diagram]]
+file = "flow.svg"
+width = 1000
+height = 560
+title = "How an answer is made"
+subtitle = "A claim reaches the reader only if its quote is found, word for word, in the passage it cites."
+caption = "Steps in reading order. Blue: the request that leaves your machine."
+
+[[diagram.component]]
+box = [28, 160, 272, 80]
+name = "1. Check the question"
+details = ["3 to 1,000 characters", "per-client limit, a request id"]
+
+[[diagram.component]]
+box = [364, 160, 272, 80]
+name = "2. Find passages"
+details = ["the 6 best: words, meaning, both", "none found: abstain, no model"]
+
+[[diagram.component]]
+box = [700, 160, 272, 80]
+name = "3. Fence the passages"
+details = ["tagged with id, title, section", "their text is data, not orders"]
+
+[[diagram.component]]
+box = [28, 300, 272, 80]
+name = "4. Draft with the model"
+details = ["JSON: answer, citations, abstain", "one repair turn, then withheld"]
+
+[[diagram.component]]
+box = [364, 300, 272, 80]
+name = "5. Check every quote"
+details = ["word for word, in its passage", "claims that fail are cut"]
+
+[[diagram.component]]
+box = [700, 300, 272, 80]
+name = "6. Answer or say why not"
+details = ["answered, quotes highlighted", "or: not covered, unverified"]
+
+[[diagram.arrow]]
+points = [[300, 200], [364, 200]]
+
+[[diagram.arrow]]
+points = [[636, 200], [700, 200]]
+
+[[diagram.arrow]]
+points = [[836, 240], [836, 270], [164, 270], [164, 300]]
+
+[[diagram.arrow]]
+points = [[300, 340], [364, 340]]
+
+[[diagram.arrow]]
+points = [[636, 340], [700, 340]]
+
+[[diagram.component]]
+box = [28, 440, 272, 80]
+name = "Model provider"
+details = ["outside your machine"]
+note = "external"
+
+[[diagram.arrow]]
+points = [[164, 380], [164, 438]]
+label = "prompt out, draft back"
+at = [174, 414]
+accent = true
+
+[[diagram.band]]
+box = [336, 440, 636, 80]
+title = "Every answer leaves"
+lines = [
+  "a JSON log line: request id, outcome, passages, time and cost, no question text",
+  "a record the evaluation scores: facts, evidence, citations, abstentions",
+]

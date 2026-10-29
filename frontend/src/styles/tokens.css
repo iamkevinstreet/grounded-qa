@@ -1,0 +1,61 @@
+/*
+########################################################################
+#                    frontend/src/styles/tokens.css                    #
+########################################################################
+#  Author:            Kevin Street                                     #
+#  Created on:        2026-10-29                                       #
+#  Last modified on:  2026-10-29                                       #
+#  Purpose:           Design tokens: colour for light and dark, the    #
+#                     type scale, spacing and shapes.                  #
+########################################################################
+*/
+
+/* Design tokens. Government paper, navy ink, and one highlighter yellow kept
+   for checked quotes; the system speaks in Public Sans, the sources in
+   Source Serif 4. Every colour is written once, for light and dark. */
+
+:root {
+  color-scheme: light dark;
+
+  /* Colour */
+  --gq-paper: light-dark(#f3f4f1, #0e1520);
+  --gq-sheet: light-dark(#fcfcfa, #162030);
+  --gq-ink: light-dark(#17202e, #e4e8ee);
+  --gq-slate: light-dark(#505a6b, #a5afbd);
+  --gq-rule: light-dark(#d4d8de, #2a3546);
+  --gq-edge: light-dark(#7d8695, #6f7b8f);
+  --gq-action: light-dark(#1f3a68, #a9c1ec);
+  --gq-on-action: light-dark(#fff, #0e1520);
+  --gq-alert: light-dark(#8a2c16, #f0a58f);
+  --gq-mark: #ffe36e;
+  --gq-on-mark: #17202e;
+  --gq-shadow: light-dark(rgb(23 32 46 / 12%), rgb(0 0 0 / 45%));
+
+  /* Type: a 1.25 scale on a 17px body */
+  --gq-sans: 'Public Sans Variable', system-ui, sans-serif;
+  --gq-serif: 'Source Serif 4 Variable', georgia, serif;
+  --gq-mono: ui-monospace, 'SFMono-Regular', menlo, monospace;
+  --gq-text-sm: 0.875rem;
+  --gq-text-base: 1.0625rem;
+  --gq-text-lg: 1.25rem;
+  --gq-text-xl: 1.5625rem;
+  --gq-text-2xl: 2.25rem;
+
+  /* Space, on a 4px grid */
+  --gq-space-1: 0.25rem;
+  --gq-space-2: 0.5rem;
+  --gq-space-3: 0.75rem;
+  --gq-space-4: 1rem;
+  --gq-space-6: 1.5rem;
+  --gq-space-8: 2rem;
+  --gq-space-12: 3rem;
+  --gq-space-16: 4rem;
+
+  /* Shape: controls round a little, chips fully, paper not at all */
+  --gq-radius-control: 6px;
+  --gq-radius-chip: 999px;
+  --gq-radius-sheet: 2px;
+
+  /* Measure */
+  --gq-width: 74rem;
+}
