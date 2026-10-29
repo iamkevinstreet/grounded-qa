@@ -349,3 +349,20 @@ def test_model_outage_is_503_with_request_id(settings: AppSettings) -> None:
         response = client.post("/api/v1/ask", json={"question": "How many workweeks of leave?"})
         # log.debug("Checks the status and that the request id is given")
         assert response.status_code == 503 and response.json()["request_id"]
+
+
+# log.debug("Defines the test: the API schema describes each route by its summary")
+def test_the_api_schema_leaves_out_doc_block_sections(client: TestClient) -> None:
+    """The schema keeps each route's summary, not its Args or Returns.
+
+    Args:
+        client: A client of the app with test settings.
+    """
+    # log.debug("Reads the schema the app publishes")
+    paths = client.get("/api/v1/openapi.json").json()["paths"]
+    # log.debug("Collects every route's description")
+    described = [op.get("description", "") for ops in paths.values() for op in ops.values()]
+    # log.debug("Checks there are routes to describe")
+    assert described
+    # log.debug("Checks each is described by its summary alone")
+    assert all(d and "Args:" not in d and "Returns:" not in d for d in described)

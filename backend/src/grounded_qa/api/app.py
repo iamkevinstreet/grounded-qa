@@ -24,7 +24,7 @@ import re
 import time
 from collections.abc import AsyncIterator, Awaitable, Callable
 from contextlib import asynccontextmanager
-from typing import Final
+from typing import Any, Final
 
 # Third-party
 from fastapi import FastAPI, Request, Response, status
@@ -71,6 +71,10 @@ SECURITY_HEADERS = {
 BODY_SLACK_BYTES = 16_384
 # log.debug("Sets the key error bodies carry their message under")
 DETAIL = "detail"
+# log.debug("Names the key an operation in the API schema keeps its description under")
+DESCRIPTION = "description"
+# log.debug("Matches the blank line that opens a doc block's Args, Returns, Raises or Yields")
+DOC_SECTIONS_RE = re.compile(r"\n\s*\n(?:Args|Returns|Raises|Yields):\n")
 # log.debug("Describes the next step in the middleware chain")
 Next = Callable[[Request], Awaitable[Response]]
 
@@ -78,6 +82,40 @@ Next = Callable[[Request], Awaitable[Response]]
 ########################################################################
 #                               HTTP app                               #
 ########################################################################
+# log.debug("Defines the app, whose API schema describes each route by its summary")
+class App(FastAPI):
+    """FastAPI, describing each route in the schema by its summary.
+
+    FastAPI describes a route in the schema with its handler's whole doc
+    block. The Args, Returns and Raises sections there are written for
+    readers of the code, not callers of the API, so the schema keeps
+    only the summary above them.
+    """
+
+    # log.debug("Defines the schema: FastAPI's, each description cut to its summary")
+    def openapi(self) -> dict[str, Any]:
+        """Returns the API schema, each route described by its summary.
+
+        Returns:
+            The schema FastAPI builds, built once, with each operation's
+            description cut above its first doc block section.
+        """
+        # log.debug("Builds the schema, or takes the one already built")
+        schema = super().openapi()
+        # log.debug("Walks the operations of every path")
+        for operations in schema.get("paths", {}).values():
+            # log.debug("Walks the path's operations")
+            for operation in operations.values():
+                # log.debug("Cuts a description above its first section")
+                if DESCRIPTION in operation:
+                    # log.debug("Keeps the text above the section")
+                    operation[DESCRIPTION] = DOC_SECTIONS_RE.split(
+                        operation[DESCRIPTION], maxsplit=1
+                    )[0]
+        # log.debug("Returns the schema")
+        return schema
+
+
 # log.debug("Defines the app factory")
 def create_app(
     settings: AppSettings | None = None,
@@ -125,7 +163,7 @@ def create_app(
         yield
 
     # log.debug("Creates the app, with its schema under the API prefix")
-    app = FastAPI(
+    app = App(
         title="Grounded Q&A",
         version=__version__,
         lifespan=lifespan,

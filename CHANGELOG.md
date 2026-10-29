@@ -22,7 +22,8 @@ evaluation's numbers are unchanged; the health report and the API schema now say
   `null` where there is no natural one; a function that cannot work without a value takes it with
   `required()`, which names the missing argument the way Python does; and every function's doc
   block says what each argument is for and what comes back. ESLint now checks the TypeScript's
-  doc blocks, defaults and return types.
+  doc blocks, defaults and return types. The API schema still describes each route by its summary
+  alone: the Args and Returns sections are for readers of the code.
 - **Shorter functions:** no function runs past 60 lines. The web app's longer components are split
   into smaller ones (the top bar, the result under the question, the question box and its examples,
   the sources table and reader, the add-source fields, the approver's token form and tools), and
