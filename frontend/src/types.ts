@@ -1,14 +1,18 @@
 // ########################################################################
 // #                        frontend/src/types.ts                         #
 // ########################################################################
-// #  Author:            Kevin Street                                     #
-// #  Created on:        2026-10-29                                       #
-// #  Last modified on:  2026-10-29                                       #
-// #  Purpose:           The API's request and response shapes, mirroring #
-// #                     the backend's pydantic models.                   #
-// ########################################################################
-/** The API's shapes, mirroring the backend's pydantic models. */
+/**
+ * Author:            Kevin Street
+ * Created on:        2026-10-29
+ * Last modified on:  2026-10-29
+ *
+ * The API's request and response shapes, mirroring the backend's
+ * pydantic models field for field.
+ */
 
+// ########################################################################
+// #                              API shapes                              #
+// ########################################################################
 export type Outcome = 'answered' | 'not_covered' | 'unverified' | 'no_passages';
 
 export type Span = readonly [number, number];

@@ -1,30 +1,36 @@
 ########################################################################
 #               backend/src/grounded_qa/core/library.py                #
 ########################################################################
-#  Author:            Kevin Street                                     #
-#  Created on:        2026-10-29                                       #
-#  Last modified on:  2026-10-29                                       #
-#  Purpose:           The approved sources: anyone may read them, only #
-#                     an approver changes them, and each change is     #
-#                     audited.                                         #
-########################################################################
-"""The library: the approved sources and the search index over them.
+"""
+Author:            Kevin Street
+Created on:        2026-10-29
+Last modified on:  2026-10-29
 
-Reading is open. Adding or removing a source is an approver's action
-(the API checks who is asking); the library checks the document,
-refuses one the guard flags, writes or deletes the file, records the
-change in the audit log, and rebuilds the index, all under one lock.
+The approved sources and the search index over them: anyone may read
+them, only an approver changes them, and each change is audited.
+Adding or removing a source is an approver's action (the API checks
+who is asking); the library checks the document, refuses one the
+guard flags, writes or deletes the file, records the change in the
+audit log, and rebuilds the index, all under one lock.
 """
 
+########################################################################
+#                               Imports                                #
+########################################################################
+# Standard library
 from __future__ import annotations
 
 import threading
 from datetime import UTC, datetime
+from typing import Final
 
+# Third-party
+from kds.args import required
 from kds.logs import get_logger, log_event
 from pydantic import BaseModel, Field
 
-from grounded_qa.config import AppSettings
+# Local
+from grounded_qa.config import SETTINGS, AppSettings
 from grounded_qa.core import sources
 from grounded_qa.core.audit import AuditLog
 from grounded_qa.core.chunk import split_all
@@ -32,16 +38,25 @@ from grounded_qa.core.embed import Embedder
 from grounded_qa.core.retrieve import Hit, Retriever
 from grounded_qa.core.sources import Source, SourceError
 
-# Module constants
+########################################################################
+#                           Global constants                           #
+########################################################################
 log = get_logger(__name__)
-# log.debug("Sets the encoding source files are written in")
-ENCODING = "utf-8"
+# log.debug("Takes the encoding that turns text into bytes, from the config")
+ENCODING: Final = SETTINGS.text_encoding
+
+########################################################################
+#                           Local constants                            #
+########################################################################
 # log.debug("Matches one line of front-matter text, with no line breaks")
 ONE_LINE = r"^[^\r\n]+$"
 # log.debug("Sets the longest title, publisher or licence, in characters")
 MAX_FIELD_CHARS = 200
 
 
+########################################################################
+#                            Source library                            #
+########################################################################
 # log.debug("Defines the error for an id already in use")
 class SourceExistsError(SourceError):
     """A source with this id is already approved."""
@@ -73,13 +88,27 @@ class Library:
 
     # log.debug("Defines the constructor, which reads and indexes the sources")
     def __init__(
-        self, settings: AppSettings, audit: AuditLog, embedder: Embedder | None = None
+        self,
+        settings: AppSettings | None = None,
+        audit: AuditLog | None = None,
+        embedder: Embedder | None = None,
     ) -> None:
-        """Read every source in the sources folder and index them.
+        """Reads every source in the sources folder and indexes them.
+
+        Args:
+            settings: The settings: the sources folder and how to
+                split and search. Required.
+            audit: The audit log each change is recorded in. Required.
+            embedder: The embedding model for semantic and hybrid
+                search; None for keyword search.
 
         Raises:
             SourceError: A source on disk fails its checks.
         """
+        # log.debug("Takes the settings, which the caller must give")
+        settings = required(settings=settings)
+        # log.debug("Takes the audit log, which the caller must give")
+        audit = required(audit=audit)
         # log.debug("Keeps the settings")
         self.settings = settings
         # log.debug("Keeps the audit log")
@@ -96,47 +125,90 @@ class Library:
     # log.debug("Defines the retrieval mode in use")
     @property
     def mode(self) -> str:
-        """Return keyword, semantic or hybrid."""
+        """Returns keyword, semantic or hybrid.
+
+        Returns:
+            The retrieval mode the index searches in.
+        """
         # log.debug("Returns the retriever's mode")
         return self._retriever.mode
 
     # log.debug("Defines how many passages are searchable")
     @property
     def passages(self) -> int:
-        """Return the number of passages in the index."""
+        """Returns the number of passages in the index.
+
+        Returns:
+            How many passages can be searched.
+        """
         # log.debug("Returns the count")
         return len(self._retriever.passages)
 
     # log.debug("Defines the list of approved sources")
     def approved(self) -> list[Source]:
-        """Return every approved source, sorted by id."""
+        """Returns every approved source, sorted by id.
+
+        Returns:
+            The sources, held-back ones included.
+        """
         # log.debug("Returns the sources in id order")
         return [self._sources[key] for key in sorted(self._sources)]
 
     # log.debug("Defines one source by id")
-    def get(self, source_id: str) -> Source:
-        """Return the source with this id.
+    def get(self, source_id: str | None = None) -> Source:
+        """Returns the source with this id.
+
+        Args:
+            source_id: The source's id. Required.
+
+        Returns:
+            The source.
 
         Raises:
             KeyError: No source has this id.
         """
+        # log.debug("Takes the source id, which the caller must give")
+        source_id = required(source_id=source_id)
         # log.debug("Returns the source; a missing id raises KeyError")
         return self._sources[source_id]
 
     # log.debug("Defines a search, delegated to the current index")
-    def search(self, question: str, k: int | None = None) -> list[Hit]:
-        """Return the best passages for the question, best first."""
+    def search(self, question: str | None = None, k: int | None = None) -> list[Hit]:
+        """Returns the best passages for the question, best first.
+
+        Args:
+            question: The question to find passages for. Required.
+            k: How many passages to return; the configured number when
+                None.
+
+        Returns:
+            The best passages, best first.
+        """
+        # log.debug("Takes the question, which the caller must give")
+        question = required(question=question)
         # log.debug("Returns the current retriever's hits")
         return self._retriever.search(question, k)
 
     # log.debug("Defines an approver adding a source")
-    def add(self, new: NewSource, request_id: str) -> Source:
-        """Check, store, audit and index a new source.
+    def add(self, new: NewSource | None = None, request_id: str | None = None) -> Source:
+        """Checks, stores, audits and indexes a new source.
+
+        Args:
+            new: The source as the approver submitted it. Required.
+            request_id: The request that adds it, for the audit log.
+                Required.
+
+        Returns:
+            The stored source, with its hash and retrieval date.
 
         Raises:
             SourceError: It fails a check, or the guard flags it.
             SourceExistsError: The id is already in use.
         """
+        # log.debug("Takes the new source, which the caller must give")
+        new = required(new=new)
+        # log.debug("Takes the request id, which the caller must give")
+        request_id = required(request_id=request_id)
         # log.debug("Builds the document with our hash and today's date")
         text = sources.render(
             Source(
@@ -177,12 +249,21 @@ class Library:
         return source
 
     # log.debug("Defines an approver removing a source")
-    def remove(self, source_id: str, request_id: str) -> None:
-        """Delete, audit and unindex a source.
+    def remove(self, source_id: str | None = None, request_id: str | None = None) -> None:
+        """Deletes, audits and unindexes a source.
+
+        Args:
+            source_id: The id of the source to remove. Required.
+            request_id: The request that removes it, for the audit log.
+                Required.
 
         Raises:
             KeyError: No source has this id.
         """
+        # log.debug("Takes the source id, which the caller must give")
+        source_id = required(source_id=source_id)
+        # log.debug("Takes the request id, which the caller must give")
+        request_id = required(request_id=request_id)
         # log.debug("Makes the change under the lock")
         with self._lock:
             # log.debug("Takes the source out; a missing id raises KeyError")
@@ -198,7 +279,11 @@ class Library:
 
     # log.debug("Defines how the index is built from the sources")
     def _index(self) -> Retriever:
-        """Return a retriever over every source the guard passed."""
+        """Returns a retriever over every source the guard passed.
+
+        Returns:
+            A retriever over the passages of those sources.
+        """
         # log.debug("Returns a retriever over the passages")
         return Retriever(
             split_all(self.approved(), self.settings.retrieval_passage_words),

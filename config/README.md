@@ -1,19 +1,32 @@
 # config
 
-[`settings.toml`](settings.toml) lists every setting the service reads, at its default. It holds no
-secrets: those go in `.env` (copy [`.env.example`](../.env.example)), and the service refuses to
-start if a secret is written here.
+Everything the project configures lives here, in one folder:
+
+| File | What it holds | In git |
+| --- | --- | --- |
+| [`config.toml`](config.toml) | Every setting the service and the web app read, at its default, and every value two of their files share | yes |
+| [`.env.example`](.env.example) | The name of every secret, with an empty value | yes |
+| `.env` | The secrets themselves: copy `.env.example` and fill it in | never |
+
+`config.toml` holds no secrets, and the service refuses to start if one is written into it.
 
 ## How a value is chosen
 
-Highest first: an environment variable, then `.env`, then this file, then the default in
-[`backend/src/grounded_qa/config.py`](../backend/src/grounded_qa/config.py). Each key's environment name is
-its section and key joined by an underscore, in capitals: `[retrieval] mode` is `RETRIEVAL_MODE`.
-`SETTINGS_FILE` points the service at a different file. Every setting is logged at startup, secrets
-masked, in the `service.start` event.
+Highest first: an environment variable, then `config/.env`, then `config.toml`, then the default in
+[`backend/src/grounded_qa/config.py`](../backend/src/grounded_qa/config.py). Each key's environment
+name is its section and key joined by an underscore, in capitals: `[retrieval] mode` is
+`RETRIEVAL_MODE`. `SETTINGS_FILE` points the service at a different file. Every setting is logged at
+startup, secrets masked, in the `service.start` event.
 
-A test (`backend/tests/test_config.py`) keeps this file equal to the defaults in code, so the two
-cannot drift.
+A test (`backend/tests/test_config.py`) keeps `config.toml` equal to the defaults in code, so the
+two cannot drift.
+
+The web app reads the keys it needs from `config.toml` when it is built
+([`frontend/vite.config.ts`](../frontend/vite.config.ts) passes them to
+[`frontend/src/config.ts`](../frontend/src/config.ts)): the API prefix and request-id header, the
+question limits, the offline provider's name, the section separator, the milliseconds in a second
+and the hash length. Nothing from `config/.env` reaches it. Change one of these and rebuild the web
+app as well as restarting the service.
 
 ## Every setting
 
@@ -27,9 +40,11 @@ cannot drift.
 | `[llm] temperature` | `0.0` | 0 keeps answers repeatable |
 | `[llm] max_retries` | `3` | Retries for failures that can succeed later |
 | `[llm] timeout_s` | `60.0` | How long one model call may take |
+| `[llm] offline_provider` | `fake` | The provider name that means the offline stand-in; the web app says so when it is in use |
 | `[azure_openai] api_version` | `2024-10-21` | Only for the `azure` provider |
 | `[eval] budget_usd` | `5.0` | A process stops calling the model once it has spent this |
 | `[eval] canaries` | `KESTREL-9`, `PINEAPPLE-7` | Phrases planted in `data/samples/`; no answer may repeat them |
+| `[eval] answerable_field` | `answerable` | The field of a case that says whether the sources answer it |
 | `[log] dir` | `logs` | Where the daily JSON log files go |
 | `[log] level` | `INFO` | `DEBUG`, `INFO`, `WARNING` or `ERROR` |
 | `[log] redact` | `true` | Removes emails, phone numbers and ID-like numbers from log lines |
@@ -47,6 +62,8 @@ cannot drift.
 | `[retrieval] bm25_b` | `0.75` | BM25's length normalisation (0 to 1) |
 | `[retrieval] model` | `BAAI/bge-small-en-v1.5` | The local embedding model |
 | `[retrieval] passage_words` | `180` | The most words in one passage |
+| `[retrieval] section_separator` | `" > "` | Joins the headings of a passage's section; the web app splits on it |
+| `[retrieval] keyword_mode` | `keyword` | The name of the mode that ranks by shared words alone, with no embedding model |
 | `[answer] min_quote_words` | `4` | The shortest quote a citation may give |
 | `[answer] max_words` | `150` | The longest answer the model may write |
 | `[api] host` | `127.0.0.1` | The address the server listens on; this machine only |
@@ -56,8 +73,13 @@ cannot drift.
 | `[api] max_source_bytes` | `200000` | The largest document an approver may add |
 | `[api] asks_per_minute` | `20` | Questions one client may ask per minute |
 | `[api] allowed_origins` | `http://localhost:5173` | Browser origins allowed to call the API |
+| `[api] prefix` | `/api/v1` | The path every route lives under; the web app calls it |
+| `[api] request_id_header` | `X-Request-ID` | The header that carries each request's id, the client's or a new one |
+| `[text] encoding` | `utf-8` | How text becomes bytes: source files, hashes, sizes, tokens and result files |
+| `[time] ms_per_second` | `1000` | Milliseconds in a second: request timings in the logs, trace lines in the web app |
+| `[web] hash_chars` | `12` | How many characters of a SHA-256 the web app shows |
 
-## Secrets (`.env` only)
+## Secrets (`config/.env` only)
 
 | Name | What it is |
 | --- | --- |
@@ -65,6 +87,6 @@ cannot drift.
 | `ANTHROPIC_API_KEY` | Needed when `[llm] provider = "anthropic"` |
 | `OPENAI_API_KEY`, `AZURE_OPENAI_API_KEY` | Needed only for those providers |
 
-The frontend has one setting of its own, `VITE_API_BASE`, read in
-[`frontend/src/config.ts`](../frontend/src/config.ts); it defaults to `/api/v1`, which the
-development server proxies to the API.
+The web app has one build variable of its own, `VITE_API_BASE`, read in
+[`frontend/src/config.ts`](../frontend/src/config.ts); unset, the app calls `[api] prefix` on its
+own origin, which the development server proxies to the API.

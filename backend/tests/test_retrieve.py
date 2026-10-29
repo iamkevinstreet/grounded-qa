@@ -1,34 +1,46 @@
 ########################################################################
 #                    backend/tests/test_retrieve.py                    #
 ########################################################################
-#  Author:            Kevin Street                                     #
-#  Created on:        2026-10-29                                       #
-#  Last modified on:  2026-10-29                                       #
-#  Purpose:           Tests BM25, rank fusion, the three modes, and    #
-#                     the error when the embedding model is missing.   #
-########################################################################
-"""Tests for grounded_qa.core.keyword, retrieve and embed."""
+"""
+Author:            Kevin Street
+Created on:        2026-10-29
+Last modified on:  2026-10-29
 
+Tests BM25, rank fusion, the three modes, and the error when the
+embedding model is missing.
+"""
+
+########################################################################
+#                               Imports                                #
+########################################################################
+# Standard library
 from __future__ import annotations
 
 import builtins
 from typing import Any
 
+# Third-party
 import pytest
+from kds.args import required
 from kds.logs import get_logger
 
+# Local
 from grounded_qa.config import AppSettings
 from grounded_qa.core.chunk import Passage, split_all
 from grounded_qa.core.embed import LocalEmbedder, MissingExtraError, cosine
 from grounded_qa.core.keyword import Bm25
 from grounded_qa.core.retrieve import Retriever, fuse
-
 from support import LEAVE_BODY, OVERTIME_BODY, make_source
 
-# Module constants
+########################################################################
+#                           Global constants                           #
+########################################################################
 log = get_logger(__name__)
 
 
+########################################################################
+#                           Retrieval tests                            #
+########################################################################
 # log.debug("Defines a stand-in embedder that counts a few topic words")
 class TopicEmbedder:
     """Embeds text as counts of three topic words; enough to rank."""
@@ -37,21 +49,48 @@ class TopicEmbedder:
     name = "topic-stand-in"
 
     # log.debug("Defines the vectors for questions")
-    def queries(self, texts: list[str]) -> list[list[float]]:
-        """Return topic counts for each question."""
+    def queries(self, texts: list[str] | None = None) -> list[list[float]]:
+        """Returns topic counts for each question.
+
+        Args:
+            texts: The questions. Required.
+
+        Returns:
+            One vector of three counts per question.
+        """
+        # log.debug("Takes the texts, which the caller must give")
+        texts = required(texts=texts)
         # log.debug("Returns the counts")
         return [self._count(t) for t in texts]
 
     # log.debug("Defines the vectors for passages")
-    def passages(self, texts: list[str]) -> list[list[float]]:
-        """Return topic counts for each passage."""
+    def passages(self, texts: list[str] | None = None) -> list[list[float]]:
+        """Returns topic counts for each passage.
+
+        Args:
+            texts: The passages' search texts. Required.
+
+        Returns:
+            One vector of three counts per passage.
+        """
+        # log.debug("Takes the texts, which the caller must give")
+        texts = required(texts=texts)
         # log.debug("Returns the counts")
         return [self._count(t) for t in texts]
 
     # log.debug("Defines the count of the topic words")
     @staticmethod
-    def _count(text: str) -> list[float]:
-        """Count words about leave, pay and time."""
+    def _count(text: str | None = None) -> list[float]:
+        """Counts words about leave, pay and time.
+
+        Args:
+            text: The text to count in. Required.
+
+        Returns:
+            How often the text names each of the three topics.
+        """
+        # log.debug("Takes the text, which the caller must give")
+        text = required(text=text)
         # log.debug("Lowercases the text once")
         lower = text.lower()
         # log.debug("Returns one count per topic")
@@ -64,7 +103,11 @@ class TopicEmbedder:
 
 # log.debug("Defines the passages of the two small sources")
 def _passages() -> list[Passage]:
-    """Return the passages of the leave and overtime sources."""
+    """Returns the passages of the leave and overtime sources.
+
+    Returns:
+        The passages, in order.
+    """
     # log.debug("Splits both sources")
     return split_all(
         [make_source("leave", LEAVE_BODY), make_source("overtime", OVERTIME_BODY)], 180
@@ -97,7 +140,11 @@ def test_fuse_rewards_agreement() -> None:
 
 # log.debug("Defines the test of keyword mode")
 def test_keyword_mode_finds_the_overtime_passage(settings: AppSettings) -> None:
-    """Keyword search finds the passage sharing the words."""
+    """Keyword search finds the passage sharing the words.
+
+    Args:
+        settings: Settings over the two small test sources.
+    """
     # log.debug("Builds a keyword retriever")
     retriever = Retriever(_passages(), settings)
     # log.debug("Searches for the waiver question")
@@ -108,7 +155,11 @@ def test_keyword_mode_finds_the_overtime_passage(settings: AppSettings) -> None:
 
 # log.debug("Defines the test of hybrid mode")
 def test_hybrid_mode_ranks_with_both(settings: AppSettings) -> None:
-    """Hybrid search records each passage's rank in both rankings."""
+    """Hybrid search records each passage's rank in both rankings.
+
+    Args:
+        settings: Settings over the two small test sources.
+    """
     # log.debug("Builds a hybrid retriever with the stand-in embedder")
     hybrid = settings.model_copy(update={"retrieval_mode": "hybrid"})
     # log.debug("Searches with words both rankers use")
@@ -119,7 +170,11 @@ def test_hybrid_mode_ranks_with_both(settings: AppSettings) -> None:
 
 # log.debug("Defines the test that meaning needs an embedder")
 def test_semantic_mode_needs_an_embedder(settings: AppSettings) -> None:
-    """Semantic mode without an embedder fails fast."""
+    """Semantic mode without an embedder fails fast.
+
+    Args:
+        settings: Settings over the two small test sources.
+    """
     # log.debug("Copies the settings to semantic mode")
     semantic = settings.model_copy(update={"retrieval_mode": "semantic"})
     # log.debug("Expects the error")
@@ -130,13 +185,29 @@ def test_semantic_mode_needs_an_embedder(settings: AppSettings) -> None:
 
 # log.debug("Defines the test of the missing optional install")
 def test_local_embedder_explains_a_missing_extra(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Without fastembed the error says how to install it."""
+    """Without fastembed the error says how to install it.
+
+    Args:
+        monkeypatch: pytest's helper for patching the environment and
+            objects.
+    """
     # log.debug("Keeps the real import")
     real_import = builtins.__import__
 
     # log.debug("Defines an import that fails only for fastembed")
-    def fail_fastembed(name: str, *args: Any, **kwargs: Any) -> Any:
-        """Raise ImportError for fastembed; import anything else."""
+    def fail_fastembed(name: str | None = None, *args: Any, **kwargs: Any) -> Any:
+        """Raises ImportError for fastembed; imports anything else.
+
+        Args:
+            name: The module to import. Required.
+            *args: The rest of what an import passes.
+            **kwargs: The same, by name.
+
+        Returns:
+            The module imported.
+        """
+        # log.debug("Takes the name, which the caller must give")
+        name = required(name=name)
         # log.debug("Fails the optional import")
         if name == "fastembed":
             # log.debug("Raises as if it were not installed")

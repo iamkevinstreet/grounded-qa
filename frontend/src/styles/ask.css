@@ -2,17 +2,22 @@
 ########################################################################
 #                     frontend/src/styles/ask.css                      #
 ########################################################################
-#  Author:            Kevin Street                                     #
-#  Created on:        2026-10-29                                       #
-#  Last modified on:  2026-10-29                                       #
-#  Purpose:           The ask page: question, answer, markers,         #
-#                     citations, and the highlighted source sheet.     #
+*/
+/*
+ * Author:            Kevin Street
+ * Created on:        2026-10-29
+ * Last modified on:  2026-10-29
+ *
+ * The ask page: the question, the answer with its markers, the
+ * citations, and the source sheet whose highlighter sweep is the page's
+ * one moment of motion.
+ */
+
+/*
+########################################################################
+#                               Ask page                               #
 ########################################################################
 */
-
-/* The ask page: the question, the answer with its markers, and the source
-   sheet whose highlighter sweep is the page's one moment of motion. */
-
 .gq-intro {
   max-width: 46rem;
 }

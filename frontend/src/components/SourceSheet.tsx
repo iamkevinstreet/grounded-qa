@@ -1,20 +1,41 @@
 // ########################################################################
 // #               frontend/src/components/SourceSheet.tsx                #
 // ########################################################################
-// #  Author:            Kevin Street                                     #
-// #  Created on:        2026-10-29                                       #
-// #  Last modified on:  2026-10-29                                       #
-// #  Purpose:           The cited passage on its own sheet: title,       #
-// #                     section, revision date, quote marked.            #
-// ########################################################################
-/** The cited passage on its own sheet: title, section, date, quote marked. */
+/**
+ * Author:            Kevin Street
+ * Created on:        2026-10-29
+ * Last modified on:  2026-10-29
+ *
+ * The cited passage on its own sheet: title, section, revision date,
+ * quote marked.
+ */
 
+// ########################################################################
+// #                               Imports                                #
+// ########################################################################
+// Local
 import { sectionLabel } from '../labels';
+import { required } from '../lib/required';
 import type { Citation } from '../types';
 import { Highlighted } from './Highlighted';
 
+// ########################################################################
+// #                             Source sheet                             #
+// ########################################################################
 // log.debug('Defines the source sheet')
-export function SourceSheet({ citation }: { citation: Citation }) {
+/**
+ * Renders the cited passage on its own sheet.
+ *
+ * @param props - The component's props.
+ * @param props.citation - The citation to show. Required.
+ * @returns The sheet: title, section, revision date, the passage with its
+ *   quote marked, and a link to the full fact sheet.
+ */
+export function SourceSheet({
+  citation = null,
+}: { citation?: Citation | null } = {}): React.JSX.Element {
+  // log.debug('Takes the citation, which the caller must give')
+  citation = required({ citation });
   // log.debug('Returns the sheet; its key replays the highlight on each change')
   return (
     <aside className="gq-sheet" aria-label={`Source ${citation.n}`}>

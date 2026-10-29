@@ -1,13 +1,13 @@
 ########################################################################
 #                backend/src/grounded_qa/core/guard.py                 #
 ########################################################################
-#  Author:            Kevin Street                                     #
-#  Created on:        2026-10-29                                       #
-#  Last modified on:  2026-10-29                                       #
-#  Purpose:           Finds text in a document that reads like orders  #
-#                     to an AI model, so it can be refused or held.    #
-########################################################################
-"""The ingest guard: flags instruction-like text in source documents.
+"""
+Author:            Kevin Street
+Created on:        2026-10-29
+Last modified on:  2026-10-29
+
+Finds text in a document that reads like orders to an AI model, so it
+can be refused or held.
 
 A source document is data. Text in it that addresses a model ("ignore
 your previous instructions") is a prompt injection, so the approver is
@@ -19,14 +19,26 @@ are full of job titles ("works as an assistant"); a bare "assistant"
 is no sign of anything. A test keeps every approved source unflagged.
 """
 
+########################################################################
+#                               Imports                                #
+########################################################################
+# Standard library
 from __future__ import annotations
 
 import re
 
+# Third-party
+from kds.args import required
 from kds.logs import get_logger
 
-# Module constants
+########################################################################
+#                           Global constants                           #
+########################################################################
 log = get_logger(__name__)
+
+########################################################################
+#                           Local constants                            #
+########################################################################
 # log.debug("Lists patterns of text that gives orders to a model")
 PATTERNS = tuple(
     re.compile(pattern, re.IGNORECASE)
@@ -47,9 +59,22 @@ PATTERNS = tuple(
 SHOWN_CHARS = 160
 
 
+########################################################################
+#                             Ingest guard                             #
+########################################################################
 # log.debug("Defines the check that finds instruction-like lines")
-def flag(text: str) -> list[str]:
-    """Return each line of `text` that reads like orders to a model."""
+def flag(text: str | None = None) -> list[str]:
+    """Returns each line of `text` that reads like orders to a model.
+
+    Args:
+        text: A source document's text. Required.
+
+    Returns:
+        Each such line, stripped and cut to the length the approver is
+        shown.
+    """
+    # log.debug("Takes the text, which the caller must give")
+    text = required(text=text)
     # log.debug("Returns every matching line, shortened for display")
     return [
         line.strip()[:SHOWN_CHARS]

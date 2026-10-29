@@ -1,30 +1,41 @@
 ########################################################################
 #                    backend/tests/test_sources.py                     #
 ########################################################################
-#  Author:            Kevin Street                                     #
-#  Created on:        2026-10-29                                       #
-#  Last modified on:  2026-10-29                                       #
-#  Purpose:           Tests reading sources: front matter, the hash    #
-#                     check, safe ids and paths, and the real corpus.  #
-########################################################################
-"""Tests for grounded_qa.core.sources."""
+"""
+Author:            Kevin Street
+Created on:        2026-10-29
+Last modified on:  2026-10-29
 
+Tests reading sources: front matter, the hash check, safe ids and paths,
+and the real corpus.
+"""
+
+########################################################################
+#                               Imports                                #
+########################################################################
+# Standard library
 from __future__ import annotations
 
 from pathlib import Path
 
+# Third-party
 import pytest
 from kds.logs import get_logger
 
+# Local
 from grounded_qa.core import sources
 from grounded_qa.core.sources import SourceError
-
 from support import REPO, make_source, write_source
 
-# Module constants
+########################################################################
+#                           Global constants                           #
+########################################################################
 log = get_logger(__name__)
 
 
+########################################################################
+#                             Source tests                             #
+########################################################################
 # log.debug("Defines the test that a document survives render and parse")
 def test_render_then_parse_round_trips() -> None:
     """A rendered source parses back to the same source."""
@@ -56,7 +67,12 @@ def test_edited_text_fails_its_hash() -> None:
     ],
 )
 def test_malformed_documents_are_refused(text: str, message: str) -> None:
-    """A document without complete front matter is refused."""
+    """A document without complete front matter is refused.
+
+    Args:
+        text: A document with missing or incomplete front matter.
+        message: What the error must say.
+    """
     # log.debug("Expects the error")
     with pytest.raises(SourceError, match=message):
         # log.debug("Parses the bad document")
@@ -77,7 +93,11 @@ def test_source_must_be_https() -> None:
 # log.debug("Defines the ids that must be refused")
 @pytest.mark.parametrize("bad", ["../secrets", "UPPER", "-dash-first", "has space", "a" * 65, ""])
 def test_unsafe_ids_are_refused(bad: str) -> None:
-    """Only lowercase letters, digits and inner dashes are allowed."""
+    """Only lowercase letters, digits and inner dashes are allowed.
+
+    Args:
+        bad: An id that breaks the id rule.
+    """
     # log.debug("Expects the id error")
     with pytest.raises(SourceError):
         # log.debug("Checks the id")
@@ -86,7 +106,11 @@ def test_unsafe_ids_are_refused(bad: str) -> None:
 
 # log.debug("Defines the test that a path stays in its folder")
 def test_path_for_stays_inside_the_folder(tmp_path: Path) -> None:
-    """A good id maps to a file directly inside the folder."""
+    """A good id maps to a file directly inside the folder.
+
+    Args:
+        tmp_path: A temporary folder pytest makes for this test.
+    """
     # log.debug("Builds the path")
     path = sources.path_for(tmp_path, "fact-sheet-1")
     # log.debug("Checks it is a direct child of the folder")
@@ -95,7 +119,11 @@ def test_path_for_stays_inside_the_folder(tmp_path: Path) -> None:
 
 # log.debug("Defines the test that the folder README is not a source")
 def test_load_dir_skips_readme(tmp_path: Path) -> None:
-    """README.md describes the folder and is not loaded as a source."""
+    """README.md describes the folder and is not loaded as a source.
+
+    Args:
+        tmp_path: A temporary folder pytest makes for this test.
+    """
     # log.debug("Writes a source and a README")
     write_source(tmp_path, make_source("one", "Text.\n"))
     # log.debug("Writes the README")

@@ -1,39 +1,87 @@
 // ########################################################################
 // #                         frontend/src/api.ts                          #
 // ########################################################################
-// #  Author:            Kevin Street                                     #
-// #  Created on:        2026-10-29                                       #
-// #  Last modified on:  2026-10-29                                       #
-// #  Purpose:           The API client: one function per route, and      #
-// #                     errors that say what happened and what to do.    #
-// ########################################################################
-/** The API client: one function per route, and errors that say what happened. */
+/**
+ * Author:            Kevin Street
+ * Created on:        2026-10-29
+ * Last modified on:  2026-10-29
+ *
+ * The API client: one function per route, and errors that say what
+ * happened and what to do.
+ */
 
-import { API_BASE } from './config';
+// ########################################################################
+// #                               Imports                                #
+// ########################################################################
+// Local
+import { CONFIG } from './config';
+import { required } from './lib/required';
 import type { Answer, AuditEntry, Health, NewSource, SourceDetail, SourceSummary } from './types';
 
-// log.debug('Names the header that carries the request id')
-const REQUEST_ID = 'X-Request-ID';
+// ########################################################################
+// #                           Global constants                           #
+// ########################################################################
+// log.debug('Takes the address of the API from the config')
+const API_BASE = CONFIG.api.base;
+// log.debug('Takes the header that carries the request id from the config')
+const REQUEST_ID = CONFIG.api.request_id_header;
+
+// ########################################################################
+// #                           Local constants                            #
+// ########################################################################
 // log.debug('Sets the status of a response with no body')
 const NO_CONTENT = 204;
 
+// ########################################################################
+// #                              API client                              #
+// ########################################################################
 // log.debug('Defines the error every failed call raises')
 export class ApiError extends Error {
+  // log.debug('Holds the HTTP status the API answered with')
+  readonly status: number;
+  // log.debug('Holds the request id the API gave, if any')
+  readonly requestId: string | null;
+
   // log.debug('Defines the constructor with the status and request id')
+  /**
+   * Builds the error from the API's answer.
+   *
+   * @param status - The HTTP status the API answered with. Required.
+   * @param message - What went wrong, in words a reader can act on. Required.
+   * @param requestId - The request id the API gave, or null.
+   */
   constructor(
-    readonly status: number,
-    message: string,
-    readonly requestId: string | null,
+    status: number | null = null,
+    message: string | null = null,
+    requestId: string | null = null,
   ) {
+    // log.debug('Takes the status, which the caller must give')
+    status = required({ status });
+    // log.debug('Takes the message, which the caller must give')
+    message = required({ message });
     // log.debug('Passes the message to Error')
     super(message);
     // log.debug('Names the error for logs and tests')
     this.name = 'ApiError';
+    // log.debug('Keeps the status')
+    this.status = status;
+    // log.debug('Keeps the request id')
+    this.requestId = requestId;
   }
 }
 
 // log.debug('Defines one call to the API')
-async function call<T>(path: string, init: RequestInit = {}): Promise<T> {
+/**
+ * Sends one request to the API and returns its parsed answer.
+ *
+ * @param path - The route, after the API's address. Required.
+ * @param init - The request's method, body and headers.
+ * @returns The parsed body, or undefined for an empty response.
+ * @throws {ApiError} When the API answers with an error status.
+ */
+async function call<T>(path: string | null = null, init: RequestInit = {}): Promise<T> {
+  // log.debug('Takes the path, which the caller must give')
+  path = required({ path });
   // log.debug('Copies the given headers, whatever form they came in')
   const headers = new Headers(init.headers);
   // log.debug('Marks the body as JSON')
@@ -50,7 +98,16 @@ async function call<T>(path: string, init: RequestInit = {}): Promise<T> {
 }
 
 // log.debug('Defines how a failed response is explained')
-async function detail(response: Response): Promise<string> {
+/**
+ * Returns the server's explanation of a failed response.
+ *
+ * @param response - The failed response. Required.
+ * @returns The server's message, its validation messages joined, or a
+ *   fallback that names the status.
+ */
+async function detail(response: Response | null = null): Promise<string> {
+  // log.debug('Takes the response, which the caller must give')
+  response = required({ response });
   // log.debug('Sets the fallback explanation')
   const fallback = `The request failed with status ${response.status}.`;
   // log.debug('Reads the body, which may not be JSON')
@@ -76,7 +133,15 @@ async function detail(response: Response): Promise<string> {
 }
 
 // log.debug('Defines the header that carries the approver token')
-function bearer(token: string): HeadersInit {
+/**
+ * Returns the header that carries the approver token.
+ *
+ * @param token - The approver token. Required.
+ * @returns The Authorization header.
+ */
+function bearer(token: string | null = null): HeadersInit {
+  // log.debug('Takes the token, which the caller must give')
+  token = required({ token });
   // log.debug('Returns the Authorization header')
   return { Authorization: `Bearer ${token}` };
 }
@@ -101,7 +166,15 @@ export const api = {
 };
 
 // log.debug('Defines the sentence shown when a call fails')
-export function describeError(error: unknown): string {
+/**
+ * Returns the sentence shown when a call fails.
+ *
+ * @param error - What the call threw; anything but an ApiError means the
+ *   service did not answer.
+ * @returns The server's explanation with its request id, or how to start
+ *   the backend.
+ */
+export function describeError(error: unknown = null): string {
   // log.debug('Explains an API error with its request id, for support')
   if (error instanceof ApiError) {
     // log.debug('Returns the server explanation and the request id')

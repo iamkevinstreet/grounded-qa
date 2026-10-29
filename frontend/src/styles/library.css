@@ -2,17 +2,21 @@
 ########################################################################
 #                   frontend/src/styles/library.css                    #
 ########################################################################
-#  Author:            Kevin Street                                     #
-#  Created on:        2026-10-29                                       #
-#  Last modified on:  2026-10-29                                       #
-#  Purpose:           The sources and approver pages: the list, the    #
-#                     reader, the forms and the audit log.             #
+*/
+/*
+ * Author:            Kevin Street
+ * Created on:        2026-10-29
+ * Last modified on:  2026-10-29
+ *
+ * The sources page and the approver page: the list, the reader, the
+ * forms, and the audit log.
+ */
+
+/*
+########################################################################
+#                      Sources and approver pages                      #
 ########################################################################
 */
-
-/* The sources page and the approver page: the list, the reader, the forms,
-   and the audit log. */
-
 .gq-library {
   display: grid;
   gap: var(--gq-space-8);

@@ -1,28 +1,39 @@
 ########################################################################
 #                     backend/tests/test_chunk.py                      #
 ########################################################################
-#  Author:            Kevin Street                                     #
-#  Created on:        2026-10-29                                       #
-#  Last modified on:  2026-10-29                                       #
-#  Purpose:           Tests passages: heading paths, ids, word limits, #
-#                     how long blocks split, held-back sources.        #
-########################################################################
-"""Tests for grounded_qa.core.chunk."""
+"""
+Author:            Kevin Street
+Created on:        2026-10-29
+Last modified on:  2026-10-29
 
+Tests passages: heading paths, ids, word limits, how long blocks split,
+held-back sources.
+"""
+
+########################################################################
+#                               Imports                                #
+########################################################################
+# Standard library
 from __future__ import annotations
 
+# Third-party
 from kds.logs import get_logger
 
+# Local
 from grounded_qa.core import sources
 from grounded_qa.core.chunk import split, split_all
 from grounded_qa.core.text import word_count
-
 from support import LEAVE_BODY, REPO, make_source
 
-# Module constants
+########################################################################
+#                           Global constants                           #
+########################################################################
 log = get_logger(__name__)
 
 
+########################################################################
+#                            Passage tests                             #
+########################################################################
 # log.debug("Defines the test of heading paths and ids")
 def test_passages_keep_heading_paths_and_number_in_order() -> None:
     """Each section becomes a passage named by its heading path."""

@@ -1,37 +1,52 @@
 ########################################################################
 #                     backend/tests/test_config.py                     #
 ########################################################################
-#  Author:            Kevin Street                                     #
-#  Created on:        2026-10-29                                       #
-#  Last modified on:  2026-10-29                                       #
-#  Purpose:           Tests settings.toml lists every setting at its   #
-#                     default, holds no secret, and tokens are strong. #
-########################################################################
-"""Tests for grounded_qa.config and config/settings.toml."""
+"""
+Author:            Kevin Street
+Created on:        2026-10-29
+Last modified on:  2026-10-29
 
+Tests config/config.toml lists every setting at its default and holds
+no secret, and that a weak approver token is refused.
+"""
+
+########################################################################
+#                               Imports                                #
+########################################################################
+# Standard library
 from __future__ import annotations
 
 import tomllib
 from typing import Any
 
+# Third-party
 import pytest
 from kds.logs import get_logger
 from kds.settings.toml import flatten, is_secret
 from pydantic import SecretStr, ValidationError
 
+# Local
 from grounded_qa.config import AppSettings
-
 from support import REPO
 
-# Module constants
+########################################################################
+#                           Global constants                           #
+########################################################################
 log = get_logger(__name__)
 
 
+########################################################################
+#                            Settings tests                            #
+########################################################################
 # log.debug("Defines how the repository's settings file is read")
 def _file_values() -> dict[str, Any]:
-    """Return config/settings.toml as flat field names and values."""
+    """Returns config/config.toml as flat field names and values.
+
+    Returns:
+        Each setting's field name mapped to the file's value.
+    """
     # log.debug("Reads and flattens the file")
-    return flatten(tomllib.loads((REPO / "config" / "settings.toml").read_text(encoding="utf-8")))
+    return flatten(tomllib.loads((REPO / "config" / "config.toml").read_text(encoding="utf-8")))
 
 
 # log.debug("Defines the test that the file matches the code's defaults")
@@ -53,7 +68,7 @@ def test_settings_file_lists_every_default() -> None:
 
 # log.debug("Defines the test that the file holds no secret")
 def test_settings_file_holds_no_secret() -> None:
-    """Secret fields are never set in settings.toml."""
+    """Secret fields are never set in config.toml."""
     # log.debug("Checks no secret field is in the file")
     assert not [n for n in _file_values() if is_secret(AppSettings.model_fields[n])]
 

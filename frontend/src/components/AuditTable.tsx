@@ -1,21 +1,46 @@
 // ########################################################################
 // #                frontend/src/components/AuditTable.tsx                #
 // ########################################################################
-// #  Author:            Kevin Street                                     #
-// #  Created on:        2026-10-29                                       #
-// #  Last modified on:  2026-10-29                                       #
-// #  Purpose:           The audit log table: every change to the         #
-// #                     sources, newest first.                           #
-// ########################################################################
-/** The audit log: every change to the sources, newest first. */
+/**
+ * Author:            Kevin Street
+ * Created on:        2026-10-29
+ * Last modified on:  2026-10-29
+ *
+ * The audit log table: every change to the sources, newest first, with
+ * its time, the source, the SHA-256 of its text and the request that
+ * made it.
+ */
 
+// ########################################################################
+// #                               Imports                                #
+// ########################################################################
+// Local
+import { CONFIG } from '../config';
+import { required } from '../lib/required';
 import type { AuditEntry } from '../types';
 
-// log.debug('Sets how many characters of a hash are shown')
-const HASH_CHARS = 12;
+// ########################################################################
+// #                           Global constants                           #
+// ########################################################################
+// log.debug('Takes how many characters of a hash are shown from the config')
+const HASH_CHARS = CONFIG.web.hash_chars;
 
+// ########################################################################
+// #                             Audit table                              #
+// ########################################################################
 // log.debug('Defines the audit table')
-export function AuditTable({ entries }: { entries: AuditEntry[] }) {
+/**
+ * Renders the audit log as a table, or says nothing has changed yet.
+ *
+ * @param props - The component's props.
+ * @param props.entries - The changes to show, newest first. Required.
+ * @returns The table, or the empty state.
+ */
+export function AuditTable({
+  entries = null,
+}: { entries?: AuditEntry[] | null } = {}): React.JSX.Element {
+  // log.debug('Takes the entries, which the caller must give')
+  entries = required({ entries });
   // log.debug('Says so plainly when nothing has changed yet')
   if (entries.length === 0) {
     // log.debug('Returns the empty state')

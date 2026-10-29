@@ -1,31 +1,43 @@
 ########################################################################
 #                backend/src/grounded_qa/core/verify.py                #
 ########################################################################
-#  Author:            Kevin Street                                     #
-#  Created on:        2026-10-29                                       #
-#  Last modified on:  2026-10-29                                       #
-#  Purpose:           Checks each quote is in the passage it cites,    #
-#                     and removes claims whose citations all failed.   #
-########################################################################
-"""The quote check: the model must show its evidence, word for word.
+"""
+Author:            Kevin Street
+Created on:        2026-10-29
+Last modified on:  2026-10-29
 
-A citation passes when its passage was shown to the model and its
-quote appears in that passage, in order, after both are normalised
+Checks each quote is in the passage it cites, and removes the claims
+whose citations all failed: the model must show its evidence, word for
+word. A citation passes when its passage was shown to the model and
+its quote appears in that passage, in order, after both are normalised
 (case, quote marks, dashes, spacing and Markdown marks do not count).
 An ellipsis may join parts of a quote; each part must be found, in
-order. A claim in the answer whose citations all fail is removed.
+order.
 """
 
+########################################################################
+#                               Imports                                #
+########################################################################
+# Standard library
 from __future__ import annotations
 
 import re
 
+# Third-party
+from kds.args import required
 from kds.logs import get_logger
 
+# Local
 from grounded_qa.core.text import normalize, plain_map, word_count
 
-# Module constants
+########################################################################
+#                           Global constants                           #
+########################################################################
 log = get_logger(__name__)
+
+########################################################################
+#                           Local constants                            #
+########################################################################
 # log.debug("Describes a range of a passage: start and end characters")
 Span = tuple[int, int]
 # log.debug("Matches an ellipsis that joins parts of a quote")
@@ -40,14 +52,31 @@ MARKER_RE = re.compile(r"\s*\[(\d+(?:\s*,\s*\d+)*)\]")
 CLAIM_RE = re.compile(r".*?\[\d+(?:\s*,\s*\d+)*\][.!?,;:]?", re.DOTALL)
 
 
+########################################################################
+#                             Quote check                              #
+########################################################################
 # log.debug("Defines the check of one quote against one passage")
-def find_quote(quote: str, passage: str, min_words: int) -> tuple[tuple[Span, ...], str | None]:
-    """Return where the quote is in the passage, or the problem.
+def find_quote(
+    quote: str | None = None, passage: str | None = None, min_words: int | None = None
+) -> tuple[tuple[Span, ...], str | None]:
+    """Returns where the quote is in the passage, or the problem.
+
+    Args:
+        quote: The quote the model gave. Required.
+        passage: The text of the passage it cites. Required.
+        min_words: The fewest words the whole quote may have.
+            Required.
 
     Returns:
         The quote's ranges in the passage (one per part of a joined
         quote) and None; or no ranges and what was wrong.
     """
+    # log.debug("Takes the quote, which the caller must give")
+    quote = required(quote=quote)
+    # log.debug("Takes the passage, which the caller must give")
+    passage = required(passage=passage)
+    # log.debug("Takes the shortest quote allowed, which the caller must give")
+    min_words = required(min_words=min_words)
     # log.debug("Splits the quote at any ellipsis and normalises each part")
     parts = [p for p in (normalize(part).strip(TRIM) for part in ELLIPSIS_RE.split(quote)) if p]
     # log.debug("Refuses a quote too short to show anything")
@@ -81,16 +110,21 @@ def find_quote(quote: str, passage: str, min_words: int) -> tuple[tuple[Span, ..
 
 
 # log.debug("Defines how an answer keeps only checked claims")
-def prune(answer: str, renumber: dict[int, int]) -> str:
-    """Renumber markers of kept citations; remove claims with none.
+def prune(answer: str | None = None, renumber: dict[int, int] | None = None) -> str:
+    """Renumbers the markers of kept citations; drops claims with none.
 
     Args:
-        answer: The draft answer, with [n] markers.
+        answer: The draft answer, with [n] markers. Required.
         renumber: Each kept citation's draft number and new number.
+            Required.
 
     Returns:
         The answer without the claims whose citations all failed.
     """
+    # log.debug("Takes the answer, which the caller must give")
+    answer = required(answer=answer)
+    # log.debug("Takes the number map, which the caller must give")
+    renumber = required(renumber=renumber)
     # log.debug("Starts the kept text")
     kept: list[str] = []
     # log.debug("Remembers where the last claim ended")
@@ -110,8 +144,21 @@ def prune(answer: str, renumber: dict[int, int]) -> str:
 
 
 # log.debug("Defines the new form of one marker")
-def _marker(match: re.Match[str], renumber: dict[int, int]) -> str:
-    """Return the marker with kept numbers renumbered, or nothing."""
+def _marker(match: re.Match[str] | None = None, renumber: dict[int, int] | None = None) -> str:
+    """Returns the marker with kept numbers renumbered, or nothing.
+
+    Args:
+        match: A citation marker found in a claim. Required.
+        renumber: Each kept citation's draft number and new number.
+            Required.
+
+    Returns:
+        The marker with its kept numbers, or an empty string.
+    """
+    # log.debug("Takes the marker found, which the caller must give")
+    match = required(match=match)
+    # log.debug("Takes the number map, which the caller must give")
+    renumber = required(renumber=renumber)
     # log.debug("Maps each number that was kept")
     numbers = [renumber[int(n)] for n in match[1].split(",") if int(n) in renumber]
     # log.debug("Returns the new marker, or nothing when none were kept")
@@ -119,8 +166,21 @@ def _marker(match: re.Match[str], renumber: dict[int, int]) -> str:
 
 
 # log.debug("Defines the closing text after the last marker")
-def _tail(rest: str, kept: list[str]) -> str:
-    """Return closing text with no marker, joined with one space."""
+def _tail(rest: str | None = None, kept: list[str] | None = None) -> str:
+    """Returns closing text with no marker, joined with one space.
+
+    Args:
+        rest: The answer's text after its last claim. Required.
+        kept: The claims kept so far. Required.
+
+    Returns:
+        The closing text, after a space when claims were kept; empty
+        when there is none.
+    """
+    # log.debug("Takes the closing text, which the caller must give")
+    rest = required(rest=rest)
+    # log.debug("Takes the claims kept, which the caller must give")
+    kept = required(kept=kept)
     # log.debug("Returns nothing when there is no closing text")
     if not rest.strip():
         # log.debug("Returns an empty string")

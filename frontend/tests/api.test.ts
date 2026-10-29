@@ -1,20 +1,43 @@
 // ########################################################################
 // #                      frontend/tests/api.test.ts                      #
 // ########################################################################
-// #  Author:            Kevin Street                                     #
-// #  Created on:        2026-10-29                                       #
-// #  Last modified on:  2026-10-29                                       #
-// #  Purpose:           Tests the API client: the request it sends and   #
-// #                     the errors it explains.                          #
-// ########################################################################
-/** Tests the API client: request shape, and errors that explain themselves. */
+/**
+ * Author:            Kevin Street
+ * Created on:        2026-10-29
+ * Last modified on:  2026-10-29
+ *
+ * Tests the API client: the request it sends, and the errors it turns a
+ * failed call into.
+ */
 
+// ########################################################################
+// #                               Imports                                #
+// ########################################################################
+// Third-party
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+// Local
 import { ApiError, api, describeError } from '../src/api';
+import { required } from '../src/lib/required';
 
+// ########################################################################
+// #                           API client tests                           #
+// ########################################################################
 // log.debug('Defines a fake fetch that answers once with the given response')
-function answer(status: number, body: unknown, headers: Record<string, string> = {}): void {
+/**
+ * Replaces fetch with a fake that answers with the given response.
+ *
+ * @param status - The response's status. Required.
+ * @param body - The response's body, sent as JSON.
+ * @param headers - The response's headers.
+ */
+function answer(
+  status: number | null = null,
+  body: unknown = null,
+  headers: Record<string, string> = {},
+): void {
+  // log.debug('Takes the status, which the caller must give')
+  status = required({ status });
   // log.debug('Replaces fetch for this test')
   vi.stubGlobal(
     'fetch',

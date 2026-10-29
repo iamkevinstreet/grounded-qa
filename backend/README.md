@@ -1,8 +1,8 @@
 # backend
 
-The service and the evaluation, in Python 3.12: the `grounded_qa` package, its tests, and its
-locked dependencies. Run everything from the repository root (`make` targets do), where
-`config/settings.toml` and `data/` are found.
+The service and the evaluation, in Python 3.12: the `grounded_qa` package in `src/`, its tests,
+and its locked dependencies. Run everything from the repository root (`make` targets do), where
+`config/config.toml`, `config/.env` and `data/` are found.
 
 ## Run it
 
@@ -19,7 +19,7 @@ provider and its key (see [config/README.md](../config/README.md)) for real answ
 
 | Path | What it holds |
 | --- | --- |
-| `src/grounded_qa/config.py` | The one place settings are read |
+| `src/grounded_qa/config.py` | The one place settings are read: `AppSettings`, and `SETTINGS`, loaded once, for the values modules take from the config |
 | `src/grounded_qa/core/` | The logic, free of HTTP: sources, the guard, passages, retrieval, the prompt, the quote check, the answerer, the library and the audit log |
 | `src/grounded_qa/api/` | The FastAPI app: routes, the approver check, rate and size limits, headers, request ids |
 | `src/grounded_qa/evals/` | The scorers and `python -m grounded_qa.evals.run answers\|retrieval` |
@@ -49,12 +49,20 @@ Approver routes take `Authorization: Bearer <APPROVER_TOKEN>`. Every response ca
 
 ## Conventions
 
-- Each module starts with the header box and has a commented logger line above every
-  statement. `kds-standards trace on backend` turns them on in a working copy; `trace off` before
-  committing.
+- The package uses the src layout, so the tests import the installed package (`uv sync` installs
+  it in editable mode), never the folder beside them.
+- Each module opens with a box holding its path and a doc block (author, dates, what it is for),
+  then its imports, the values it takes from the config, its own constants and its logic, each
+  under a banner. A value two modules share lives in `config/config.toml` and is read through
+  `SETTINGS`; code the tests run with other settings takes them as a parameter.
+- Every function shows its whole contract: each parameter has a type and a default, those it
+  cannot do without are taken with `required()` from `kds.args`, and its doc block lists every
+  argument and what comes back.
+- Every statement has a commented logger line above it. `kds-standards trace on backend` turns
+  them on in a working copy; `trace off` before committing.
 - Lint and format: ruff (`backend/pyproject.toml`); types: mypy in strict mode, tests included.
 - Tests never call a model or the network, write only to `tmp_path`, and run from an empty folder
-  so no `.env` can leak in.
+  so no `config/.env` can leak in.
 
 ```sh
 make check-backend   # ruff, format, mypy, kds-standards

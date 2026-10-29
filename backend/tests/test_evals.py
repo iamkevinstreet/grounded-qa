@@ -1,21 +1,29 @@
 ########################################################################
 #                     backend/tests/test_evals.py                      #
 ########################################################################
-#  Author:            Kevin Street                                     #
-#  Created on:        2026-10-29                                       #
-#  Last modified on:  2026-10-29                                       #
-#  Purpose:           Tests the gold cases are sound and the scorers   #
-#                     and runs work end to end, offline.               #
-########################################################################
-"""Tests for grounded_qa.evals and data/evals/cases.jsonl."""
+"""
+Author:            Kevin Street
+Created on:        2026-10-29
+Last modified on:  2026-10-29
 
+Tests the gold cases are sound, and that the scorers and both kinds of
+run work end to end, offline.
+"""
+
+########################################################################
+#                               Imports                                #
+########################################################################
+# Standard library
 from __future__ import annotations
 
 from typing import Any
 
+# Third-party
+from kds.args import required
 from kds.evals import EvalCase, load_cases
 from kds.logs import get_logger
 
+# Local
 from grounded_qa.config import AppSettings
 from grounded_qa.core.chunk import Passage
 from grounded_qa.core.models import Answer, Citation, Retrieved
@@ -25,11 +33,16 @@ from grounded_qa.core.text import normalize
 from grounded_qa.evals import retrieval
 from grounded_qa.evals.run import corpus, run_answers, run_retrieval
 from grounded_qa.evals.score import score
-
 from support import REPO
 
-# Module constants
+########################################################################
+#                           Global constants                           #
+########################################################################
 log = get_logger(__name__)
+
+########################################################################
+#                           Local constants                            #
+########################################################################
 # log.debug("Lists the tags a case may carry")
 TAGS = {
     "fmla",
@@ -56,9 +69,16 @@ PASSAGE = Passage(
 )
 
 
+########################################################################
+#                           Evaluation tests                           #
+########################################################################
 # log.debug("Defines the cases every test here reads")
 def _cases() -> list[EvalCase]:
-    """Return the repository's gold cases."""
+    """Returns the repository's gold cases.
+
+    Returns:
+        The cases in data/evals/cases.jsonl, in order.
+    """
     # log.debug("Loads the case file")
     return load_cases(REPO / "data" / "evals" / "cases.jsonl")
 
@@ -94,8 +114,24 @@ def test_cases_are_well_formed() -> None:
 
 
 # log.debug("Defines an answer for the scoring tests")
-def _answer(text: str, outcome: Any, cited: bool) -> Answer:
-    """Return an answer that showed PASSAGE and maybe cited it."""
+def _answer(text: str | None = None, outcome: Any = None, cited: bool | None = None) -> Answer:
+    """Returns an answer that showed PASSAGE and maybe cited it.
+
+    Args:
+        text: The answer's text. Required.
+        outcome: How the question ended, as Answer names it.
+            Required.
+        cited: Whether the answer cites PASSAGE. Required.
+
+    Returns:
+        The answer, with PASSAGE the one passage shown.
+    """
+    # log.debug("Takes the text, which the caller must give")
+    text = required(text=text)
+    # log.debug("Takes the outcome, which the caller must give")
+    outcome = required(outcome=outcome)
+    # log.debug("Takes whether to cite, which the caller must give")
+    cited = required(cited=cited)
     # log.debug("Builds the citation when asked")
     citations = (
         (
@@ -169,7 +205,11 @@ def test_score_of_an_abstention_and_a_canary() -> None:
 
 # log.debug("Defines the end-to-end offline run")
 def test_offline_answer_run_writes_results(real_settings: AppSettings) -> None:
-    """The stand-in answers five real cases; results are written."""
+    """The stand-in answers five real cases; results are written.
+
+    Args:
+        real_settings: Settings over the repository's data.
+    """
     # log.debug("Runs five cases with the stand-in")
     line = run_answers(real_settings, "keyword", "offline-test", 5)
     # log.debug("Checks the summary and the files")
@@ -180,7 +220,11 @@ def test_offline_answer_run_writes_results(real_settings: AppSettings) -> None:
 
 # log.debug("Defines the retrieval run over the real corpus")
 def test_keyword_retrieval_finds_most_evidence(real_settings: AppSettings) -> None:
-    """Keyword search puts evidence in the top 10 for most questions."""
+    """Keyword search puts evidence in the top 10 for most questions.
+
+    Args:
+        real_settings: Settings over the repository's data.
+    """
     # log.debug("Runs the retrieval evaluation in keyword mode")
     table = run_retrieval(real_settings, ["keyword"], "retrieval-test")
     # log.debug("Scores the rows directly too")
@@ -192,7 +236,17 @@ def test_keyword_retrieval_finds_most_evidence(real_settings: AppSettings) -> No
 
 
 # log.debug("Defines a keyword retriever over the evaluation corpus")
-def _retriever(settings: AppSettings) -> Retriever:
-    """Return a keyword retriever over the sources and samples."""
+def _retriever(settings: AppSettings | None = None) -> Retriever:
+    """Returns a keyword retriever over the sources and samples.
+
+    Args:
+        settings: The settings that name the data and the mode.
+            Required.
+
+    Returns:
+        A retriever over every passage the evaluation searches.
+    """
+    # log.debug("Takes the settings, which the caller must give")
+    settings = required(settings=settings)
     # log.debug("Returns the retriever")
     return Retriever(corpus(settings), settings)

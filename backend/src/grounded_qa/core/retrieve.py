@@ -1,40 +1,56 @@
 ########################################################################
 #               backend/src/grounded_qa/core/retrieve.py               #
 ########################################################################
-#  Author:            Kevin Street                                     #
-#  Created on:        2026-10-29                                       #
-#  Last modified on:  2026-10-29                                       #
-#  Purpose:           Finds the passages most likely to answer a       #
-#                     question: by words, by meaning, or both fused.   #
-########################################################################
-"""Retrieval: keyword (BM25), semantic (embeddings) or hybrid.
+"""
+Author:            Kevin Street
+Created on:        2026-10-29
+Last modified on:  2026-10-29
 
-Hybrid mode fuses the two rankings with reciprocal rank fusion: each
-passage scores 1 / (rrf_k + rank) in every ranking it appears in, so
-a passage both rankers like rises, and neither ranker's raw scores
-need to be put on a common scale.
+Finds the passages most likely to answer a question: by words
+(keyword, BM25), by meaning (semantic, embeddings), or both fused
+(hybrid). Hybrid mode fuses the two rankings with reciprocal rank
+fusion: each passage scores 1 / (rrf_k + rank) in every ranking it
+appears in, so a passage both rankers like rises, and neither ranker's
+raw scores need to be put on a common scale.
 """
 
+########################################################################
+#                               Imports                                #
+########################################################################
+# Standard library
 from __future__ import annotations
 
 from collections import defaultdict
 from dataclasses import dataclass
+from typing import Final
 
+# Third-party
+from kds.args import required
 from kds.logs import get_logger
 
-from grounded_qa.config import AppSettings
+# Local
+from grounded_qa.config import SETTINGS, AppSettings
 from grounded_qa.core.chunk import Passage
 from grounded_qa.core.embed import Embedder, cosine
 from grounded_qa.core.keyword import Bm25
 
-# Module constants
+########################################################################
+#                           Global constants                           #
+########################################################################
 log = get_logger(__name__)
-# log.debug("Names the mode that ranks by shared words only")
-KEYWORD = "keyword"
+# log.debug("Takes the name of the mode that ranks by shared words only, from the config")
+KEYWORD: Final = SETTINGS.retrieval_keyword_mode
+
+########################################################################
+#                           Local constants                            #
+########################################################################
 # log.debug("Names the mode that ranks by meaning only")
 SEMANTIC = "semantic"
 
 
+########################################################################
+#                              Retrieval                               #
+########################################################################
 # log.debug("Defines one retrieved passage and how it ranked")
 @dataclass(frozen=True)
 class Hit:
@@ -51,8 +67,24 @@ class Hit:
 
 
 # log.debug("Defines reciprocal rank fusion")
-def fuse(rankings: list[list[int]], rrf_k: int) -> list[tuple[int, float]]:
-    """Return (index, fused score) pairs, best first, ties by index."""
+def fuse(
+    rankings: list[list[int]] | None = None, rrf_k: int | None = None
+) -> list[tuple[int, float]]:
+    """Returns (index, fused score) pairs, best first, ties by index.
+
+    Args:
+        rankings: The rankings to fuse, each a list of passage indexes,
+            best first. Required.
+        rrf_k: The rank constant: the higher it is, the less the top
+            ranks count. Required.
+
+    Returns:
+        Each ranked passage's index and fused score, best first.
+    """
+    # log.debug("Takes the rankings, which the caller must give")
+    rankings = required(rankings=rankings)
+    # log.debug("Takes the rank constant, which the caller must give")
+    rrf_k = required(rrf_k=rrf_k)
     # log.debug("Starts every passage at zero")
     scores: dict[int, float] = defaultdict(float)
     # log.debug("Walks each ranking")
@@ -71,13 +103,28 @@ class Retriever:
 
     # log.debug("Defines the constructor, which builds the indexes")
     def __init__(
-        self, passages: list[Passage], settings: AppSettings, embedder: Embedder | None = None
+        self,
+        passages: list[Passage] | None = None,
+        settings: AppSettings | None = None,
+        embedder: Embedder | None = None,
     ) -> None:
-        """Index the passages for the configured mode.
+        """Indexes the passages for the configured mode.
+
+        Args:
+            passages: The passages to search, in a fixed order.
+                Required.
+            settings: The retrieval settings: the mode, k and the
+                ranking constants. Required.
+            embedder: The embedding model; needed for the semantic and
+                hybrid modes, and None for keyword.
 
         Raises:
             ValueError: A semantic or hybrid mode has no embedder.
         """
+        # log.debug("Takes the passages, which the caller must give")
+        passages = required(passages=passages)
+        # log.debug("Takes the settings, which the caller must give")
+        settings = required(settings=settings)
         # log.debug("Keeps the passages, in a fixed order")
         self.passages = tuple(passages)
         # log.debug("Keeps the settings retrieval uses")
@@ -106,8 +153,20 @@ class Retriever:
         )
 
     # log.debug("Defines a search for one question")
-    def search(self, question: str, k: int | None = None) -> list[Hit]:
-        """Return the best `k` passages for the question, best first."""
+    def search(self, question: str | None = None, k: int | None = None) -> list[Hit]:
+        """Returns the best `k` passages for the question, best first.
+
+        Args:
+            question: The question to find passages for. Required.
+            k: How many passages to return; the configured number when
+                None.
+
+        Returns:
+            The best passages, best first, each with its rank in each
+            ranking.
+        """
+        # log.debug("Takes the question, which the caller must give")
+        question = required(question=question)
         # log.debug("Uses the configured k unless one is given")
         limit = k or self.settings.retrieval_k
         # log.debug("Ranks by shared words unless the mode is semantic")
@@ -128,14 +187,34 @@ class Retriever:
         ]
 
     # log.debug("Defines the keyword ranking")
-    def _keyword(self, question: str) -> list[int]:
-        """Return passage indexes by BM25 score, best first."""
+    def _keyword(self, question: str | None = None) -> list[int]:
+        """Returns passage indexes by BM25 score, best first.
+
+        Args:
+            question: The question to rank the passages for. Required.
+
+        Returns:
+            Up to the pool size of passage indexes that share a term
+            with the question.
+        """
+        # log.debug("Takes the question, which the caller must give")
+        question = required(question=question)
         # log.debug("Returns the indexes from the BM25 ranking")
         return [i for i, _ in self.bm25.rank(question, self.settings.retrieval_pool)]
 
     # log.debug("Defines the semantic ranking")
-    def _semantic(self, question: str) -> list[int]:
-        """Return passage indexes by cosine similarity, best first."""
+    def _semantic(self, question: str | None = None) -> list[int]:
+        """Returns passage indexes by cosine similarity, best first.
+
+        Args:
+            question: The question to rank the passages for. Required.
+
+        Returns:
+            Up to the pool size of passage indexes; none without an
+            embedder.
+        """
+        # log.debug("Takes the question, which the caller must give")
+        question = required(question=question)
         # log.debug("Returns nothing without an embedder")
         if self.embedder is None:
             # log.debug("Returns an empty ranking")
@@ -150,7 +229,23 @@ class Retriever:
         return [i for i, _ in scored[: self.settings.retrieval_pool]]
 
     # log.debug("Defines the final order from the rankings")
-    def _order(self, keyword: list[int], semantic: list[int]) -> list[tuple[int, float]]:
-        """Return (index, score) pairs in the order hits go out."""
+    def _order(
+        self, keyword: list[int] | None = None, semantic: list[int] | None = None
+    ) -> list[tuple[int, float]]:
+        """Returns (index, score) pairs in the order hits go out.
+
+        Args:
+            keyword: The keyword ranking; empty when not used.
+                Required.
+            semantic: The semantic ranking; empty when not used.
+                Required.
+
+        Returns:
+            Each passage's index and score, in the order hits go out.
+        """
+        # log.debug("Takes the keyword ranking, which the caller must give")
+        keyword = required(keyword=keyword)
+        # log.debug("Takes the semantic ranking, which the caller must give")
+        semantic = required(semantic=semantic)
         # log.debug("Fuses the rankings; a single ranking fuses to itself")
         return fuse([r for r in (keyword, semantic) if r], self.settings.retrieval_rrf_k)

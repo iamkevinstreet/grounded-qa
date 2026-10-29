@@ -1,46 +1,65 @@
 ########################################################################
 #                 backend/src/grounded_qa/api/auth.py                  #
 ########################################################################
-#  Author:            Kevin Street                                     #
-#  Created on:        2026-10-29                                       #
-#  Last modified on:  2026-10-29                                       #
-#  Purpose:           Lets only the approver change sources: a bearer  #
-#                     token from .env, compared in constant time.      #
-########################################################################
-"""The approver check for the routes that change sources.
+"""
+Author:            Kevin Street
+Created on:        2026-10-29
+Last modified on:  2026-10-29
 
-The token lives in .env as APPROVER_TOKEN (at least 32 characters).
-When it is unset the approver routes answer 503, so a fresh clone has
-no admin surface at all. The comparison takes the same time however
-much of a guess is right, and failures are logged without the token.
+Lets only the approver change sources: the routes that change them
+need the bearer token set as APPROVER_TOKEN in config/.env (at least 32
+characters). While it is unset those routes answer 503, so a fresh
+clone has no admin surface at all. The comparison takes the same time
+however much of a guess is right, and failures are logged without the
+token.
 """
 
+########################################################################
+#                               Imports                                #
+########################################################################
+# Standard library
 from __future__ import annotations
 
 import hmac
 import logging
-from typing import Annotated
+from typing import Annotated, Final
 
+# Third-party
 from fastapi import Header, HTTPException, Request, status
 from kds.logs import get_logger, log_event
 
-from grounded_qa.config import AppSettings
+# Local
+from grounded_qa.config import SETTINGS, AppSettings
 
-# Module constants
+########################################################################
+#                           Global constants                           #
+########################################################################
 log = get_logger(__name__)
+# log.debug("Takes the encoding that turns text into bytes, from the config")
+ENCODING: Final = SETTINGS.text_encoding
+
+########################################################################
+#                           Local constants                            #
+########################################################################
 # log.debug("Sets the scheme an Authorization header must use")
 SCHEME = "Bearer "
 # log.debug("Sets the header that tells a client how to authenticate")
 CHALLENGE = {"WWW-Authenticate": "Bearer"}
-# log.debug("Sets the encoding tokens are compared in")
-ENCODING = "utf-8"
 
 
+########################################################################
+#                            Approver check                            #
+########################################################################
 # log.debug("Defines the dependency every approver route declares")
-def require_approver(
+def require_approver(  # fixed: FastAPI's dependency signature
     request: Request, authorization: Annotated[str | None, Header()] = None
 ) -> None:
-    """Pass when the request carries the approver's token.
+    """Passes when the request carries the approver's token.
+
+    Args:
+        request: The request, which FastAPI passes.
+        authorization: The Authorization header, which FastAPI reads;
+            None when the request has none.
 
     Raises:
         HTTPException: 503 when admin is off, 401 without a bearer

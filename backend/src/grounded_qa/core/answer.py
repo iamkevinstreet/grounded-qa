@@ -1,13 +1,13 @@
 ########################################################################
 #                backend/src/grounded_qa/core/answer.py                #
 ########################################################################
-#  Author:            Kevin Street                                     #
-#  Created on:        2026-10-29                                       #
-#  Last modified on:  2026-10-29                                       #
-#  Purpose:           Answers a question from the approved sources     #
-#                     only and abstains when they do not cover it.     #
-########################################################################
-"""The answerer: retrieve, draft, check, and return only what held.
+"""
+Author:            Kevin Street
+Created on:        2026-10-29
+Last modified on:  2026-10-29
+
+Answers a question from the approved sources only and abstains when they
+do not cover it.
 
 1. Retrieve the passages most likely to answer the question.
 2. Ask the model for an answer as JSON: text, citations, abstain.
@@ -17,22 +17,35 @@
    otherwise return an abstention that says why.
 """
 
+########################################################################
+#                               Imports                                #
+########################################################################
+# Standard library
 from __future__ import annotations
 
 import logging
 from typing import Protocol
 
+# Third-party
+from kds.args import missing, required
 from kds.llm import ModelAdapter, StructuredOutputError
 from kds.logs import current_request_id, get_logger, log_event
 
+# Local
 from grounded_qa.config import AppSettings
 from grounded_qa.core import prompt
 from grounded_qa.core.models import Answer, Citation, Draft, Outcome, Retrieved
 from grounded_qa.core.retrieve import Hit
 from grounded_qa.core.verify import find_quote, prune
 
-# Module constants
+########################################################################
+#                           Global constants                           #
+########################################################################
 log = get_logger(__name__)
+
+########################################################################
+#                           Local constants                            #
+########################################################################
 # log.debug("Sets the reply when nothing in the sources matched at all")
 NO_PASSAGES_TEXT = "Nothing in the approved sources matches this question."
 # log.debug("Sets the reply when no quote could be found in its passage")
@@ -44,13 +57,25 @@ UNVERIFIED_TEXT = (
 UNVERIFIED: Outcome = "unverified"
 
 
+########################################################################
+#                           Grounded answers                           #
+########################################################################
 # log.debug("Defines what the answerer needs from retrieval")
 class Searcher(Protocol):
     """Anything that finds passages for a question."""
 
     # log.debug("Defines the search the answerer calls")
-    def search(self, question: str, k: int | None = None) -> list[Hit]:
-        """Return the best passages for the question, best first."""
+    def search(self, question: str | None = None, k: int | None = None) -> list[Hit]:
+        """Returns the best passages for the question, best first.
+
+        Args:
+            question: The question to find passages for. Required.
+            k: How many passages to return; the configured number when
+                None.
+
+        Returns:
+            The best passages, best first.
+        """
 
 
 # log.debug("Defines the answerer")
@@ -59,9 +84,32 @@ class Answerer:
 
     # log.debug("Defines the constructor")
     def __init__(
-        self, searcher: Searcher, adapter: ModelAdapter, settings: AppSettings, *, mode: str
+        self,
+        searcher: Searcher | None = None,
+        adapter: ModelAdapter | None = None,
+        settings: AppSettings | None = None,
+        *,
+        mode: str | None = None,
     ) -> None:
-        """Keep the searcher, model adapter and settings."""
+        """Keeps the searcher, model adapter and settings.
+
+        Args:
+            searcher: What finds the passages: the library, or a
+                retriever in the evaluation. Required.
+            adapter: The model adapter the drafts come from. Required.
+            settings: The settings for the prompt's limits and the
+                quote check. Required.
+            mode: The retrieval mode, recorded with each answer.
+                Required.
+        """
+        # log.debug("Takes the searcher, which the caller must give")
+        searcher = required(searcher=searcher)
+        # log.debug("Takes the adapter, which the caller must give")
+        adapter = required(adapter=adapter)
+        # log.debug("Takes the settings, which the caller must give")
+        settings = required(settings=settings)
+        # log.debug("Takes the mode, which the caller must give")
+        mode = required(mode=mode)
         # log.debug("Keeps the searcher")
         self.searcher = searcher
         # log.debug("Keeps the model adapter")
@@ -76,8 +124,18 @@ class Answerer:
         )
 
     # log.debug("Defines one question, start to finish")
-    def ask(self, question: str) -> Answer:
-        """Return a checked answer to `question`, or an abstention."""
+    def ask(self, question: str | None = None) -> Answer:
+        """Returns a checked answer to `question`, or an abstention.
+
+        Args:
+            question: The question to answer. Required.
+
+        Returns:
+            The answer with its checked citations, or an abstention
+            that says why.
+        """
+        # log.debug("Takes the question, which the caller must give")
+        question = required(question=question)
         # log.debug("Finds the passages most likely to answer")
         hits = self.searcher.search(question)
         # log.debug("Abstains without a model call when nothing matched")
@@ -125,8 +183,25 @@ class Answerer:
         )
 
     # log.debug("Defines the check of a draft's citations")
-    def _check(self, draft: Draft, hits: list[Hit]) -> tuple[list[Citation], dict[int, int]]:
-        """Return the citations that pass, and old-to-new numbers."""
+    def _check(
+        self, draft: Draft | None = None, hits: list[Hit] | None = None
+    ) -> tuple[list[Citation], dict[int, int]]:
+        """Returns the citations that pass, and old-to-new numbers.
+
+        Args:
+            draft: The model's draft. Required.
+            hits: The passages the model was shown, best first.
+                Required.
+
+        Returns:
+            The citations whose quotes were found in their passages,
+            numbered from 1, and a map from each one's number in the
+            draft to its new number.
+        """
+        # log.debug("Takes the draft, which the caller must give")
+        draft = required(draft=draft)
+        # log.debug("Takes the passages found, which the caller must give")
+        hits = required(hits=hits)
         # log.debug("Indexes the passages the model was shown")
         shown = {h.passage.id: h.passage for h in hits}
         # log.debug("Starts the passing citations")
@@ -172,8 +247,23 @@ class Answerer:
         return passed, renumber
 
     # log.debug("Defines the outcome of a checked draft")
-    def _outcome(self, draft: Draft, citations: list[Citation]) -> Outcome:
-        """Return not_covered, answered, or unverified."""
+    def _outcome(
+        self, draft: Draft | None = None, citations: list[Citation] | None = None
+    ) -> Outcome:
+        """Returns not_covered, answered, or unverified.
+
+        Args:
+            draft: The model's draft. Required.
+            citations: The citations that passed the check. Required.
+
+        Returns:
+            not_covered when the model abstained, answered when a
+            citation passed, else unverified.
+        """
+        # log.debug("Takes the draft, which the caller must give")
+        draft = required(draft=draft)
+        # log.debug("Takes the citations, which the caller must give")
+        citations = required(citations=citations)
         # log.debug("Keeps the model's own abstention")
         if draft.abstain:
             # log.debug("Returns not covered")
@@ -184,13 +274,35 @@ class Answerer:
     # log.debug("Defines how the returned answer is assembled")
     def _answer(
         self,
-        question: str,
-        text: str,
-        outcome: Outcome,
-        hits: list[Hit],
+        question: str | None = None,
+        text: str | None = None,
+        outcome: Outcome | None = None,
+        hits: list[Hit] | None = None,
         **extra: object,
     ) -> Answer:
-        """Return the Answer with the record of what was retrieved."""
+        """Returns the Answer with the record of what was retrieved.
+
+        Args:
+            question: The question as asked. Required.
+            text: The answer's text, or why there is none. Required.
+            outcome: How the question ended. Required.
+            hits: The passages the model was shown. Required.
+            **extra: Further Answer fields: the citations, how many
+                were dropped, and the model.
+
+        Returns:
+            The answer, validated.
+        """
+        # log.debug("Takes the question, which the caller must give")
+        question = required(question=question)
+        # log.debug("Takes the text, which the caller must give")
+        text = required(text=text)
+        # log.debug("Stops when the caller left out the outcome")
+        if outcome is None:
+            # log.debug("Raises the missing-argument error")
+            raise missing(outcome=outcome)
+        # log.debug("Takes the passages found, which the caller must give")
+        hits = required(hits=hits)
         # log.debug("Returns the answer with the passages and identifiers")
         return Answer.model_validate(
             {

@@ -1,18 +1,37 @@
 // ########################################################################
 // #                frontend/src/components/SourceText.tsx                #
 // ########################################################################
-// #  Author:            Kevin Street                                     #
-// #  Created on:        2026-10-29                                       #
-// #  Last modified on:  2026-10-29                                       #
-// #  Purpose:           A whole source document, rendered from its       #
-// #                     Markdown blocks.                                 #
-// ########################################################################
-/** A whole source document, rendered from its Markdown blocks. */
+/**
+ * Author:            Kevin Street
+ * Created on:        2026-10-29
+ * Last modified on:  2026-10-29
+ *
+ * A whole source document, rendered from its Markdown blocks.
+ */
 
+// ########################################################################
+// #                               Imports                                #
+// ########################################################################
+// Local
+import { required } from '../lib/required';
 import { parseBlocks, type Block } from '../markdown';
 
+// ########################################################################
+// #                           Source document                            #
+// ########################################################################
 // log.debug('Defines how one block is rendered')
-function render(block: Block, index: number) {
+/**
+ * Renders one block of a document as its element.
+ *
+ * @param block - The block. Required.
+ * @param index - Its position in the document, used as its key. Required.
+ * @returns A heading, list, table or paragraph.
+ */
+function render(block: Block | null = null, index: number | null = null): React.JSX.Element {
+  // log.debug('Takes the block, which the caller must give')
+  block = required({ block });
+  // log.debug('Takes the position, which the caller must give')
+  index = required({ index });
   // log.debug('Chooses the element for the block kind')
   switch (block.kind) {
     case 'heading':
@@ -57,7 +76,16 @@ function render(block: Block, index: number) {
 }
 
 // log.debug('Defines the document view')
-export function SourceText({ body }: { body: string }) {
+/**
+ * Renders a whole source document from its Markdown.
+ *
+ * @param props - The component's props.
+ * @param props.body - The document's text, as Markdown. Required.
+ * @returns The document's blocks, in order.
+ */
+export function SourceText({ body = null }: { body?: string | null } = {}): React.JSX.Element {
+  // log.debug('Takes the text, which the caller must give')
+  body = required({ body });
   // log.debug('Returns every block of the document')
   return <div className="gq-doc">{parseBlocks(body).map(render)}</div>;
 }

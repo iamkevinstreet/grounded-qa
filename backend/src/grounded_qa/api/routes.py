@@ -1,43 +1,71 @@
 ########################################################################
 #                backend/src/grounded_qa/api/routes.py                 #
 ########################################################################
-#  Author:            Kevin Street                                     #
-#  Created on:        2026-10-29                                       #
-#  Last modified on:  2026-10-29                                       #
-#  Purpose:           The open routes: ask a question, list and read   #
-#                     the approved sources, and check health.          #
-########################################################################
-"""Open routes under /api/v1: health, ask, sources."""
+"""
+Author:            Kevin Street
+Created on:        2026-10-29
+Last modified on:  2026-10-29
 
+The open routes, which anyone may call: ask a question, list and read
+the approved sources, and check the service's health.
+"""
+
+########################################################################
+#                               Imports                                #
+########################################################################
+# Standard library
 from __future__ import annotations
 
-from typing import Annotated
+from typing import Annotated, Final
 
+# Third-party
 from fastapi import APIRouter, Depends, HTTPException, Path, Request, status
 from kds.logs import get_logger
 
+# Local
 from grounded_qa import __version__
 from grounded_qa.api.schemas import AskRequest, Health, SourceDetail, SourceSummary
-from grounded_qa.api.state import PREFIX, Services, services
+from grounded_qa.api.state import Services, services
+from grounded_qa.config import SETTINGS
 from grounded_qa.core.models import Answer
 from grounded_qa.core.sources import ID_RE
 
-# Module constants
+########################################################################
+#                           Global constants                           #
+########################################################################
 log = get_logger(__name__)
+# log.debug("Takes the API's path prefix from the config")
+PREFIX: Final = SETTINGS.api_prefix
+
+########################################################################
+#                           Local constants                            #
+########################################################################
+# log.debug("Sets how long a client is told to wait when over the limit")
+RETRY_AFTER_S = "60"
+
+
+########################################################################
+#                             Open routes                              #
+########################################################################
 # log.debug("Creates the router for the open routes")
 router = APIRouter(prefix=PREFIX)
 # log.debug("Describes the services dependency once, for every route")
 Svc = Annotated[Services, Depends(services)]
 # log.debug("Describes a source id in a path, checked against the id rule")
 SourceId = Annotated[str, Path(pattern=ID_RE.pattern)]
-# log.debug("Sets how long a client is told to wait when over the limit")
-RETRY_AFTER_S = "60"
 
 
 # log.debug("Defines the health check")
 @router.get("/health")
 def health(svc: Svc) -> Health:
-    """Report the version, sources, mode and model in use."""
+    """Reports the version, sources, mode and model in use.
+
+    Args:
+        svc: The services the app built at startup, from FastAPI.
+
+    Returns:
+        The health report.
+    """
     # log.debug("Takes the approved sources")
     approved = svc.library.approved()
     # log.debug("Returns the health report")
@@ -56,7 +84,15 @@ def health(svc: Svc) -> Health:
 # log.debug("Defines the question route")
 @router.post("/ask")
 def ask(body: AskRequest, request: Request, svc: Svc) -> Answer:
-    """Answer a question from the approved sources, or abstain.
+    """Answers a question from the approved sources, or abstains.
+
+    Args:
+        body: The question, as the client sent it.
+        request: The request, for the client's address.
+        svc: The services the app built at startup, from FastAPI.
+
+    Returns:
+        The checked answer, or an abstention that says why.
 
     Raises:
         HTTPException: 422 for a question outside the length limits,
@@ -90,7 +126,14 @@ def ask(body: AskRequest, request: Request, svc: Svc) -> Answer:
 # log.debug("Defines the list of sources")
 @router.get("/sources")
 def list_sources(svc: Svc) -> list[SourceSummary]:
-    """List every approved source with its provenance."""
+    """Lists every approved source with its provenance.
+
+    Args:
+        svc: The services the app built at startup, from FastAPI.
+
+    Returns:
+        Each approved source's summary, sorted by id.
+    """
     # log.debug("Returns each source's summary")
     return [SourceSummary.of(s) for s in svc.library.approved()]
 
@@ -98,7 +141,14 @@ def list_sources(svc: Svc) -> list[SourceSummary]:
 # log.debug("Defines one source with its text")
 @router.get("/sources/{source_id}")
 def get_source(source_id: SourceId, svc: Svc) -> SourceDetail:
-    """Return one source with its full text.
+    """Returns one source with its full text.
+
+    Args:
+        source_id: The id of the source to read.
+        svc: The services the app built at startup, from FastAPI.
+
+    Returns:
+        The source's provenance and full text.
 
     Raises:
         HTTPException: 404 when no source has this id.

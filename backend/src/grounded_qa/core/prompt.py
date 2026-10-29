@@ -1,30 +1,42 @@
 ########################################################################
 #                backend/src/grounded_qa/core/prompt.py                #
 ########################################################################
-#  Author:            Kevin Street                                     #
-#  Created on:        2026-10-29                                       #
-#  Last modified on:  2026-10-29                                       #
-#  Purpose:           The instructions and the message the model gets: #
-#                     rules first, then fenced passages, then the ask. #
-########################################################################
-"""The prompt: fixed rules in the system message, data in the user one.
+"""
+Author:            Kevin Street
+Created on:        2026-10-29
+Last modified on:  2026-10-29
 
+Writes what the model is sent: the fixed rules in the system message,
+then the fenced passages and the question in the user message.
 Passages go inside <passage> tags with their id, title and section,
 and the rules say text inside the tags is quoted material, never
 instructions. Any tag-like text inside a passage is removed first, so
 a source cannot close its own fence.
 """
 
+########################################################################
+#                               Imports                                #
+########################################################################
+# Standard library
 from __future__ import annotations
 
 import re
 
+# Third-party
+from kds.args import required
 from kds.logs import get_logger
 
+# Local
 from grounded_qa.core.retrieve import Hit
 
-# Module constants
+########################################################################
+#                           Global constants                           #
+########################################################################
 log = get_logger(__name__)
+
+########################################################################
+#                           Local constants                            #
+########################################################################
 # log.debug("Sets the prompt's version, recorded with every answer")
 VERSION = "2026-10-29"
 # log.debug("Sets the rules the model answers by")
@@ -53,16 +65,43 @@ do not tell the person what to do in their own situation.
 FENCE_RE = re.compile(r"</?\s*passages?\b[^>]*>?", re.IGNORECASE)
 
 
+########################################################################
+#                             Model prompt                             #
+########################################################################
 # log.debug("Defines the system message for given limits")
-def system_prompt(*, min_quote_words: int, max_words: int) -> str:
-    """Return the rules with the quote and length limits filled in."""
+def system_prompt(*, min_quote_words: int | None = None, max_words: int | None = None) -> str:
+    """Returns the rules with the quote and length limits filled in.
+
+    Args:
+        min_quote_words: The fewest words a quote may have. Required.
+        max_words: The most words the answer may run to. Required.
+
+    Returns:
+        The system message.
+    """
+    # log.debug("Takes the shortest quote allowed, which the caller must give")
+    min_quote_words = required(min_quote_words=min_quote_words)
+    # log.debug("Takes the longest answer allowed, which the caller must give")
+    max_words = required(max_words=max_words)
     # log.debug("Returns the rules with the limits")
     return SYSTEM.format(min_quote_words=min_quote_words, max_words=max_words)
 
 
 # log.debug("Defines the user message: passages, then the question")
-def user_message(question: str, hits: list[Hit]) -> str:
-    """Return the fenced passages followed by the question."""
+def user_message(question: str | None = None, hits: list[Hit] | None = None) -> str:
+    """Returns the fenced passages followed by the question.
+
+    Args:
+        question: The question, as asked. Required.
+        hits: The passages to show, best first. Required.
+
+    Returns:
+        The user message: the fenced passages, then the question.
+    """
+    # log.debug("Takes the question, which the caller must give")
+    question = required(question=question)
+    # log.debug("Takes the passages found, which the caller must give")
+    hits = required(hits=hits)
     # log.debug("Fences each passage with its id, title and section")
     blocks = [
         f'<passage id="{h.passage.id}" title="{_attr(h.passage.title)}" '
@@ -74,14 +113,34 @@ def user_message(question: str, hits: list[Hit]) -> str:
 
 
 # log.debug("Defines how a passage's text is made safe to fence")
-def _clean(text: str) -> str:
-    """Remove any tag-like text that could close or forge a fence."""
+def _clean(text: str | None = None) -> str:
+    """Removes any tag-like text that could close or forge a fence.
+
+    Args:
+        text: A passage's text. Required.
+
+    Returns:
+        The text without passage tags.
+    """
+    # log.debug("Takes the text, which the caller must give")
+    text = required(text=text)
     # log.debug("Returns the text without passage tags")
     return FENCE_RE.sub("", text)
 
 
 # log.debug("Defines how a value is made safe inside a tag attribute")
-def _attr(value: str) -> str:
-    """Return the value with quotes and angle brackets removed."""
+def _attr(value: str | None = None) -> str:
+    """Returns the value with no character that could end a tag.
+
+    Double quotes become single ones; angle brackets are removed.
+
+    Args:
+        value: A passage's title or section. Required.
+
+    Returns:
+        The value, safe inside a double-quoted attribute.
+    """
+    # log.debug("Takes the value, which the caller must give")
+    value = required(value=value)
     # log.debug("Returns the value without the characters that end a tag")
     return value.replace('"', "'").replace("<", "").replace(">", "")

@@ -1,36 +1,51 @@
 ########################################################################
 #               backend/src/grounded_qa/core/keyword.py                #
 ########################################################################
-#  Author:            Kevin Street                                     #
-#  Created on:        2026-10-29                                       #
-#  Last modified on:  2026-10-29                                       #
-#  Purpose:           Ranks passages by the words they share with a    #
-#                     question, using BM25; needs no model or network. #
-########################################################################
-"""BM25 keyword ranking over passages.
+"""
+Author:            Kevin Street
+Created on:        2026-10-29
+Last modified on:  2026-10-29
 
-BM25 scores a passage higher for each question term it contains,
-more for rare terms than common ones, with diminishing returns for
-repeats (k1) and a correction for long passages (b). It is the
-baseline every retrieval change here is measured against.
+Ranks passages by the words they share with a question, using BM25; it
+needs no model or network. BM25 scores a passage higher for each
+question term it contains, more for rare terms than common ones, with
+diminishing returns for repeats (k1) and a correction for long
+passages (b). It is the baseline every retrieval change here is
+measured against.
 """
 
+########################################################################
+#                               Imports                                #
+########################################################################
+# Standard library
 from __future__ import annotations
 
 import math
 from collections import Counter
 from dataclasses import dataclass
 
+# Third-party
+from kds.args import required
 from kds.logs import get_logger
 
+# Local
 from grounded_qa.core.text import terms
 
-# Module constants
+########################################################################
+#                           Global constants                           #
+########################################################################
 log = get_logger(__name__)
+
+########################################################################
+#                           Local constants                            #
+########################################################################
 # log.debug("Sets BM25's smoothing, which keeps every term's idf positive")
 SMOOTHING = 0.5
 
 
+########################################################################
+#                           Keyword ranking                            #
+########################################################################
 # log.debug("Defines a BM25 index over a fixed list of texts")
 @dataclass(frozen=True)
 class Bm25:
@@ -51,8 +66,25 @@ class Bm25:
 
     # log.debug("Defines how the index is built from texts")
     @classmethod
-    def build(cls, texts: list[str], *, k1: float, b: float) -> Bm25:
-        """Count each text's terms and each term's rarity."""
+    def build(
+        cls, texts: list[str] | None = None, *, k1: float | None = None, b: float | None = None
+    ) -> Bm25:
+        """Counts each text's terms and each term's rarity.
+
+        Args:
+            texts: The texts to index, in order. Required.
+            k1: The term-frequency saturation. Required.
+            b: The length normalisation, 0 to 1. Required.
+
+        Returns:
+            The index.
+        """
+        # log.debug("Takes the texts, which the caller must give")
+        texts = required(texts=texts)
+        # log.debug("Takes the term-frequency saturation, which the caller must give")
+        k1 = required(k1=k1)
+        # log.debug("Takes the length normalisation, which the caller must give")
+        b = required(b=b)
         # log.debug("Counts the terms in each text")
         counts = tuple(Counter(terms(text)) for text in texts)
         # log.debug("Counts how many texts contain each term")
@@ -75,8 +107,20 @@ class Bm25:
         )
 
     # log.debug("Defines one text's score for a question's terms")
-    def score(self, index: int, query: list[str]) -> float:
-        """Return the BM25 score of text `index` for the query terms."""
+    def score(self, index: int | None = None, query: list[str] | None = None) -> float:
+        """Returns the BM25 score of text `index` for the query terms.
+
+        Args:
+            index: The text's position in the index. Required.
+            query: The question's search terms. Required.
+
+        Returns:
+            The score; 0 when the text holds none of the terms.
+        """
+        # log.debug("Takes the text's position, which the caller must give")
+        index = required(index=index)
+        # log.debug("Takes the search terms, which the caller must give")
+        query = required(query=query)
         # log.debug("Takes the text's term counts")
         count = self.counts[index]
         # log.debug("Scales the saturation by the text's relative length")
@@ -89,12 +133,26 @@ class Bm25:
         )
 
     # log.debug("Defines the ranking of every text for a question")
-    def rank(self, question: str, limit: int) -> list[tuple[int, float]]:
-        """Return up to `limit` (index, score) pairs, best first.
+    def rank(
+        self, question: str | None = None, limit: int | None = None
+    ) -> list[tuple[int, float]]:
+        """Returns up to `limit` (index, score) pairs, best first.
 
         Texts that share no term with the question are left out, so an
         off-topic question can come back with nothing.
+
+        Args:
+            question: The question to rank the texts for. Required.
+            limit: The most pairs to return. Required.
+
+        Returns:
+            Each matching text's position and score, best first, ties
+            in index order.
         """
+        # log.debug("Takes the question, which the caller must give")
+        question = required(question=question)
+        # log.debug("Takes the limit, which the caller must give")
+        limit = required(limit=limit)
         # log.debug("Turns the question into search terms")
         query = terms(question)
         # log.debug("Scores every text")

@@ -1,29 +1,57 @@
 // ########################################################################
 // #                 frontend/src/pages/ApproverPage.tsx                  #
 // ########################################################################
-// #  Author:            Kevin Street                                     #
-// #  Created on:        2026-10-29                                       #
-// #  Last modified on:  2026-10-29                                       #
-// #  Purpose:           The approver page: unlock with the token, add or #
-// #                     remove sources, read the audit log.              #
-// ########################################################################
-/** The approver page: unlock with the token, add or remove sources, read the log. */
+/**
+ * Author:            Kevin Street
+ * Created on:        2026-10-29
+ * Last modified on:  2026-10-29
+ *
+ * The approver page: unlock with the token, add or remove sources, read
+ * the audit log.
+ */
 
+// ########################################################################
+// #                               Imports                                #
+// ########################################################################
+// Third-party
 import { useState, type SubmitEvent } from 'react';
 
+// Local
 import { api, describeError } from '../api';
 import { AddSourceForm } from '../components/AddSourceForm';
 import { AuditTable } from '../components/AuditTable';
+import { required } from '../lib/required';
 import type { AuditEntry, Health, NewSource, SourceSummary } from '../types';
 
+// ########################################################################
+// #                            Approver page                             #
+// ########################################################################
 interface Props {
-  health: Health | null;
-  sources: SourceSummary[];
-  onChanged: () => void;
+  health?: Health | null;
+  sources?: SourceSummary[] | null;
+  onChanged?: (() => void) | null;
 }
 
 // log.debug('Defines the approver page')
-export function ApproverPage({ health, sources, onChanged }: Props) {
+/**
+ * Renders the approver page, or says approver changes are off.
+ *
+ * @param props - The component's props.
+ * @param props.health - The service's health report; null until it
+ *   loads.
+ * @param props.sources - The approved sources. Required.
+ * @param props.onChanged - Reloads the sources after a change. Required.
+ * @returns The page.
+ */
+export function ApproverPage({
+  health = null,
+  sources = null,
+  onChanged = null,
+}: Props = {}): React.JSX.Element {
+  // log.debug('Takes the sources, which the caller must give')
+  sources = required({ sources });
+  // log.debug('Takes what a change reloads, which the caller must give')
+  const changed = required({ onChanged });
   // log.debug('Keeps the token in memory only, never in storage')
   const [token, setToken] = useState('');
   // log.debug('Keeps whether the token has been accepted')
@@ -36,7 +64,14 @@ export function ApproverPage({ health, sources, onChanged }: Props) {
   const [confirming, setConfirming] = useState<string | null>(null);
 
   // log.debug('Defines unlocking: the audit log is read with the token')
-  async function unlock(event: SubmitEvent<HTMLFormElement>): Promise<void> {
+  /**
+   * Reads the audit log with the token, which proves the token works.
+   *
+   * @param event - The token form's submit event. Required.
+   */
+  async function unlock(event: SubmitEvent<HTMLFormElement> | null = null): Promise<void> {
+    // log.debug('Takes the event, which the caller must give')
+    event = required({ event });
     // log.debug('Stops the browser from reloading the page')
     event.preventDefault();
     // log.debug('Reads the audit log, which proves the token works')
@@ -54,7 +89,14 @@ export function ApproverPage({ health, sources, onChanged }: Props) {
   }
 
   // log.debug('Defines adding a source, then refreshing everything it touches')
-  async function add(source: NewSource): Promise<void> {
+  /**
+   * Adds a source, then refreshes the source list and the audit log.
+   *
+   * @param source - The source the approver submitted. Required.
+   */
+  async function add(source: NewSource | null = null): Promise<void> {
+    // log.debug('Takes the source, which the caller must give')
+    source = required({ source });
     // log.debug('Adds it; a refusal is shown, not thrown')
     try {
       // log.debug('Sends the new source')
@@ -62,7 +104,7 @@ export function ApproverPage({ health, sources, onChanged }: Props) {
       // log.debug('Confirms the change')
       setMessage(`Added ${source.id}.`);
       // log.debug('Refreshes the source list')
-      onChanged();
+      changed();
       // log.debug('Refreshes the audit log')
       setAudit(await api.audit(token));
     } catch (error) {
@@ -72,7 +114,14 @@ export function ApproverPage({ health, sources, onChanged }: Props) {
   }
 
   // log.debug('Defines removing a source after a second click')
-  async function remove(id: string): Promise<void> {
+  /**
+   * Removes a source on its second click, then refreshes the lists.
+   *
+   * @param id - The id of the source to remove. Required.
+   */
+  async function remove(id: string | null = null): Promise<void> {
+    // log.debug('Takes the id, which the caller must give')
+    id = required({ id });
     // log.debug('Asks for a second click first')
     if (confirming !== id) {
       // log.debug('Waits for the confirming click')
@@ -87,7 +136,7 @@ export function ApproverPage({ health, sources, onChanged }: Props) {
       // log.debug('Confirms the change')
       setMessage(`Removed ${id}.`);
       // log.debug('Refreshes the source list')
-      onChanged();
+      changed();
       // log.debug('Refreshes the audit log')
       setAudit(await api.audit(token));
     } catch (error) {
@@ -106,7 +155,7 @@ export function ApproverPage({ health, sources, onChanged }: Props) {
       <div className="gq-page">
         <h1 className="gq-intro__title">Approver</h1>
         <p className="gq-intro__lede">
-          Approver changes are off on this server. Set APPROVER_TOKEN in .env (at least 32
+          Approver changes are off on this server. Set APPROVER_TOKEN in config/.env (at least 32
           characters) and restart it to turn them on.
         </p>
       </div>

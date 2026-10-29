@@ -1,45 +1,62 @@
 ########################################################################
 #                backend/src/grounded_qa/core/chunk.py                 #
 ########################################################################
-#  Author:            Kevin Street                                     #
-#  Created on:        2026-10-29                                       #
-#  Last modified on:  2026-10-29                                       #
-#  Purpose:           Splits each source into passages that keep their #
-#                     heading path, at paragraph and list boundaries.  #
-########################################################################
-"""Passages: the units retrieval finds and answers cite.
+"""
+Author:            Kevin Street
+Created on:        2026-10-29
+Last modified on:  2026-10-29
 
-A passage is a run of whole paragraphs, lists and tables under one
-heading, up to a word limit, so a quote never spans two sections and
-a citation can name the section it came from. A block too long for
-one passage is split between list items, then between sentences.
+Splits each source into passages, the units retrieval finds and
+answers cite. A passage is a run of whole paragraphs, lists and tables
+under one heading, up to a word limit, so a quote never spans two
+sections and a citation can name the section it came from. A block too
+long for one passage is split between list items, then between
+sentences.
 """
 
+########################################################################
+#                               Imports                                #
+########################################################################
+# Standard library
 from __future__ import annotations
 
 import re
 from collections.abc import Iterator
+from typing import Final
 
+# Third-party
+from kds.args import required
 from kds.logs import get_logger
 from pydantic import BaseModel
 
+# Local
+from grounded_qa.config import SETTINGS
 from grounded_qa.core.sources import Source
 from grounded_qa.core.text import word_count
 
-# Module constants
+########################################################################
+#                           Global constants                           #
+########################################################################
 log = get_logger(__name__)
+# log.debug("Takes the text between the parts of a heading path, from the config")
+PATH_SEP: Final = SETTINGS.retrieval_section_separator
+
+########################################################################
+#                           Local constants                            #
+########################################################################
 # log.debug("Matches a Markdown heading; captures its marks and text")
 HEADING_RE = re.compile(r"^(?P<marks>#{1,6})\s+(?P<name>.+)$")
 # log.debug("Matches the space between two sentences")
 SENTENCE_RE = re.compile(r"(?<=[.!?])\s+(?=[A-Z0-9\"(])")
 # log.debug("Sets the text between blocks of a document")
 BLOCK_SEP = "\n\n"
-# log.debug("Sets the text between the parts of a heading path")
-PATH_SEP = " > "
 # log.debug("Sets the marker between a source id and a passage number")
 ID_SEP = "#"
 
 
+########################################################################
+#                               Passages                               #
+########################################################################
 # log.debug("Defines one passage of a source")
 class Passage(BaseModel, frozen=True):
     """A passage and where it came from."""
@@ -62,18 +79,33 @@ class Passage(BaseModel, frozen=True):
     # log.debug("Defines the text search reads: title, section, passage")
     @property
     def search_text(self) -> str:
-        """Return title, heading path and text, so headings count."""
+        """Returns title, heading path and text, so headings count.
+
+        Returns:
+            The title, the heading path and the text, one per line.
+        """
         # log.debug("Returns the three joined by newlines")
         return f"{self.title}\n{self.section}\n{self.text}"
 
 
 # log.debug("Defines how a source becomes passages")
-def split(source: Source, max_words: int) -> list[Passage]:
-    """Split a source into passages of at most `max_words` words.
+def split(source: Source | None = None, max_words: int | None = None) -> list[Passage]:
+    """Splits a source into passages of at most `max_words` words.
 
     A single sentence longer than the limit stays whole, because a
     passage must hold text exactly as the source wrote it.
+
+    Args:
+        source: The source to split. Required.
+        max_words: The most words in one passage. Required.
+
+    Returns:
+        The passages in reading order, numbered from 1.
     """
+    # log.debug("Takes the source, which the caller must give")
+    source = required(source=source)
+    # log.debug("Takes the word limit, which the caller must give")
+    max_words = required(max_words=max_words)
     # log.debug("Starts the list of passages")
     passages: list[Passage] = []
     # log.debug("Groups the source's blocks under their headings")
@@ -97,12 +129,23 @@ def split(source: Source, max_words: int) -> list[Passage]:
 
 
 # log.debug("Defines the passages of every source the guard passed")
-def split_all(sources: list[Source], max_words: int) -> list[Passage]:
-    """Split each source; hold back any the guard flagged.
+def split_all(sources: list[Source] | None = None, max_words: int | None = None) -> list[Passage]:
+    """Splits each source; holds back any the guard flagged.
 
     A flagged source stays listed, with its flagged lines, so an
     approver can see it, but none of its text reaches the model.
+
+    Args:
+        sources: The sources to split. Required.
+        max_words: The most words in one passage. Required.
+
+    Returns:
+        The passages of every source the guard passed, in order.
     """
+    # log.debug("Takes the sources, which the caller must give")
+    sources = required(sources=sources)
+    # log.debug("Takes the word limit, which the caller must give")
+    max_words = required(max_words=max_words)
     # log.debug("Logs each held-back source by id")
     for source in (s for s in sources if s.flagged):
         # log.debug("Logs the source and how many lines were flagged")
@@ -112,8 +155,23 @@ def split_all(sources: list[Source], max_words: int) -> list[Passage]:
 
 
 # log.debug("Defines how a text is grouped under its headings")
-def _sections(body: str, max_words: int) -> Iterator[tuple[str, list[str]]]:
-    """Yield (heading path, pieces) for each run of text."""
+def _sections(
+    body: str | None = None, max_words: int | None = None
+) -> Iterator[tuple[str, list[str]]]:
+    """Yields (heading path, pieces) for each run of text.
+
+    Args:
+        body: The source's text, as Markdown. Required.
+        max_words: The most words in one passage, for cutting long
+            blocks. Required.
+
+    Yields:
+        Each section's joined heading path, with its pieces.
+    """
+    # log.debug("Takes the body, which the caller must give")
+    body = required(body=body)
+    # log.debug("Takes the word limit, which the caller must give")
+    max_words = required(max_words=max_words)
     # log.debug("Starts with no headings above the text")
     path: list[tuple[int, str]] = []
     # log.debug("Starts the current section's pieces")
@@ -145,8 +203,22 @@ def _sections(body: str, max_words: int) -> Iterator[tuple[str, list[str]]]:
 
 
 # log.debug("Defines how a block is cut to fit a passage")
-def _fit(block: str, max_words: int) -> list[str]:
-    """Return the block whole, or cut between lines, then sentences."""
+def _fit(block: str | None = None, max_words: int | None = None) -> list[str]:
+    """Returns the block whole, or cut between lines, then sentences.
+
+    Args:
+        block: One block of the text: a paragraph, list or table.
+            Required.
+        max_words: The most words in one piece. Required.
+
+    Returns:
+        The block's pieces, each within the limit unless a single
+        sentence is longer.
+    """
+    # log.debug("Takes the block, which the caller must give")
+    block = required(block=block)
+    # log.debug("Takes the word limit, which the caller must give")
+    max_words = required(max_words=max_words)
     # log.debug("Keeps a block that fits")
     if word_count(block) <= max_words:
         # log.debug("Returns it whole")
@@ -162,8 +234,23 @@ def _fit(block: str, max_words: int) -> list[str]:
 
 
 # log.debug("Defines how pieces are packed into passages")
-def _pack(pieces: list[str], max_words: int, sep: str = BLOCK_SEP) -> Iterator[str]:
-    """Yield runs of pieces joined by `sep`, each within the limit."""
+def _pack(
+    pieces: list[str] | None = None, max_words: int | None = None, sep: str = BLOCK_SEP
+) -> Iterator[str]:
+    """Yields runs of pieces joined by `sep`, each within the limit.
+
+    Args:
+        pieces: The pieces to join, in order. Required.
+        max_words: The most words in one run. Required.
+        sep: The text that joins two pieces.
+
+    Yields:
+        Each run of pieces, joined.
+    """
+    # log.debug("Takes the pieces, which the caller must give")
+    pieces = required(pieces=pieces)
+    # log.debug("Takes the word limit, which the caller must give")
+    max_words = required(max_words=max_words)
     # log.debug("Starts the current run")
     run: list[str] = []
     # log.debug("Walks the pieces in order")

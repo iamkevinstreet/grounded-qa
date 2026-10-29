@@ -28,8 +28,8 @@ see "Unresolved questions" in the [README](README.md) before running it anywhere
 
 | Risk | Control |
 | --- | --- |
-| A committed secret | gitleaks before every commit and over the whole history in CI; secrets live only in `.env` |
-| A secret in config | The settings loader refuses to start when `config/settings.toml` holds a secret |
+| A committed secret | gitleaks before every commit and over the whole history in CI; secrets live only in `config/.env` |
+| A secret in config | The settings loader refuses to start when `config/config.toml` holds a secret |
 | A weak approver token | The service refuses an `APPROVER_TOKEN` shorter than 32 characters |
 | An unauthorised source change | Approver routes need the bearer token, compared in constant time; unset, they answer 503 |
 | An unrecorded source change | Every add and remove is written to an audit log that SQLite triggers make append-only |

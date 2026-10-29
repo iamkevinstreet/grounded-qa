@@ -1,23 +1,36 @@
 ########################################################################
 #                     backend/tests/test_verify.py                     #
 ########################################################################
-#  Author:            Kevin Street                                     #
-#  Created on:        2026-10-29                                       #
-#  Last modified on:  2026-10-29                                       #
-#  Purpose:           Tests the quote check and the removal of claims  #
-#                     whose citations all failed.                      #
-########################################################################
-"""Tests for grounded_qa.core.verify."""
+"""
+Author:            Kevin Street
+Created on:        2026-10-29
+Last modified on:  2026-10-29
 
+Tests the quote check and the removal of claims whose citations all
+failed.
+"""
+
+########################################################################
+#                               Imports                                #
+########################################################################
+# Standard library
 from __future__ import annotations
 
+# Third-party
 import pytest
 from kds.logs import get_logger
 
+# Local
 from grounded_qa.core.verify import find_quote, prune
 
-# Module constants
+########################################################################
+#                           Global constants                           #
+########################################################################
 log = get_logger(__name__)
+
+########################################################################
+#                           Local constants                            #
+########################################################################
 # log.debug("Sets a passage written as a Markdown list with curly quotes")
 PASSAGE = (
     "Eligible employees may take:\n\n"
@@ -27,6 +40,9 @@ PASSAGE = (
 )
 
 
+########################################################################
+#                          Quote check tests                           #
+########################################################################
 # log.debug("Defines quotes that must pass")
 @pytest.mark.parametrize(
     "quote",
@@ -39,7 +55,11 @@ PASSAGE = (
     ],
 )
 def test_quotes_found_in_the_passage_pass(quote: str) -> None:
-    """Case, quote marks, list marks and an ellipsis do not matter."""
+    """Case, quote marks, list marks and an ellipsis do not matter.
+
+    Args:
+        quote: A quote that is in PASSAGE.
+    """
     # log.debug("Checks the quote passes")
     assert find_quote(quote, PASSAGE, min_words=4)[1] is None
 
@@ -55,7 +75,12 @@ def test_quotes_found_in_the_passage_pass(quote: str) -> None:
     ],
 )
 def test_quotes_not_in_the_passage_fail(quote: str, problem: str) -> None:
-    """Changed words, short quotes and out-of-order parts fail."""
+    """Changed words, short quotes and out-of-order parts fail.
+
+    Args:
+        quote: A quote that is not in PASSAGE, or too short.
+        problem: What the check must report.
+    """
     # log.debug("Checks the quote fails with the expected problem")
     assert problem in (find_quote(quote, PASSAGE, min_words=4)[1] or "")
 

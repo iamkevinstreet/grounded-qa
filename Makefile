@@ -1,20 +1,26 @@
 ########################################################################
 #                               Makefile                               #
 ########################################################################
-#  Author:            Kevin Street                                     #
-#  Created on:        2026-10-14                                       #
-#  Last modified on:  2026-10-29                                       #
-#  Purpose:           One command for each routine task: install, run, #
-#                     check, test, eval, audit, diagrams, build.       #
+# Author:            Kevin Street
+# Created on:        2026-10-14
+# Last modified on:  2026-10-29
+#
+# One command for each routine task: install, run, check, test, eval,
+# audit, diagrams, build. CI runs the same targets. Run them from the
+# repository root, where config/config.toml and data/ are found.
+
 ########################################################################
-# CI runs the same targets. Run them from the repository root, where
-# config/settings.toml and data/ are found.
+#                           Local constants                            #
+########################################################################
 UV := uv run --project backend --no-sync
 NPM := npm --prefix frontend
 # Our own packages install from git, not PyPI, so the PyPI audit leaves them out.
-KDS := kds-settings kds-logs kds-llm kds-evals kds-standards kds-diagrams
+KDS := kds-args kds-settings kds-logs kds-llm kds-evals kds-standards kds-diagrams
 AUDIT_FILE := data/generated/requirements-audit.txt
 
+########################################################################
+#                            Routine tasks                             #
+########################################################################
 .PHONY: install run api web check check-backend check-frontend test test-backend test-frontend \
 	eval eval-retrieval audit audit-backend audit-frontend diagrams build
 

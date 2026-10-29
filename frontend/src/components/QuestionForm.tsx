@@ -1,30 +1,76 @@
 // ########################################################################
 // #               frontend/src/components/QuestionForm.tsx               #
 // ########################################################################
-// #  Author:            Kevin Street                                     #
-// #  Created on:        2026-10-29                                       #
-// #  Last modified on:  2026-10-29                                       #
-// #  Purpose:           The question box, its Ask button, and example    #
-// #                     questions to try.                                #
-// ########################################################################
-/** The question box, its Ask button, and example questions to try. */
+/**
+ * Author:            Kevin Street
+ * Created on:        2026-10-29
+ * Last modified on:  2026-10-29
+ *
+ * The question box, its Ask button, and example questions to try.
+ */
 
+// ########################################################################
+// #                               Imports                                #
+// ########################################################################
+// Third-party
 import { useState, type SubmitEvent, type KeyboardEvent } from 'react';
 
-import { EXAMPLES, MAX_QUESTION_CHARS, MIN_QUESTION_CHARS } from '../config';
+// Local
+import { CONFIG } from '../config';
+import { required } from '../lib/required';
 
+// ########################################################################
+// #                           Global constants                           #
+// ########################################################################
+// log.debug('Takes the shortest question the API accepts from the config')
+const MIN_QUESTION_CHARS = CONFIG.api.min_question_chars;
+// log.debug('Takes the longest question the API accepts from the config')
+const MAX_QUESTION_CHARS = CONFIG.api.max_question_chars;
+
+// ########################################################################
+// #                           Local constants                            #
+// ########################################################################
+// log.debug('Lists the example questions the ask page offers')
+const EXAMPLES: readonly string[] = [
+  'How many weeks of FMLA leave can I take?',
+  'Can my supervisor call my doctor about my leave?',
+  'Do short breaks count as hours worked?',
+  'Can I take FMLA leave to care for my mother-in-law?',
+];
+
+// ########################################################################
+// #                            Question form                             #
+// ########################################################################
 interface Props {
-  busy: boolean;
-  onAsk: (question: string) => void;
+  busy?: boolean;
+  onAsk?: ((question: string) => void) | null;
 }
 
 // log.debug('Defines the question form')
-export function QuestionForm({ busy, onAsk }: Props) {
+/**
+ * Renders the question box, its Ask button, and example questions.
+ *
+ * @param props - The component's props.
+ * @param props.busy - Whether a question is being answered, which
+ *   disables asking.
+ * @param props.onAsk - Asks a question. Required.
+ * @returns The form.
+ */
+export function QuestionForm({ busy = false, onAsk = null }: Props = {}): React.JSX.Element {
+  // log.debug('Takes what asking does, which the caller must give')
+  const ask = required({ onAsk });
   // log.debug('Keeps the text typed so far')
   const [text, setText] = useState('');
 
   // log.debug('Defines what Ask does')
-  function submit(event: SubmitEvent<HTMLFormElement>): void {
+  /**
+   * Asks the question typed, once it is long enough.
+   *
+   * @param event - The form's submit event. Required.
+   */
+  function submit(event: SubmitEvent<HTMLFormElement> | null = null): void {
+    // log.debug('Takes the event, which the caller must give')
+    event = required({ event });
     // log.debug('Stops the browser from reloading the page')
     event.preventDefault();
     // log.debug('Trims the question')
@@ -32,12 +78,19 @@ export function QuestionForm({ busy, onAsk }: Props) {
     // log.debug('Asks only when the question is long enough')
     if (question.length >= MIN_QUESTION_CHARS) {
       // log.debug('Hands the question to the page')
-      onAsk(question);
+      ask(question);
     }
   }
 
   // log.debug('Defines Enter to ask and Shift+Enter for a new line')
-  function keyDown(event: KeyboardEvent<HTMLTextAreaElement>): void {
+  /**
+   * Asks on a plain Enter; Shift+Enter starts a new line.
+   *
+   * @param event - The key press in the question box. Required.
+   */
+  function keyDown(event: KeyboardEvent<HTMLTextAreaElement> | null = null): void {
+    // log.debug('Takes the event, which the caller must give')
+    event = required({ event });
     // log.debug('Asks on a plain Enter')
     if (event.key === 'Enter' && !event.shiftKey) {
       // log.debug('Keeps the newline out of the question')
@@ -48,11 +101,18 @@ export function QuestionForm({ busy, onAsk }: Props) {
   }
 
   // log.debug('Defines what choosing an example does')
-  function choose(example: string): void {
+  /**
+   * Shows an example in the box and asks it.
+   *
+   * @param example - The example question. Required.
+   */
+  function choose(example: string | null = null): void {
+    // log.debug('Takes the example, which the caller must give')
+    example = required({ example });
     // log.debug('Shows the example in the box')
     setText(example);
     // log.debug('Asks it')
-    onAsk(example);
+    ask(example);
   }
 
   // log.debug('Returns the form')

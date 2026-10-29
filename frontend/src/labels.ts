@@ -1,25 +1,53 @@
 // ########################################################################
 // #                        frontend/src/labels.ts                        #
 // ########################################################################
-// #  Author:            Kevin Street                                     #
-// #  Created on:        2026-10-29                                       #
-// #  Last modified on:  2026-10-29                                       #
-// #  Purpose:           Display labels: a passage's heading path in      #
-// #                     sentence case, with acronyms kept.               #
+/**
+ * Author:            Kevin Street
+ * Created on:        2026-10-29
+ * Last modified on:  2026-10-29
+ *
+ * Display labels: a passage's heading path, written in sentence case
+ * where the source shouts it, with acronyms kept in capitals.
+ */
+
 // ########################################################################
-/** Display labels: a passage's heading path, written in sentence case. */
+// #                               Imports                                #
+// ########################################################################
+// Local
+import { CONFIG } from './config';
+import { required } from './lib/required';
 
-import { ACRONYMS } from './config';
+// ########################################################################
+// #                           Global constants                           #
+// ########################################################################
+// log.debug('Takes the text between the parts of a heading path from the config')
+const PATH_SEP = CONFIG.retrieval.section_separator;
 
-// log.debug('Sets the text between the parts of a heading path')
-const PATH_SEP = ' > ';
+// ########################################################################
+// #                           Local constants                            #
+// ########################################################################
+// log.debug('Lists acronyms a heading keeps in capitals')
+const ACRONYMS: readonly string[] = ['FMLA', 'FLSA', 'ADA', 'USERRA', 'PUMP', 'U.S.', 'PTO'];
 // log.debug('Sets the text shown between parts of a heading path')
 const SHOWN_SEP = ' \u203a ';
 // log.debug('Matches the letters a word must keep in capitals')
 const LETTERS = /[A-Za-z.]+/;
 
+// ########################################################################
+// #                            Display labels                            #
+// ########################################################################
 // log.debug('Defines the label for a heading path')
-export function sectionLabel(section: string): string {
+/**
+ * Returns the label for a passage's heading path.
+ *
+ * @param section - The heading path, its parts joined as the config
+ *   sets; empty for the text before the first heading. Required.
+ * @returns Each shouted heading in sentence case, the parts joined by a
+ *   chevron, or Opening section for an empty path.
+ */
+export function sectionLabel(section: string | null = null): string {
+  // log.debug('Takes the section, which the caller must give')
+  section = required({ section });
   // log.debug('Names the text before the first heading')
   if (section === '') {
     // log.debug('Returns the opening label')
@@ -33,7 +61,16 @@ export function sectionLabel(section: string): string {
 }
 
 // log.debug('Defines sentence case that keeps acronyms such as FMLA')
-export function sentenceCase(text: string): string {
+/**
+ * Writes a heading in sentence case, keeping acronyms such as FMLA.
+ *
+ * @param text - The heading. Required.
+ * @returns The heading with only its first letter and its acronyms in
+ *   capitals.
+ */
+export function sentenceCase(text: string | null = null): string {
+  // log.debug('Takes the text, which the caller must give')
+  text = required({ text });
   // log.debug('Lowercases each word unless it is a known acronym')
   const words = text
     .split(' ')

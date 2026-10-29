@@ -1,32 +1,48 @@
 ########################################################################
 #                backend/src/grounded_qa/api/schemas.py                #
 ########################################################################
-#  Author:            Kevin Street                                     #
-#  Created on:        2026-10-29                                       #
-#  Last modified on:  2026-10-29                                       #
-#  Purpose:           The shapes of the API's requests and responses,  #
-#                     validated at the edge before the logic sees      #
-#                     them.                                            #
-########################################################################
-"""Request and response bodies for /api/v1."""
+"""
+Author:            Kevin Street
+Created on:        2026-10-29
+Last modified on:  2026-10-29
 
+The shapes of the API's requests and responses, validated at the edge
+before the logic sees them.
+"""
+
+########################################################################
+#                               Imports                                #
+########################################################################
+# Standard library
 from __future__ import annotations
 
 from typing import Literal
 
+# Third-party
+from kds.args import required
 from kds.logs import get_logger
 from pydantic import BaseModel, Field
 
+# Local
 from grounded_qa.core.sources import Source
 
-# Module constants
+########################################################################
+#                           Global constants                           #
+########################################################################
 log = get_logger(__name__)
+
+########################################################################
+#                           Local constants                            #
+########################################################################
 # log.debug("Sets a hard ceiling on a question before settings apply")
 CEILING_CHARS = 10_000
 # log.debug("Lists the one status a running service reports")
 Status = Literal["ok"]
 
 
+########################################################################
+#                     Request and response bodies                      #
+########################################################################
 # log.debug("Defines the body of a question")
 class AskRequest(BaseModel):
     """A question; the configured length limits are checked on top."""
@@ -62,8 +78,17 @@ class SourceSummary(BaseModel):
 
     # log.debug("Defines the summary of a stored source")
     @classmethod
-    def of(cls, source: Source) -> SourceSummary:
-        """Return the summary of `source`."""
+    def of(cls, source: Source | None = None) -> SourceSummary:
+        """Returns the summary of `source`.
+
+        Args:
+            source: The stored source. Required.
+
+        Returns:
+            Its provenance and status, without its text.
+        """
+        # log.debug("Takes the source, which the caller must give")
+        source = required(source=source)
         # log.debug("Returns the fields the list shows")
         return cls(
             id=source.id,
@@ -88,8 +113,17 @@ class SourceDetail(SourceSummary):
 
     # log.debug("Defines the detail of a stored source")
     @classmethod
-    def of(cls, source: Source) -> SourceDetail:
-        """Return the detail of `source`."""
+    def of(cls, source: Source | None = None) -> SourceDetail:
+        """Returns the detail of `source`.
+
+        Args:
+            source: The stored source. Required.
+
+        Returns:
+            Its provenance, status and full text.
+        """
+        # log.debug("Takes the source, which the caller must give")
+        source = required(source=source)
         # log.debug("Returns the summary fields plus the text")
         return cls(**SourceSummary.of(source).model_dump(), body=source.body)
 

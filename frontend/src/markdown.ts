@@ -1,20 +1,24 @@
 // ########################################################################
 // #                       frontend/src/markdown.ts                       #
 // ########################################################################
-// #  Author:            Kevin Street                                     #
-// #  Created on:        2026-10-29                                       #
-// #  Last modified on:  2026-10-29                                       #
-// #  Purpose:           Reads a source document's Markdown into          #
-// #                     headings, paragraphs, lists and tables.          #
+/**
+ * Author:            Kevin Street
+ * Created on:        2026-10-29
+ * Last modified on:  2026-10-29
+ *
+ * Reads a source document's Markdown into the blocks the reader renders
+ * as elements: headings, paragraphs, lists and tables.
+ */
+
 // ########################################################################
-/** Reads a source's Markdown into blocks the reader renders as elements. */
+// #                               Imports                                #
+// ########################################################################
+// Local
+import { required } from './lib/required';
 
-export type Block =
-  | { kind: 'heading'; level: number; text: string }
-  | { kind: 'paragraph'; text: string }
-  | { kind: 'list'; items: { depth: number; text: string }[] }
-  | { kind: 'table'; rows: string[][] };
-
+// ########################################################################
+// #                           Local constants                            #
+// ########################################################################
 // log.debug('Matches a heading block; captures its marks and text')
 const HEADING = /^(#{1,6})\s+(.+)$/;
 // log.debug('Matches a list item line; captures its indent and text')
@@ -24,8 +28,25 @@ const INDENT = 2;
 // log.debug('Sets the character that starts and divides a table row')
 const BAR = '|';
 
+// ########################################################################
+// #                           Markdown blocks                            #
+// ########################################################################
+export type Block =
+  | { kind: 'heading'; level: number; text: string }
+  | { kind: 'paragraph'; text: string }
+  | { kind: 'list'; items: { depth: number; text: string }[] }
+  | { kind: 'table'; rows: string[][] };
+
 // log.debug('Defines how a document becomes blocks')
-export function parseBlocks(body: string): Block[] {
+/**
+ * Reads a document into its blocks.
+ *
+ * @param body - The document's text, as Markdown. Required.
+ * @returns The blocks in order, empty ones left out.
+ */
+export function parseBlocks(body: string | null = null): Block[] {
+  // log.debug('Takes the body, which the caller must give')
+  body = required({ body });
   // log.debug('Splits at blank lines and reads each block')
   return body
     .split(/\n{2,}/)
@@ -35,7 +56,16 @@ export function parseBlocks(body: string): Block[] {
 }
 
 // log.debug('Defines how one block is read')
-function toBlock(block: string): Block {
+/**
+ * Reads one block of a document.
+ *
+ * @param block - The block's text, without the blank lines around it.
+ *   Required.
+ * @returns A heading, a list, a table, or else a paragraph.
+ */
+function toBlock(block: string | null = null): Block {
+  // log.debug('Takes the block, which the caller must give')
+  block = required({ block });
   // log.debug('Reads a heading')
   const heading = HEADING.exec(block.trim());
   // log.debug('Returns a heading block')
@@ -69,7 +99,15 @@ function toBlock(block: string): Block {
 }
 
 // log.debug('Defines how one list line is read')
-function item(line: string): { depth: number; text: string } {
+/**
+ * Reads one line of a list.
+ *
+ * @param line - The line, with its indent and dash. Required.
+ * @returns The item's nesting depth and its text.
+ */
+function item(line: string | null = null): { depth: number; text: string } {
+  // log.debug('Takes the line, which the caller must give')
+  line = required({ line });
   // log.debug('Matches the line')
   const match = ITEM.exec(line);
   // log.debug('Returns its depth from the indent, and its text')

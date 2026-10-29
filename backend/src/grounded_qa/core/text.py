@@ -1,22 +1,36 @@
 ########################################################################
 #                 backend/src/grounded_qa/core/text.py                 #
 ########################################################################
-#  Author:            Kevin Street                                     #
-#  Created on:        2026-10-29                                       #
-#  Last modified on:  2026-10-29                                       #
-#  Purpose:           Text helpers shared by search and checks: plain  #
-#                     forms for comparing quotes, and search terms.    #
-########################################################################
-"""Text helpers: normalising for quote checks, terms for search."""
+"""
+Author:            Kevin Street
+Created on:        2026-10-29
+Last modified on:  2026-10-29
 
+Text helpers that search and the checks share: the plain form two
+texts are compared in, with a map back to the original for
+highlighting, word counts, and the stemmed search terms of a text.
+"""
+
+########################################################################
+#                               Imports                                #
+########################################################################
+# Standard library
 from __future__ import annotations
 
 import re
 
+# Third-party
+from kds.args import required
 from kds.logs import get_logger
 
-# Module constants
+########################################################################
+#                           Global constants                           #
+########################################################################
 log = get_logger(__name__)
+
+########################################################################
+#                           Local constants                            #
+########################################################################
 # log.debug("Maps curly quotes, dashes and odd spaces to plain ones")
 PLAIN = str.maketrans(
     {
@@ -53,24 +67,44 @@ STOPWORDS = frozenset(
 MIN_STEM = 4
 
 
+########################################################################
+#                             Text helpers                             #
+########################################################################
 # log.debug("Defines the plain form two texts are compared in")
-def normalize(text: str) -> str:
-    """Return text lowercased, with plain quotes and no Markdown marks.
+def normalize(text: str | None = None) -> str:
+    """Returns text lowercased, with plain quotes and no Markdown marks.
 
     Two texts that say the same words in the same order normalise to
     the same string, however they were typed or formatted.
+
+    Args:
+        text: The text to normalise. Required.
+
+    Returns:
+        The plain form: lowercase, one space between words.
     """
+    # log.debug("Takes the text, which the caller must give")
+    text = required(text=text)
     # log.debug("Returns the plain form without its position map")
     return plain_map(text)[0]
 
 
 # log.debug("Defines the plain form with a map back to the original")
-def plain_map(text: str) -> tuple[str, list[int]]:
-    """Return the plain form, and each plain character's index in text.
+def plain_map(text: str | None = None) -> tuple[str, list[int]]:
+    """Returns the plain form, and each plain character's index in text.
 
     The map turns a match found in the plain form into a range of the
     original text, which is how a checked quote is highlighted.
+
+    Args:
+        text: The text to normalise. Required.
+
+    Returns:
+        The plain form, and for each of its characters the index of
+        the character in `text` it came from.
     """
+    # log.debug("Takes the text, which the caller must give")
+    text = required(text=text)
     # log.debug("Finds every character inside a Markdown mark")
     marks = {i for match in MARKUP_RE.finditer(text) for i in range(*match.span())}
     # log.debug("Starts the plain characters")
@@ -106,19 +140,36 @@ def plain_map(text: str) -> tuple[str, list[int]]:
 
 
 # log.debug("Defines how many words a text has")
-def word_count(text: str) -> int:
-    """Return the number of whitespace-separated words."""
+def word_count(text: str | None = None) -> int:
+    """Returns the number of whitespace-separated words.
+
+    Args:
+        text: The text to count. Required.
+
+    Returns:
+        The number of words.
+    """
+    # log.debug("Takes the text, which the caller must give")
+    text = required(text=text)
     # log.debug("Returns the count of words")
     return len(text.split())
 
 
 # log.debug("Defines the plural rules of Harman's S-stemmer")
-def stem(word: str) -> str:
-    """Return the singular of a plural English word, conservatively.
+def stem(word: str | None = None) -> str:
+    """Returns the singular of a plural English word, conservatively.
 
     Harman's S-stemmer (1991): "policies" -> "policy", "leaves" ->
     "leave", "hours" -> "hour"; "business" and "status" stay.
+
+    Args:
+        word: A lowercase word. Required.
+
+    Returns:
+        The word's singular, or the word unchanged.
     """
+    # log.debug("Takes the word, which the caller must give")
+    word = required(word=word)
     # log.debug("Leaves short words alone")
     if len(word) < MIN_STEM:
         # log.debug("Returns the word unchanged")
@@ -140,8 +191,17 @@ def stem(word: str) -> str:
 
 
 # log.debug("Defines the search terms of a text")
-def terms(text: str) -> list[str]:
-    """Return the text's search terms: stemmed, without stopwords."""
+def terms(text: str | None = None) -> list[str]:
+    """Returns the text's search terms: stemmed, without stopwords.
+
+    Args:
+        text: The text to take terms from. Required.
+
+    Returns:
+        The terms in the order they appear, repeats kept.
+    """
+    # log.debug("Takes the text, which the caller must give")
+    text = required(text=text)
     # log.debug("Puts the text in plain lowercase form")
     plain = normalize(text)
     # log.debug("Removes possessives and thousands commas")

@@ -1,34 +1,51 @@
 ########################################################################
 #               backend/src/grounded_qa/core/sources.py                #
 ########################################################################
-#  Author:            Kevin Street                                     #
-#  Created on:        2026-10-29                                       #
-#  Last modified on:  2026-10-29                                       #
-#  Purpose:           Reads and writes approved source documents:      #
-#                     front matter, a SHA-256 check, safe file paths.  #
-########################################################################
-"""Source documents: Markdown with provenance front matter.
+"""
+Author:            Kevin Street
+Created on:        2026-10-29
+Last modified on:  2026-10-29
 
-Each document starts with a block of `key: value` lines between `---`
+Reads and writes the approved source documents: Markdown under front
+matter that carries each one's provenance, checked against the SHA-256
+of its text, at file paths that stay inside the sources folder. Each
+document starts with a block of `key: value` lines between `---`
 fences: its title, publisher, source URL, revision date, retrieval
 date, licence, and the SHA-256 of the text below the block. A document
 whose text no longer matches its hash is refused, so an edit to a
 source can never go unnoticed.
 """
 
+########################################################################
+#                               Imports                                #
+########################################################################
+# Standard library
 from __future__ import annotations
 
 import hashlib
 import re
 from pathlib import Path
+from typing import Final
 
+# Third-party
+from kds.args import required
 from kds.logs import get_logger
 from pydantic import BaseModel, Field, ValidationError
 
+# Local
+from grounded_qa.config import SETTINGS
 from grounded_qa.core import guard
 
-# Module constants
+########################################################################
+#                           Global constants                           #
+########################################################################
 log = get_logger(__name__)
+# log.debug("Takes the encoding that turns text into bytes, from the config")
+ENCODING: Final = SETTINGS.text_encoding
+
+########################################################################
+#                           Local constants                            #
+########################################################################
 # log.debug("Matches a safe source id: lowercase letters, digits, dashes")
 ID_RE = re.compile(r"^[a-z0-9](?:[a-z0-9-]{0,62}[a-z0-9])?$")
 # log.debug("Matches a SHA-256 written as 64 hex characters")
@@ -45,10 +62,11 @@ FIELDS = ("title", "publisher", "source", "revised", "retrieved", "license", "sh
 SUFFIX = ".md"
 # log.debug("Names the folder guide that is not itself a source")
 README = "README.md"
-# log.debug("Sets the encoding source files are read and written in")
-ENCODING = "utf-8"
 
 
+########################################################################
+#                           Source documents                           #
+########################################################################
 # log.debug("Defines the error for a document that cannot be accepted")
 class SourceError(ValueError):
     """A source document is malformed, altered or unsafe to store."""
@@ -82,21 +100,48 @@ class Source(BaseModel, frozen=True):
     # log.debug("Defines the document's length in words")
     @property
     def words(self) -> int:
-        """Return the number of words in the text."""
+        """Returns the number of words in the text.
+
+        Returns:
+            How many whitespace-separated words the text has.
+        """
         # log.debug("Returns the word count")
         return len(self.body.split())
 
 
 # log.debug("Defines the SHA-256 of a text")
-def digest(body: str) -> str:
-    """Return the hex SHA-256 of the text as UTF-8."""
+def digest(body: str | None = None) -> str:
+    """Returns the hex SHA-256 of the text's bytes.
+
+    Args:
+        body: The text below the front matter. Required.
+
+    Returns:
+        The digest, as 64 hex characters.
+    """
+    # log.debug("Takes the body, which the caller must give")
+    body = required(body=body)
     # log.debug("Returns the hex digest")
     return hashlib.sha256(body.encode(ENCODING)).hexdigest()
 
 
 # log.debug("Defines the check on a source id")
-def check_id(source_id: str) -> str:
-    """Return the id if it is safe as a file name; raise otherwise."""
+def check_id(source_id: str | None = None) -> str:
+    """Returns the id if it is safe as a file name; raises otherwise.
+
+    Args:
+        source_id: The id to check. Required.
+
+    Returns:
+        The id, unchanged.
+
+    Raises:
+        SourceError: When the id is not 1 to 64 lowercase letters,
+            digits and dashes, starting and ending with a letter or
+            digit.
+    """
+    # log.debug("Takes the source id, which the caller must give")
+    source_id = required(source_id=source_id)
     # log.debug("Refuses an id that is not lowercase letters, digits, dashes")
     if not ID_RE.fullmatch(source_id):
         # log.debug("Raises with the rule the id broke")
@@ -108,8 +153,24 @@ def check_id(source_id: str) -> str:
 
 
 # log.debug("Defines the file path of a source, kept inside its folder")
-def path_for(folder: Path, source_id: str) -> Path:
-    """Return the file for `source_id`; refuse any path that escapes."""
+def path_for(folder: Path | None = None, source_id: str | None = None) -> Path:
+    """Returns the file for `source_id`; refuses any path that escapes.
+
+    Args:
+        folder: The sources folder. Required.
+        source_id: The source's id. Required.
+
+    Returns:
+        The file's path, directly inside the folder.
+
+    Raises:
+        SourceError: When the id is unsafe or the path would leave the
+            folder.
+    """
+    # log.debug("Takes the folder, which the caller must give")
+    folder = required(folder=folder)
+    # log.debug("Takes the source id, which the caller must give")
+    source_id = required(source_id=source_id)
     # log.debug("Resolves the folder to an absolute path")
     root = folder.resolve()
     # log.debug("Builds the file path from the checked id")
@@ -125,13 +186,25 @@ def path_for(folder: Path, source_id: str) -> Path:
 
 
 # log.debug("Defines how a document's text is read into a Source")
-def parse(source_id: str, text: str) -> Source:
-    """Read front matter and text; check the text against its hash.
+def parse(source_id: str | None = None, text: str | None = None) -> Source:
+    """Reads front matter and text; checks the text against its hash.
+
+    Args:
+        source_id: The source's id, its file name without .md.
+            Required.
+        text: The whole document, front matter first. Required.
+
+    Returns:
+        The source, with any lines the guard flagged.
 
     Raises:
         SourceError: The front matter is missing or incomplete, or the
             text does not match its SHA-256.
     """
+    # log.debug("Takes the source id, which the caller must give")
+    source_id = required(source_id=source_id)
+    # log.debug("Takes the text, which the caller must give")
+    text = required(text=text)
     # log.debug("Refuses a document without front matter")
     if not text.startswith(OPEN) or CLOSE not in text:
         # log.debug("Words the error")
@@ -171,8 +244,17 @@ def parse(source_id: str, text: str) -> Source:
 
 
 # log.debug("Defines how a Source is written back as a document")
-def render(source: Source) -> str:
-    """Return the document text: front matter, then the text."""
+def render(source: Source | None = None) -> str:
+    """Returns the document text: front matter, then the text.
+
+    Args:
+        source: The source to write. Required.
+
+    Returns:
+        The document's text, as it is stored.
+    """
+    # log.debug("Takes the source, which the caller must give")
+    source = required(source=source)
     # log.debug("Writes each front-matter key on its own line")
     head = "\n".join(f"{key}{KEY_SEP}{getattr(source, key)}" for key in FIELDS)
     # log.debug("Returns the fenced front matter and the text")
@@ -180,19 +262,36 @@ def render(source: Source) -> str:
 
 
 # log.debug("Defines how one document file is read")
-def load(path: Path) -> Source:
-    """Read and check the document at `path`, named for its id."""
+def load(path: Path | None = None) -> Source:
+    """Reads and checks the document at `path`, named for its id.
+
+    Args:
+        path: The document's file. Required.
+
+    Returns:
+        The source.
+    """
+    # log.debug("Takes the path, which the caller must give")
+    path = required(path=path)
     # log.debug("Parses the file, named for its id")
     return parse(path.stem, path.read_text(encoding=ENCODING))
 
 
 # log.debug("Defines how a folder of documents is read")
-def load_dir(folder: Path) -> list[Source]:
-    """Read every document in `folder`, sorted by id.
+def load_dir(folder: Path | None = None) -> list[Source]:
+    """Reads every document in `folder`, sorted by id.
+
+    Args:
+        folder: The folder of documents. Required.
+
+    Returns:
+        Every source in the folder but its README, sorted by id.
 
     Raises:
         SourceError: Any document fails its checks; one bad source
             stops the service rather than being skipped silently.
     """
+    # log.debug("Takes the folder, which the caller must give")
+    folder = required(folder=folder)
     # log.debug("Returns each Markdown file but the folder's README")
     return [load(path) for path in sorted(folder.glob(f"*{SUFFIX}")) if path.name != README]

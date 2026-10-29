@@ -1,31 +1,52 @@
 ########################################################################
 #                    backend/tests/test_library.py                     #
 ########################################################################
-#  Author:            Kevin Street                                     #
-#  Created on:        2026-10-29                                       #
-#  Last modified on:  2026-10-29                                       #
-#  Purpose:           Tests approver changes: stored, audited and      #
-#                     searchable at once; bad documents refused.       #
-########################################################################
-"""Tests for grounded_qa.core.library."""
+"""
+Author:            Kevin Street
+Created on:        2026-10-29
+Last modified on:  2026-10-29
 
+Tests approver changes: stored, audited and searchable at once; bad
+documents refused.
+"""
+
+########################################################################
+#                               Imports                                #
+########################################################################
+# Standard library
 from __future__ import annotations
 
+# Third-party
 import pytest
+from kds.args import required
 from kds.logs import get_logger
 
+# Local
 from grounded_qa.config import AppSettings
 from grounded_qa.core.audit import AuditLog
 from grounded_qa.core.library import Library, NewSource, SourceExistsError
 from grounded_qa.core.sources import SourceError
 
-# Module constants
+########################################################################
+#                           Global constants                           #
+########################################################################
 log = get_logger(__name__)
 
 
+########################################################################
+#                            Library tests                             #
+########################################################################
 # log.debug("Defines a new document an approver might submit")
 def _new(source_id: str = "pump-breaks", body: str = "") -> NewSource:
-    """Return a submission about pump breaks unless a body is given."""
+    """Returns a submission about pump breaks unless a body is given.
+
+    Args:
+        source_id: The new source's id.
+        body: Its text; a sentence about pump breaks when empty.
+
+    Returns:
+        The submission.
+    """
     # log.debug("Returns the submission")
     return NewSource(
         id=source_id,
@@ -39,15 +60,28 @@ def _new(source_id: str = "pump-breaks", body: str = "") -> NewSource:
 
 
 # log.debug("Defines a library over the small test sources")
-def _library(settings: AppSettings) -> Library:
-    """Return a library with its audit log in tmp_path."""
+def _library(settings: AppSettings | None = None) -> Library:
+    """Returns a library with its audit log in tmp_path.
+
+    Args:
+        settings: Settings over the two small test sources. Required.
+
+    Returns:
+        A library over the settings' sources.
+    """
+    # log.debug("Takes the settings, which the caller must give")
+    settings = required(settings=settings)
     # log.debug("Returns the library")
     return Library(settings, AuditLog(settings.data_audit))
 
 
 # log.debug("Defines the test that an added source is live at once")
 def test_added_source_is_stored_audited_and_searchable(settings: AppSettings) -> None:
-    """Adding writes the file, logs the change and indexes the text."""
+    """Adding writes the file, logs the change and indexes the text.
+
+    Args:
+        settings: Settings over the two small test sources.
+    """
     # log.debug("Adds the pump document")
     library = _library(settings)
     # log.debug("Adds it")
@@ -62,7 +96,11 @@ def test_added_source_is_stored_audited_and_searchable(settings: AppSettings) ->
 
 # log.debug("Defines the test that a removed source disappears")
 def test_removed_source_is_deleted_audited_and_unsearchable(settings: AppSettings) -> None:
-    """Removing deletes the file, logs it, and drops it from search."""
+    """Removing deletes the file, logs it, and drops it from search.
+
+    Args:
+        settings: Settings over the two small test sources.
+    """
     # log.debug("Builds the library")
     library = _library(settings)
     # log.debug("Removes the overtime source")
@@ -77,7 +115,11 @@ def test_removed_source_is_deleted_audited_and_unsearchable(settings: AppSetting
 
 # log.debug("Defines the test that instruction-like text is refused")
 def test_flagged_document_is_refused(settings: AppSettings) -> None:
-    """A document that gives orders to a model is not stored."""
+    """A document that gives orders to a model is not stored.
+
+    Args:
+        settings: Settings over the two small test sources.
+    """
     # log.debug("Expects the source error naming the lines")
     with pytest.raises(SourceError, match="instruction-like"):
         # log.debug("Adds the poisoned document")
@@ -88,7 +130,11 @@ def test_flagged_document_is_refused(settings: AppSettings) -> None:
 
 # log.debug("Defines the test that an id cannot be reused")
 def test_duplicate_id_is_refused(settings: AppSettings) -> None:
-    """Adding an id already in use fails and changes nothing."""
+    """Adding an id already in use fails and changes nothing.
+
+    Args:
+        settings: Settings over the two small test sources.
+    """
     # log.debug("Expects the duplicate error")
     with pytest.raises(SourceExistsError):
         # log.debug("Adds a document with the leave source's id")
@@ -97,7 +143,11 @@ def test_duplicate_id_is_refused(settings: AppSettings) -> None:
 
 # log.debug("Defines the test that removing an unknown id fails")
 def test_removing_an_unknown_id_fails(settings: AppSettings) -> None:
-    """Removing an id that does not exist raises KeyError."""
+    """Removing an id that does not exist raises KeyError.
+
+    Args:
+        settings: Settings over the two small test sources.
+    """
     # log.debug("Expects the key error")
     with pytest.raises(KeyError):
         # log.debug("Removes a missing id")

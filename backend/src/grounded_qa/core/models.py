@@ -1,32 +1,44 @@
 ########################################################################
 #                backend/src/grounded_qa/core/models.py                #
 ########################################################################
-#  Author:            Kevin Street                                     #
-#  Created on:        2026-10-29                                       #
-#  Last modified on:  2026-10-29                                       #
-#  Purpose:           The shapes answers take: the model's draft, and  #
-#                     the checked answer the service returns.          #
-########################################################################
-"""Answer shapes: what the model must return, and what we return.
+"""
+Author:            Kevin Street
+Created on:        2026-10-29
+Last modified on:  2026-10-29
 
-The model's output is parsed into `Draft` before anything uses it.
-`Answer` is what the API and the evaluation see: only checked
-citations, with the outcome named.
+The shapes answers take: the model's draft, and the checked answer the
+service returns. The model's output is parsed into `Draft` before
+anything uses it; `Answer` is what the API and the evaluation see:
+only checked citations, with the outcome named.
 """
 
+########################################################################
+#                               Imports                                #
+########################################################################
+# Standard library
 from __future__ import annotations
 
 from typing import Literal
 
+# Third-party
 from kds.logs import get_logger
 from pydantic import BaseModel, Field
 
-# Module constants
+########################################################################
+#                           Global constants                           #
+########################################################################
 log = get_logger(__name__)
+
+########################################################################
+#                           Local constants                            #
+########################################################################
 # log.debug("Lists the ways a question can end")
 Outcome = Literal["answered", "not_covered", "unverified", "no_passages"]
 
 
+########################################################################
+#                            Answer shapes                             #
+########################################################################
 # log.debug("Defines one citation as the model writes it")
 class DraftCitation(BaseModel):
     """A passage id and a quote the model says is in that passage."""
@@ -115,6 +127,10 @@ class Answer(BaseModel, frozen=True):
     # log.debug("Defines whether this is an abstention")
     @property
     def abstained(self) -> bool:
-        """Return True for every outcome but answered."""
+        """Returns True for every outcome but answered.
+
+        Returns:
+            True when the question was not answered.
+        """
         # log.debug("Returns whether it was not answered")
         return self.outcome != "answered"

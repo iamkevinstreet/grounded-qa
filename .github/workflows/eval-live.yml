@@ -1,12 +1,13 @@
 ########################################################################
 #                   .github/workflows/eval-live.yml                    #
 ########################################################################
-#  Author:            Kevin Street                                     #
-#  Created on:        2026-10-29                                       #
-#  Last modified on:  2026-10-29                                       #
-#  Purpose:           Started by hand: retrieval in all three modes,   #
-#                     and the answer evaluation against a real model.  #
-########################################################################
+# Author:            Kevin Street
+# Created on:        2026-10-29
+# Last modified on:  2026-10-29
+#
+# Runs by hand: retrieval in all three modes, and the answer evaluation
+# against a real model.
+
 name: eval-live
 
 # Retrieval needs no key: the embedding model runs on the runner. The answer evaluation uses the

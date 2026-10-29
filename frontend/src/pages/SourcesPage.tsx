@@ -1,25 +1,50 @@
 // ########################################################################
 // #                  frontend/src/pages/SourcesPage.tsx                  #
 // ########################################################################
-// #  Author:            Kevin Street                                     #
-// #  Created on:        2026-10-29                                       #
-// #  Last modified on:  2026-10-29                                       #
-// #  Purpose:           The sources page: every approved fact sheet with #
-// #                     its provenance, and a reader for each.           #
-// ########################################################################
-/** The sources page: every approved fact sheet, and a reader for each. */
+/**
+ * Author:            Kevin Street
+ * Created on:        2026-10-29
+ * Last modified on:  2026-10-29
+ *
+ * The sources page: every approved fact sheet with its provenance, and
+ * a reader for each.
+ */
 
+// ########################################################################
+// #                               Imports                                #
+// ########################################################################
+// Third-party
 import { useRef, useState } from 'react';
 
+// Local
 import { api, describeError } from '../api';
 import { SourceText } from '../components/SourceText';
+import { CONFIG } from '../config';
+import { required } from '../lib/required';
 import type { SourceDetail, SourceSummary } from '../types';
 
-// log.debug('Sets how many characters of a hash are shown')
-const HASH_CHARS = 12;
+// ########################################################################
+// #                           Global constants                           #
+// ########################################################################
+// log.debug('Takes how many characters of a hash are shown from the config')
+const HASH_CHARS = CONFIG.web.hash_chars;
 
+// ########################################################################
+// #                             Sources page                             #
+// ########################################################################
 // log.debug('Defines the sources page')
-export function SourcesPage({ sources }: { sources: SourceSummary[] }) {
+/**
+ * Renders the sources page: every approved fact sheet, and a reader.
+ *
+ * @param props - The component's props.
+ * @param props.sources - The approved sources. Required.
+ * @returns The page.
+ */
+export function SourcesPage({
+  sources = null,
+}: { sources?: SourceSummary[] | null } = {}): React.JSX.Element {
+  // log.debug('Takes the sources, which the caller must give')
+  sources = required({ sources });
   // log.debug('Keeps the document being read')
   const [doc, setDoc] = useState<SourceDetail | null>(null);
   // log.debug('Keeps a problem loading it')
@@ -28,7 +53,14 @@ export function SourcesPage({ sources }: { sources: SourceSummary[] }) {
   const latest = useRef<string | null>(null);
 
   // log.debug('Defines what opening a source does')
-  async function open(id: string): Promise<void> {
+  /**
+   * Loads a source into the reader, unless a newer one was asked for.
+   *
+   * @param id - The id of the source to read. Required.
+   */
+  async function open(id: string | null = null): Promise<void> {
+    // log.debug('Takes the id, which the caller must give')
+    id = required({ id });
     // log.debug('Notes this as the latest request')
     latest.current = id;
     // log.debug('Clears the previous problem')

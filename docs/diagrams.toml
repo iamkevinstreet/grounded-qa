@@ -1,12 +1,13 @@
 ########################################################################
 #                          docs/diagrams.toml                          #
 ########################################################################
-#  Author:            Kevin Street                                     #
-#  Created on:        2026-10-29                                       #
-#  Last modified on:  2026-10-29                                       #
-#  Purpose:           The README diagrams as data. Redraw them with    #
-#                     make diagrams; never edit the SVGs by hand.      #
-########################################################################
+# Author:            Kevin Street
+# Created on:        2026-10-29
+# Last modified on:  2026-10-29
+#
+# The README diagrams as data. Redraw them with make diagrams; never
+# edit the SVGs by hand.
+#
 # Boxes are [left, top, width, height] in pixels; arrow points are [x, y].
 
 [[diagram]]
@@ -122,7 +123,7 @@ at = [392, 508]
 box = [28, 680, 944, 92]
 title = "Foundation"
 lines = [
-  "config/settings.toml holds every setting, .env holds secrets only · kds settings, logs, llm, evals",
+  "config/config.toml holds every setting, config/.env secrets only · kds settings, logs, llm, evals",
   "JSON logs with request ids, never question text · CI: tests, offline eval, CodeQL, gitleaks, audits",
 ]
 

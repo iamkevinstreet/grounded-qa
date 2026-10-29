@@ -1,16 +1,25 @@
 // ########################################################################
 // #                frontend/src/components/Abstention.tsx                #
 // ########################################################################
-// #  Author:            Kevin Street                                     #
-// #  Created on:        2026-10-29                                       #
-// #  Last modified on:  2026-10-29                                       #
-// #  Purpose:           What the page says when there is no checked      #
-// #                     answer, and what the sources do cover.           #
-// ########################################################################
-/** What the page says when there is no checked answer, and what to try next. */
+/**
+ * Author:            Kevin Street
+ * Created on:        2026-10-29
+ * Last modified on:  2026-10-29
+ *
+ * What the ask page says when there is no checked answer: why, which
+ * fact sheets were searched, and what the sources do cover.
+ */
 
+// ########################################################################
+// #                               Imports                                #
+// ########################################################################
+// Local
+import { required } from '../lib/required';
 import type { Answer, Outcome } from '../types';
 
+// ########################################################################
+// #                           Local constants                            #
+// ########################################################################
 // log.debug('Sets the heading and explanation for each kind of abstention')
 const COPY: Record<Exclude<Outcome, 'answered'>, { heading: string; body: string }> = {
   not_covered: {
@@ -27,13 +36,30 @@ const COPY: Record<Exclude<Outcome, 'answered'>, { heading: string; body: string
   },
 };
 
+// ########################################################################
+// #                              Abstention                              #
+// ########################################################################
 interface Props {
-  answer: Answer;
-  titles: ReadonlyMap<string, string>;
+  answer?: Answer | null;
+  titles?: ReadonlyMap<string, string> | null;
 }
 
 // log.debug('Defines the abstention view')
-export function Abstention({ answer, titles }: Props) {
+/**
+ * Renders what the page says when there is no checked answer.
+ *
+ * @param props - The component's props.
+ * @param props.answer - The answer that ended in an abstention. Required.
+ * @param props.titles - Each source's title by its id, to name the fact
+ *   sheets searched. Required.
+ * @returns Why there is no answer, the fact sheets searched, and what the
+ *   sources cover.
+ */
+export function Abstention({ answer = null, titles = null }: Props = {}): React.JSX.Element {
+  // log.debug('Takes the answer, which the caller must give')
+  answer = required({ answer });
+  // log.debug('Takes the titles, which the caller must give')
+  titles = required({ titles });
   // log.debug('Picks the copy for this outcome')
   const copy = COPY[answer.outcome === 'answered' ? 'unverified' : answer.outcome];
   // log.debug('Lists the fact sheets that were searched, once each')

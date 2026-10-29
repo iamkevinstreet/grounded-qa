@@ -1,16 +1,22 @@
 // ########################################################################
 // #                    frontend/src/pages/AskPage.tsx                    #
 // ########################################################################
-// #  Author:            Kevin Street                                     #
-// #  Created on:        2026-10-29                                       #
-// #  Last modified on:  2026-10-29                                       #
-// #  Purpose:           The ask page: a question in; a checked answer,   #
-// #                     its citations and the cited passage out.         #
-// ########################################################################
-/** The ask page: a question in, a checked answer and its sources out. */
+/**
+ * Author:            Kevin Street
+ * Created on:        2026-10-29
+ * Last modified on:  2026-10-29
+ *
+ * The ask page: a question in; a checked answer, its citations and the
+ * cited passage out, or an abstention that says why.
+ */
 
+// ########################################################################
+// #                               Imports                                #
+// ########################################################################
+// Third-party
 import { useState } from 'react';
 
+// Local
 import { api, describeError } from '../api';
 import { Abstention } from '../components/Abstention';
 import { AnswerText } from '../components/AnswerText';
@@ -19,9 +25,19 @@ import { CitationList } from '../components/CitationList';
 import { OfflineNotice } from '../components/OfflineNotice';
 import { QuestionForm } from '../components/QuestionForm';
 import { SourceSheet } from '../components/SourceSheet';
-import { OFFLINE_PROVIDER } from '../config';
+import { CONFIG } from '../config';
+import { required } from '../lib/required';
 import type { Answer, Health } from '../types';
 
+// ########################################################################
+// #                           Global constants                           #
+// ########################################################################
+// log.debug('Takes the provider name that means the offline stand-in from the config')
+const OFFLINE_PROVIDER = CONFIG.llm.offline_provider;
+
+// ########################################################################
+// #                               Ask page                               #
+// ########################################################################
 type State =
   | { kind: 'idle' }
   | { kind: 'asking' }
@@ -29,19 +45,38 @@ type State =
   | { kind: 'failed'; message: string };
 
 interface Props {
-  health: Health | null;
-  titles: ReadonlyMap<string, string>;
+  health?: Health | null;
+  titles?: ReadonlyMap<string, string> | null;
 }
 
 // log.debug('Defines the ask page')
-export function AskPage({ health, titles }: Props) {
+/**
+ * Renders the ask page: the question, then the checked answer.
+ *
+ * @param props - The component's props.
+ * @param props.health - The service's health report; null until it
+ *   loads.
+ * @param props.titles - Each source's title by its id, for abstentions.
+ *   Required.
+ * @returns The page.
+ */
+export function AskPage({ health = null, titles = null }: Props = {}): React.JSX.Element {
+  // log.debug('Takes the titles, which the caller must give')
+  titles = required({ titles });
   // log.debug('Keeps where the question is: idle, asking, done or failed')
   const [state, setState] = useState<State>({ kind: 'idle' });
   // log.debug('Keeps which citation the source sheet shows')
   const [selected, setSelected] = useState(1);
 
   // log.debug('Defines what asking a question does')
-  async function ask(question: string): Promise<void> {
+  /**
+   * Asks the service a question and shows the checked answer.
+   *
+   * @param question - The question. Required.
+   */
+  async function ask(question: string | null = null): Promise<void> {
+    // log.debug('Takes the question, which the caller must give')
+    question = required({ question });
     // log.debug('Shows that the question is being answered')
     setState({ kind: 'asking' });
     // log.debug('Asks the service, which may fail')

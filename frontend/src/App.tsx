@@ -1,24 +1,32 @@
 // ########################################################################
 // #                         frontend/src/App.tsx                         #
 // ########################################################################
-// #  Author:            Kevin Street                                     #
-// #  Created on:        2026-10-29                                       #
-// #  Last modified on:  2026-10-29                                       #
-// #  Purpose:           The app shell: the top bar, the three views, and #
-// #                     the health and sources they share.               #
-// ########################################################################
-/** The app shell: the top bar, the three views, and what they share. */
+/**
+ * Author:            Kevin Street
+ * Created on:        2026-10-29
+ * Last modified on:  2026-10-29
+ *
+ * The app shell: the top bar, the three views, and the health and
+ * sources they share.
+ */
 
+// ########################################################################
+// #                               Imports                                #
+// ########################################################################
+// Third-party
 import { useEffect, useState } from 'react';
 
+// Local
 import { api, describeError } from './api';
+import { required } from './lib/required';
 import { ApproverPage } from './pages/ApproverPage';
 import { AskPage } from './pages/AskPage';
 import { SourcesPage } from './pages/SourcesPage';
 import type { Health, SourceSummary } from './types';
 
-type View = 'ask' | 'sources' | 'approver';
-
+// ########################################################################
+// #                           Local constants                            #
+// ########################################################################
 // log.debug('Lists the views in the order the bar shows them')
 const VIEWS: readonly { id: View; label: string }[] = [
   { id: 'ask', label: 'Ask' },
@@ -26,14 +34,32 @@ const VIEWS: readonly { id: View; label: string }[] = [
   { id: 'approver', label: 'Approver' },
 ];
 
+// ########################################################################
+// #                              App shell                               #
+// ########################################################################
+type View = 'ask' | 'sources' | 'approver';
+
 // log.debug('Defines how the address picks a view')
-function viewFor(hash: string): View {
+/**
+ * Returns the view the address names.
+ *
+ * @param hash - The address's hash, such as #/sources. Required.
+ * @returns The view it names, or ask.
+ */
+function viewFor(hash: string | null = null): View {
+  // log.debug('Takes the hash, which the caller must give')
+  hash = required({ hash });
   // log.debug('Returns the view named after the #, or ask')
   return VIEWS.find((view) => `#/${view.id}` === hash)?.id ?? 'ask';
 }
 
 // log.debug('Defines the app')
-export function App() {
+/**
+ * Renders the app: the top bar, the view the address names, the footer.
+ *
+ * @returns The page.
+ */
+export function App(): React.JSX.Element {
   // log.debug('Keeps the view the address names')
   const [view, setView] = useState<View>(() => viewFor(window.location.hash));
   // log.debug('Keeps the health report')
@@ -48,7 +74,11 @@ export function App() {
   // log.debug('Follows the address as the view changes')
   useEffect(() => {
     // log.debug('Defines the listener')
-    const follow = (): void => setView(viewFor(window.location.hash));
+    /** Shows the view the address now names. */
+    const follow = (): void => {
+      // log.debug('Shows the view the new address names')
+      setView(viewFor(window.location.hash));
+    };
     // log.debug('Listens for changes')
     window.addEventListener('hashchange', follow);
     // log.debug('Stops listening when the app closes')

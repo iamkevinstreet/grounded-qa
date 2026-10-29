@@ -1,27 +1,38 @@
 ########################################################################
 #                     backend/tests/test_guard.py                      #
 ########################################################################
-#  Author:            Kevin Street                                     #
-#  Created on:        2026-10-29                                       #
-#  Last modified on:  2026-10-29                                       #
-#  Purpose:           Tests the ingest guard flags orders to a model   #
-#                     and leaves ordinary workplace text alone.        #
-########################################################################
-"""Tests for grounded_qa.core.guard."""
+"""
+Author:            Kevin Street
+Created on:        2026-10-29
+Last modified on:  2026-10-29
 
+Tests the ingest guard flags orders to a model and leaves ordinary
+workplace text alone.
+"""
+
+########################################################################
+#                               Imports                                #
+########################################################################
+# Standard library
 from __future__ import annotations
 
+# Third-party
 import pytest
 from kds.logs import get_logger
 
+# Local
 from grounded_qa.core import guard, sources
-
 from support import REPO
 
-# Module constants
+########################################################################
+#                           Global constants                           #
+########################################################################
 log = get_logger(__name__)
 
 
+########################################################################
+#                             Guard tests                              #
+########################################################################
 # log.debug("Defines the injections the guard must flag")
 @pytest.mark.parametrize(
     "line",
@@ -37,7 +48,11 @@ log = get_logger(__name__)
     ],
 )
 def test_injections_are_flagged(line: str) -> None:
-    """Each classic injection is found."""
+    """Each classic injection is found.
+
+    Args:
+        line: A line that gives orders to a model.
+    """
     # log.debug("Checks the line is flagged")
     assert guard.flag(f"Intro.\n{line}\nOutro.") == [line]
 
@@ -53,7 +68,11 @@ def test_injections_are_flagged(line: str) -> None:
     ],
 )
 def test_workplace_text_is_not_flagged(line: str) -> None:
-    """Job titles and ordinary duties are not orders to a model."""
+    """Job titles and ordinary duties are not orders to a model.
+
+    Args:
+        line: A line of ordinary workplace text.
+    """
     # log.debug("Checks nothing is flagged")
     assert guard.flag(line) == []
 

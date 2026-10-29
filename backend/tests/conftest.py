@@ -1,35 +1,56 @@
 ########################################################################
 #                      backend/tests/conftest.py                       #
 ########################################################################
-#  Author:            Kevin Street                                     #
-#  Created on:        2026-10-29                                       #
-#  Last modified on:  2026-10-29                                       #
-#  Purpose:           Test setup: offline, isolated folders, and small #
-#                     sources with true hashes for any test to use.    #
-########################################################################
-"""Shared fixtures: every test is offline and writes to tmp_path."""
+"""
+Author:            Kevin Street
+Created on:        2026-10-29
+Last modified on:  2026-10-29
 
+The fixtures every test shares: each test runs offline from its own
+empty folder, and may take settings over two small sources with true
+hashes, or over the repository's real data.
+"""
+
+########################################################################
+#                               Imports                                #
+########################################################################
+# Standard library
 from __future__ import annotations
 
 from collections.abc import Iterator
 from pathlib import Path
 
+# Third-party
 import pytest
 from kds.logs import get_logger
 
+# Local
 from grounded_qa.config import AppSettings, get_app_settings
-
 from support import LEAVE_BODY, OVERTIME_BODY, REPO, make_source, write_source
 
-# Module constants
+########################################################################
+#                           Global constants                           #
+########################################################################
 log = get_logger(__name__)
 
 
+########################################################################
+#                               Fixtures                               #
+########################################################################
 # log.debug("Defines the isolation every test gets")
 @pytest.fixture(autouse=True)
 def isolated(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
-    """Offline provider, logs in tmp_path, no settings file or .env."""
-    # log.debug("Runs from an empty folder, so no .env or settings file is found")
+    """Offline provider, logs in tmp_path, no config or secrets files.
+
+    Args:
+        tmp_path: A temporary folder pytest makes for this test.
+        monkeypatch: pytest's helper for patching the environment and
+            objects.
+
+    Yields:
+        Nothing; the test runs between the setup and the clean-up.
+    """
+    # log.debug("Runs from an empty folder, so no config/.env or config.toml is found")
     monkeypatch.chdir(tmp_path)
     # log.debug("Forces the offline provider so no test calls a model")
     monkeypatch.setenv("LLM_PROVIDER", "fake")
@@ -50,7 +71,15 @@ def isolated(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
 # log.debug("Defines settings whose data folders are in tmp_path")
 @pytest.fixture
 def settings(tmp_path: Path) -> AppSettings:
-    """Settings with two small sources and empty samples in tmp_path."""
+    """Settings with two small sources and empty samples in tmp_path.
+
+    Args:
+        tmp_path: A temporary folder pytest makes for this test.
+
+    Returns:
+        Settings over the two sources, showing three passages a
+        question.
+    """
     # log.debug("Writes the two small sources")
     for source in (make_source("leave", LEAVE_BODY), make_source("overtime", OVERTIME_BODY)):
         # log.debug("Writes one source")
@@ -70,7 +99,14 @@ def settings(tmp_path: Path) -> AppSettings:
 # log.debug("Defines settings over the real approved corpus")
 @pytest.fixture
 def real_settings(tmp_path: Path) -> AppSettings:
-    """Settings over the repository data; results in tmp_path."""
+    """Settings over the repository data; results in tmp_path.
+
+    Args:
+        tmp_path: A temporary folder pytest makes for this test.
+
+    Returns:
+        Settings over the repository's sources, samples and cases.
+    """
     # log.debug("Returns settings over the repository's data")
     return AppSettings(
         data_sources=REPO / "data" / "sources",

@@ -1,7 +1,7 @@
 # data
 
 Everything the service reads and the evaluation scores against. The paths are settings in
-[config/settings.toml](../config/settings.toml) under `[data]`.
+[config/config.toml](../config/config.toml) under `[data]`.
 
 | Folder | What it holds | In git |
 | --- | --- | --- |

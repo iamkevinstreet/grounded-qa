@@ -32,8 +32,9 @@ make install
 make run    # the web app on http://localhost:5173, the API on http://127.0.0.1:8000
 ```
 
-For real answers, set `[llm] provider = "anthropic"` in `config/settings.toml` and
-`ANTHROPIC_API_KEY` in `.env` (copy `.env.example`). To manage sources, set `APPROVER_TOKEN` too.
+For real answers, set `[llm] provider = "anthropic"` in `config/config.toml` and
+`ANTHROPIC_API_KEY` in `config/.env` (copy `config/.env.example`). To manage sources, set
+`APPROVER_TOKEN` there too.
 
 ## Architecture at a glance
 
@@ -136,16 +137,20 @@ answers everything and refuses too rarely, which is what the model had to beat.
 
 ## Configuration
 
-Every setting, its default and what it does is in [config/README.md](config/README.md). The ones
-you are most likely to change:
+Everything the project configures lives in `config/`: `config.toml` holds every setting and
+every value two files share, at its default, and `config/.env` holds the secrets (never committed;
+`config/.env.example` lists them). Every setting, its default and what it does is in
+[config/README.md](config/README.md). The service reads both files when it starts; the web app
+reads the few keys it needs from `config.toml` when it is built, so the two cannot drift. The
+settings you are most likely to change:
 
 | Setting | Default | Lives in |
 | --- | --- | --- |
-| `[llm] provider`, `[llm] model` | `fake`, `claude-sonnet-5-5` | `config/settings.toml` |
-| `[retrieval] mode` | `keyword` (`semantic` and `hybrid` need `uv sync --project backend --extra local`) | `config/settings.toml` |
-| `[eval] budget_usd` | `5.0`: a process stops calling the model past this spend | `config/settings.toml` |
-| `[api] host`, `[api] port` | `127.0.0.1`, `8000` | `config/settings.toml` |
-| `ANTHROPIC_API_KEY`, `APPROVER_TOKEN` | unset | `.env` only |
+| `[llm] provider`, `[llm] model` | `fake`, `claude-sonnet-5-5` | `config/config.toml` |
+| `[retrieval] mode` | `keyword` (`semantic` and `hybrid` need `uv sync --project backend --extra local`) | `config/config.toml` |
+| `[eval] budget_usd` | `5.0`: a process stops calling the model past this spend | `config/config.toml` |
+| `[api] host`, `[api] port` | `127.0.0.1`, `8000` | `config/config.toml` |
+| `ANTHROPIC_API_KEY`, `APPROVER_TOKEN` | unset | `config/.env` only |
 
 Any setting can be overridden by an environment variable named for its section and key:
 `RETRIEVAL_MODE=hybrid`.
@@ -163,7 +168,7 @@ Any setting can be overridden by an environment variable named for its section a
   Questions failing with 503 mean the model could not be reached or the process spent its budget
   (look for `model.unavailable`); a run of `unverified` answers means quotes were not found (look
   for `answer.citation_dropped`); bursts of `auth.denied` mean someone may be guessing the approver
-  token, so rotate it in `.env` and read the audit log.
+  token, so rotate it in `config/.env` and read the audit log.
 
 ## Testing
 
@@ -174,17 +179,17 @@ make eval    # the offline evaluation
 ```
 
 Tests never call a model or the network: the offline stand-in and a small embedding stand-in take
-their place. They write only to temporary folders, run from an empty folder so no `.env` leaks in,
-and use fixed clocks where time matters. CI runs every target on each push, plus the dependency
-audits, CodeQL and a secrets scan of the whole history.
+their place. They write only to temporary folders, run from an empty folder so no `config/.env`
+leaks in, and use fixed clocks where time matters. CI runs every target on each push, plus the
+dependency audits, CodeQL and a secrets scan of the whole history.
 
 ## Security
 
-Secrets live only in `.env`; the approver routes are off until `APPROVER_TOKEN` (32 characters or
-more) is set; the service listens on localhost by default; every source is checked against its
-SHA-256; injections are held back, fenced and checked; and every change to the sources is recorded
-in an append-only log. Report a vulnerability privately as described in [SECURITY.md](SECURITY.md),
-which also lists every control.
+Secrets live only in `config/.env`; the approver routes are off until `APPROVER_TOKEN` (32
+characters or more) is set; the service listens on localhost by default; every source is checked
+against its SHA-256; injections are held back, fenced and checked; and every change to the sources
+is recorded in an append-only log. Report a vulnerability privately as described in
+[SECURITY.md](SECURITY.md), which also lists every control.
 
 ## Project layout
 
@@ -194,16 +199,22 @@ grounded-qa/
 │   ├── src/grounded_qa/  config.py, core/ (the logic), api/ (FastAPI), evals/ (scorers, runner)
 │   └── tests/            109 tests, offline
 ├── frontend/             the web app (React, TypeScript, Vite)
-│   ├── src/              pages/, components/, styles/, the API client
+│   ├── src/              pages/, components/, lib/, styles/, the API client, config.ts
 │   └── tests/            14 tests
-├── config/               settings.toml: every setting at its default
+├── config/               config.toml (every setting and shared value), .env.example, README.md
 ├── data/                 sources/ (22 fact sheets), samples/ (2 synthetic), evals/ (cases, results)
 ├── docs/                 diagrams.toml and the two SVGs it draws
 └── .github/              CI, CodeQL, the live evaluation, Dependabot
 ```
 
+Every source file opens with a box holding its path and a doc block (author, dates, what the file
+is for), then its imports, the values it takes from the config, its own constants, and its logic,
+each under a banner. Every function shows its whole contract where it is defined: each parameter
+has a type and a default, those it cannot do without are taken with `required()`, and its doc
+block says what each parameter is for and what comes back.
+
 ## Changelog and license
 
-Changes by release are in [CHANGELOG.md](CHANGELOG.md); this is v0.1.0. Licensed under Apache 2.0
-([LICENSE](LICENSE), [NOTICE](NOTICE)). The fact
-sheets in `data/sources/` are works of the U.S. federal government and in the public domain.
+Changes by release are in [CHANGELOG.md](CHANGELOG.md); this is v0.2.0. Licensed under Apache 2.0
+([LICENSE](LICENSE), [NOTICE](NOTICE)). The fact sheets in `data/sources/` are works of the U.S.
+federal government and in the public domain.

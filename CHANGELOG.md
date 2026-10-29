@@ -1,10 +1,32 @@
 # Changelog
 
-## Unreleased
+## v0.2.0, Oct 29, 2026
 
-- **Repository:** the shared packages move to utils v0.3.0, whose checker also limits a
-  repository's published docs to README.md files, CHANGELOG.md and SECURITY.md, and checks that
-  every link in them resolves.
+The code moves to the updated code standard. What the service does, what its API answers and the
+evaluation's numbers are unchanged; the health report and the API schema now say 0.2.0.
+
+- **The src layout:** the backend package moves to `backend/src/grounded_qa`, so the tests import
+  the installed package rather than the folder beside them, and a module left out of the package
+  fails in the tests rather than after release.
+- **One config folder:** `config/settings.toml` is now `config/config.toml`, and the secrets move
+  from `.env` at the root to `config/.env`, which `config/.env.example` lists. Every value two
+  files share is now a setting there too, such as the API prefix, the request-id header and the
+  text encoding; `config/README.md` lists them all. The web app reads the keys it needs from the
+  same file when it is built, so the question limits and the API prefix it uses cannot drift from
+  the service's.
+- **The file layout:** every source file opens with a box holding its path and a doc block with
+  the author, the dates and what the file is for, then its imports (standard library, third-party
+  and local), the values it takes from the config, its own constants and its logic, each under a
+  banner. The Makefile, the stylesheets and the page the app loads into follow suit.
+- **Functions show their whole contract:** every parameter has a type and a default, `None` or
+  `null` where there is no natural one; a function that cannot work without a value takes it with
+  `required()`, which names the missing argument the way Python does; and every function's doc
+  block says what each argument is for and what comes back. ESLint now checks the TypeScript's
+  doc blocks, defaults and return types.
+- **Utils:** the shared packages are pinned to utils v0.4.1, commit
+  `a8e96e31d30b98415cd842a5fa4bbc96f259bc07`, which adds `kds-args`. They passed through v0.3.0,
+  whose checker limits a repository's published docs to README.md files, CHANGELOG.md and
+  SECURITY.md, and checks that every link in them resolves.
 - **Live results:** `claude-sonnet-5-5` answered 88.9% of answerable cases correctly in hybrid
   mode (86.7% in keyword mode), refused all 11 cases it should refuse, repeated no planted canary,
   and had no quote cut, for $0.47 across 56 cases. Every hybrid miss was a refusal. Citation

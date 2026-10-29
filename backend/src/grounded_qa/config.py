@@ -1,32 +1,46 @@
 ########################################################################
 #                  backend/src/grounded_qa/config.py                   #
 ########################################################################
-#  Author:            Kevin Street                                     #
-#  Created on:        2026-10-29                                       #
-#  Last modified on:  2026-10-29                                       #
-#  Purpose:           The one place settings are read: the shared kds  #
-#                     settings plus data, retrieval, answer and API.   #
-########################################################################
-"""Settings for the grounded Q&A service.
+"""
+Author:            Kevin Street
+Created on:        2026-10-29
+Last modified on:  2026-10-29
 
-Each field is a `[section] key` in config/settings.toml, joined by an
+Loads the service's settings, the one place they are read: the shared
+kds settings plus the service's own data, retrieval, answer, evaluation
+and API settings, and the values two of its files share. SETTINGS holds
+them, built once, for the values modules bind when they load; code that
+tests run with other settings takes those settings as a parameter.
+
+Each field is a `[section] key` in config/config.toml, joined by an
 underscore: `[retrieval] mode` is `retrieval_mode`, which the
 environment variable RETRIEVAL_MODE overrides. The approver token, the
-only secret this service adds, lives in .env as APPROVER_TOKEN.
+only secret this service adds, lives in config/.env as APPROVER_TOKEN.
 """
 
+########################################################################
+#                               Imports                                #
+########################################################################
+# Standard library
 from __future__ import annotations
 
 from functools import lru_cache
 from pathlib import Path
-from typing import Literal
+from typing import Final, Literal
 
+# Third-party
 from kds.logs import get_logger
 from kds.settings import Settings
 from pydantic import Field, SecretStr, field_validator
 
-# Module constants
+########################################################################
+#                           Global constants                           #
+########################################################################
 log = get_logger(__name__)
+
+########################################################################
+#                           Local constants                            #
+########################################################################
 # log.debug("Lists how passages can be found: by words, by meaning, or both")
 Mode = Literal["keyword", "semantic", "hybrid"]
 # log.debug("Sets the shortest approver token accepted, in characters")
@@ -39,11 +53,18 @@ MIN_ANSWER_WORDS = 20
 MAX_PASSAGE_WORDS = 1000
 # log.debug("Sets the smallest source size limit allowed, in bytes")
 MIN_SOURCE_BYTES = 1000
+# log.debug("Names the mode that ranks by shared words alone, the default")
+KEYWORD_MODE: Final = "keyword"
+# log.debug("Sets the milliseconds in a second")
+MS_PER_SECOND = 1000
 
 
+########################################################################
+#                           Service settings                           #
+########################################################################
 # log.debug("Defines the service's settings on top of the shared ones")
 class AppSettings(Settings):
-    """Grounded Q&A settings; config/settings.toml lists each one."""
+    """Grounded Q&A settings; config/config.toml lists each one."""
 
     # log.debug("Holds the folder of approved source documents")
     data_sources: Path = Path("data/sources")
@@ -57,7 +78,7 @@ class AppSettings(Settings):
     data_audit: Path = Path("data/generated/audit.sqlite")
 
     # log.debug("Holds how passages are found")
-    retrieval_mode: Mode = "keyword"
+    retrieval_mode: Mode = KEYWORD_MODE
     # log.debug("Holds how many passages the model is shown")
     retrieval_k: int = Field(default=6, ge=1, le=MAX_K)
     # log.debug("Holds how many candidates each ranker passes to fusion")
@@ -72,6 +93,10 @@ class AppSettings(Settings):
     retrieval_model: str = "BAAI/bge-small-en-v1.5"
     # log.debug("Holds the most words one passage may hold")
     retrieval_passage_words: int = Field(default=180, ge=40, le=MAX_PASSAGE_WORDS)
+    # log.debug("Holds the text that joins the headings of a passage's section")
+    retrieval_section_separator: str = " > "
+    # log.debug("Holds the name of the mode that ranks by shared words alone")
+    retrieval_keyword_mode: Mode = KEYWORD_MODE
 
     # log.debug("Holds the fewest words a citation's quote may have")
     answer_min_quote_words: int = Field(default=4, ge=1)
@@ -80,6 +105,11 @@ class AppSettings(Settings):
 
     # log.debug("Holds phrases planted in data/samples that no answer may repeat")
     eval_canaries: tuple[str, ...] = ("KESTREL-9", "PINEAPPLE-7")
+    # log.debug("Holds the field of a case that says whether the sources answer it")
+    eval_answerable_field: str = "answerable"
+
+    # log.debug("Holds the provider name that means the offline stand-in")
+    llm_offline_provider: str = "fake"
 
     # log.debug("Holds the address the server listens on; local only by default")
     api_host: str = "127.0.0.1"
@@ -95,6 +125,17 @@ class AppSettings(Settings):
     api_asks_per_minute: int = Field(default=20, ge=1)
     # log.debug("Holds the browser origins allowed to call the API")
     api_allowed_origins: tuple[str, ...] = ("http://localhost:5173",)
+    # log.debug("Holds the path every route lives under, with its version")
+    api_prefix: str = "/api/v1"
+    # log.debug("Holds the header that carries each request's id")
+    api_request_id_header: str = "X-Request-ID"
+
+    # log.debug("Holds the encoding text is stored, hashed and measured in")
+    text_encoding: str = "utf-8"
+    # log.debug("Holds the milliseconds in a second, for timings")
+    time_ms_per_second: int = MS_PER_SECOND
+    # log.debug("Holds how many characters of a SHA-256 the web app shows")
+    web_hash_chars: int = Field(default=12, ge=1, le=64)
 
     # log.debug("Holds the approver's bearer token, a secret; unset turns admin off")
     approver_token: SecretStr | None = None
@@ -102,8 +143,20 @@ class AppSettings(Settings):
     # log.debug("Defines the check that the approver token is strong enough")
     @field_validator("approver_token")
     @classmethod
-    def _strong_token(cls, token: SecretStr | None) -> SecretStr | None:
-        """Refuse a token short enough to guess."""
+    def _strong_token(cls, token: SecretStr | None = None) -> SecretStr | None:
+        """Refuses a token short enough to guess.
+
+        Args:
+            token: The approver token from the environment or
+                config/.env; None when it is unset, which turns the
+                approver routes off.
+
+        Returns:
+            The token, unchanged.
+
+        Raises:
+            ValueError: When the token is shorter than 32 characters.
+        """
         # log.debug("Refuses a token under the minimum length")
         if token is not None and len(token.get_secret_value()) < MIN_TOKEN_CHARS:
             # log.debug("Words the error with how to make a strong one")
@@ -120,6 +173,17 @@ class AppSettings(Settings):
 # log.debug("Defines the loader every module calls")
 @lru_cache(maxsize=1)
 def get_app_settings() -> AppSettings:
-    """Return the service's settings, built and validated once."""
+    """Returns the service's settings, built and validated once.
+
+    Tests that change the environment call
+    `get_app_settings.cache_clear()`.
+
+    Returns:
+        The settings, frozen.
+    """
     # log.debug("Builds and validates the settings")
     return AppSettings()
+
+
+# log.debug("Loads the settings once, for the values modules bind as they load")
+SETTINGS: Final = get_app_settings()

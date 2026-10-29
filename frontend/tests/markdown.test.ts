@@ -1,18 +1,27 @@
 // ########################################################################
 // #                   frontend/tests/markdown.test.ts                    #
 // ########################################################################
-// #  Author:            Kevin Street                                     #
-// #  Created on:        2026-10-29                                       #
-// #  Last modified on:  2026-10-29                                       #
-// #  Purpose:           Tests reading a source's Markdown into headings, #
-// #                     paragraphs, lists and tables.                    #
-// ########################################################################
-/** Tests reading a source document into blocks. */
+/**
+ * Author:            Kevin Street
+ * Created on:        2026-10-29
+ * Last modified on:  2026-10-29
+ *
+ * Tests reading a source document's Markdown into headings, paragraphs,
+ * lists and tables.
+ */
 
+// ########################################################################
+// #                               Imports                                #
+// ########################################################################
+// Third-party
 import { describe, expect, it } from 'vitest';
 
+// Local
 import { parseBlocks } from '../src/markdown';
 
+// ########################################################################
+// #                            Markdown tests                            #
+// ########################################################################
 // log.debug('Describes the block reader')
 describe('parseBlocks', () => {
   // log.debug('Checks each kind of block is read')

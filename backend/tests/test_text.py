@@ -1,25 +1,37 @@
 ########################################################################
 #                      backend/tests/test_text.py                      #
 ########################################################################
-#  Author:            Kevin Street                                     #
-#  Created on:        2026-10-29                                       #
-#  Last modified on:  2026-10-29                                       #
-#  Purpose:           Tests normalising for quote checks, the plural   #
-#                     stemmer, and search terms.                       #
-########################################################################
-"""Tests for grounded_qa.core.text."""
+"""
+Author:            Kevin Street
+Created on:        2026-10-29
+Last modified on:  2026-10-29
 
+Tests normalising for quote checks, the plural stemmer, and search
+terms.
+"""
+
+########################################################################
+#                               Imports                                #
+########################################################################
+# Standard library
 from __future__ import annotations
 
+# Third-party
 import pytest
 from kds.logs import get_logger
 
+# Local
 from grounded_qa.core.text import normalize, plain_map, stem, terms, word_count
 
-# Module constants
+########################################################################
+#                           Global constants                           #
+########################################################################
 log = get_logger(__name__)
 
 
+########################################################################
+#                          Text helper tests                           #
+########################################################################
 # log.debug("Defines the test that formatting does not change the plain form")
 def test_normalize_ignores_case_quotes_dashes_and_markup() -> None:
     """Curly quotes, dashes, list marks and spacing normalise away."""
@@ -43,7 +55,12 @@ def test_normalize_ignores_case_quotes_dashes_and_markup() -> None:
     ],
 )
 def test_stem(word: str, expected: str) -> None:
-    """Plurals become singular; -ss, -us and short words stay."""
+    """Plurals become singular; -ss, -us and short words stay.
+
+    Args:
+        word: The word to stem.
+        expected: Its stem.
+    """
     # log.debug("Checks the stem")
     assert stem(word) == expected
 
