@@ -7,15 +7,16 @@
 # Created on:        2026-10-29
 # Last modified on:  2026-11-03
 #
-# Every setting the service and the web app read, at its default, and
-# every value two of their files share. No secrets: those go in
-# config/.env (copy config/.env.example).
+# Every setting the service, the dashboard and the web app read, at its
+# default, and every value two of their files share. No secrets: those
+# go in config/.env (copy config/.env.example).
 #
 # Each key's name is its section and key joined: [retrieval] mode is
 # retrieval_mode, and the environment variable RETRIEVAL_MODE overrides
-# it. backend/tests/test_config.py keeps this file equal to the defaults
-# in backend/src/grounded_qa/config.py and the shared kds settings. The
-# web app reads the keys it needs when it is built.
+# it. A nested table is one setting: [labels.kinds] is labels_kinds.
+# backend/tests/test_config.py keeps this file equal to the defaults in
+# backend/src/grounded_qa/config.py and the shared kds settings. The web
+# app reads the keys it needs when it is built.
 
 # The model that drafts answers, and how it is called (shared kds settings)
 [llm]
@@ -53,6 +54,8 @@ samples = "data/samples"                  # synthetic documents only the evaluat
 cases = "data/evals/cases.jsonl"          # questions with expected answers
 results = "data/evals/results"            # where evaluation results are written
 audit = "data/generated/audit.sqlite"     # append-only log of source changes
+export = "data/export"                    # CSV files for Tableau
+figures = "figures.json"                  # the case study's figures, in the results folder
 
 # How passages are cut from the sources and found for a question
 [retrieval]
@@ -95,3 +98,78 @@ ms_per_second = 1000                      # request timings in the logs, trace l
 # The web app's own settings
 [web]
 hash_chars = 12                           # how much of a SHA-256 the web app shows
+
+# The evaluation dashboard
+[dashboard]
+host = "127.0.0.1"                        # this machine only: the dashboard has no sign-in
+port = 8050
+
+# The ids of the dashboard's parts, which its layout and its callbacks share.
+[dashboard_ids]
+url = "url"                               # the location, whose first change reads the scheme
+scheme = "scheme"                         # the store that holds the browser's colour scheme
+runs = "runs"                             # the run picker
+legend = "legend"                         # the runs' key
+tiles = "tiles"                           # the headline numbers
+outcomes = "outcomes"                     # the chart of how each kind of question ended
+retrieval = "retrieval"                   # the retrieval chart
+latency = "latency"                       # the time chart
+cost = "cost"                             # the cost chart
+wrong_table = "wrong-table"               # the table of questions that went wrong
+
+# The column names of the evaluation tables the dashboard draws and the
+# Tableau CSV files hold.
+[columns]
+run_id = "run_id"                         # the run's id: its file name without .json
+run = "run"                               # the run's long label
+model = "model"                           # the model
+mode = "mode"                             # the retrieval mode: keyword, semantic or hybrid
+started_at = "started_at"                 # when the run started
+kind = "kind"                             # whether a run is live or offline
+prices_as_of = "prices_as_of"             # the date of the list prices a run's costs use
+case_id = "case_id"                       # the question's id
+case_kind = "case_kind"                   # the kind of question, from its tags
+outcome = "outcome"                       # how the question ended
+latency_ms = "latency_ms"                 # a question's time, in milliseconds
+cost_per_case = "cost_per_case_usd"       # a run's cost per question
+
+# The dashboard's charts, which the case study's figures share.
+[charts]
+light_scheme = "light"                    # the light scheme, which the exported figures use
+dark_scheme = "dark"                      # the dark scheme
+max_runs = 3                              # the most runs a chart compares: one per ramp step
+font_size = 12                            # the size of chart text, in pixels
+tick_size = 11                            # the size of value-axis ticks and small notes, in pixels
+edge = 8                                  # the margin every chart keeps at its edges, in pixels
+clear = "rgba(0,0,0,0)"                   # the colour that lets the card show through
+align = "left"                            # titles and notes line up on their left edge
+cost_places = 4                           # the decimals a cost is written with
+percent_ticks = ".0%"                     # a share axis's ticks: whole percents
+outcomes_title = "How each kind of question ended"
+retrieval_title = "Retrieval: recall at k and MRR"
+latency_title = "Seconds per question"
+cost_title = "Cost per question, at list prices"
+
+# How a question can end, as the tables and the charts name each outcome.
+[outcomes]
+right = "right"                           # answered, with every expected fact
+missed = "missed"                         # answered, without every expected fact
+refused_wrongly = "refused_wrongly"       # refused, though the sources answer it
+refused_rightly = "refused_rightly"       # refused, and the sources do not answer it
+should_have_refused = "should_have_refused"  # answered, though the sources do not answer it
+failed = "failed"                         # the run could not finish it
+
+# The words people read, shared by the dashboard, the figures and the CSV files.
+[labels.kinds]                            # each kind of question, by its tag, in chart order
+direct = "Direct"
+paraphrased = "Everyday words"
+unanswerable = "Unanswerable"
+adversarial = "Adversarial"
+
+[labels.outcomes]                         # how a question can end, in the order the chart stacks them
+right = "Right"
+missed = "Missed a fact"
+refused_wrongly = "Refused wrongly"
+refused_rightly = "Refused rightly"
+should_have_refused = "Should have refused"
+failed = "Failed"

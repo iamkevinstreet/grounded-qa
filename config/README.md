@@ -4,7 +4,7 @@ Everything the project configures lives here, in one folder:
 
 | File | What it holds | In git |
 | --- | --- | --- |
-| [`config.toml`](config.toml) | Every setting the service and the web app read, at its default, and every value two of their files share | yes |
+| [`config.toml`](config.toml) | Every setting the service, the dashboard and the web app read, at its default, and every value two of their files share | yes |
 | [`.env.example`](.env.example) | The name of every secret, with an empty value | yes |
 | `.env` | The secrets themselves: copy `.env.example` and fill it in | never |
 
@@ -54,6 +54,8 @@ app as well as restarting the service.
 | `[data] cases` | `data/evals/cases.jsonl` | The evaluation questions |
 | `[data] results` | `data/evals/results` | Where evaluation results are written |
 | `[data] audit` | `data/generated/audit.sqlite` | The append-only audit log |
+| `[data] export` | `data/export` | Where the CSV files for Tableau go |
+| `[data] figures` | `figures.json` | The name of the case study's figures file, written beside the results |
 | `[retrieval] mode` | `keyword` | `keyword` (BM25), `semantic` or `hybrid`; the last two need the `local` extra |
 | `[retrieval] k` | `6` | Passages shown to the model per question (1 to 20) |
 | `[retrieval] pool` | `50` | Candidates each ranker passes to fusion |
@@ -78,6 +80,18 @@ app as well as restarting the service.
 | `[text] encoding` | `utf-8` | How text becomes bytes: source files, hashes, sizes, tokens and result files |
 | `[time] ms_per_second` | `1000` | Milliseconds in a second: request timings in the logs, trace lines in the web app |
 | `[web] hash_chars` | `12` | How many characters of a SHA-256 the web app shows |
+| `[dashboard] host`, `[dashboard] port` | `127.0.0.1`, `8050` | Where the evaluation dashboard listens; this machine only, since it has no sign-in |
+| `[dashboard_ids] url` ... `wrong_table` | `url`, `scheme`, `runs`, `legend`, `tiles`, `outcomes`, `retrieval`, `latency`, `cost`, `wrong-table` | The ids of the dashboard's parts, which its layout and its callbacks share |
+| `[columns] run_id` ... `cost_per_case` | `run_id`, `run`, `model`, `mode`, `started_at`, `kind`, `prices_as_of`, `case_id`, `case_kind`, `outcome`, `latency_ms`, `cost_per_case_usd` | The column names of the tables the dashboard draws and the Tableau CSV files hold |
+| `[charts] light_scheme`, `dark_scheme` | `light`, `dark` | The two colour schemes; the exported figures use the light one |
+| `[charts] max_runs` | `3` | The most runs a chart compares, one per step of the run ramp |
+| `[charts] font_size`, `tick_size`, `edge` | `12`, `11`, `8` | Chart text size, tick size and edge margin, in pixels |
+| `[charts] clear`, `align` | `rgba(0,0,0,0)`, `left` | The colour that lets the card show through; the edge titles and notes line up on |
+| `[charts] cost_places`, `percent_ticks` | `4`, `.0%` | The decimals a cost is written with; the tick format of a share axis |
+| `[charts] outcomes_title` ... `cost_title` | see the file | The title of each of the four charts, in the dashboard and in `figures.json` |
+| `[outcomes] right` ... `failed` | `right`, `missed`, `refused_wrongly`, `refused_rightly`, `should_have_refused`, `failed` | How a question can end, as the tables and the charts name each outcome |
+| `[labels.kinds]` | `direct` = `Direct`, `paraphrased` = `Everyday words`, `unanswerable` = `Unanswerable`, `adversarial` = `Adversarial` | The name of each kind of question, by its tag, in the order the charts list them |
+| `[labels.outcomes]` | `right` = `Right`, `missed` = `Missed a fact`, `refused_wrongly` = `Refused wrongly`, `refused_rightly` = `Refused rightly`, `should_have_refused` = `Should have refused`, `failed` = `Failed` | How a question can end, in the order the outcomes chart stacks them |
 
 ## Secrets (`config/.env` only)
 

@@ -9,15 +9,17 @@ Created on:        2026-10-29
 Last modified on:  2026-11-03
 
 Loads the service's settings, the one place they are read: the shared
-kds settings plus the service's own data, retrieval, answer, evaluation
-and API settings, and the values two of its files share. SETTINGS holds
-them, built once, for the values modules bind when they load; code that
-tests run with other settings takes those settings as a parameter.
+kds settings plus the service's own data, retrieval, answer, evaluation,
+API and dashboard settings, and the values two of its files share.
+SETTINGS holds them, built once, for the values modules bind when they
+load; code that tests run with other settings takes those settings as a
+parameter.
 
 Each field is a `[section] key` in config/config.toml, joined by an
 underscore: `[retrieval] mode` is `retrieval_mode`, which the
-environment variable RETRIEVAL_MODE overrides. The approver token, the
-only secret this service adds, lives in config/.env as APPROVER_TOKEN.
+environment variable RETRIEVAL_MODE overrides. A nested table is one
+field: `[labels.kinds]` is `labels_kinds`. The approver token, the only
+secret this service adds, lives in config/.env as APPROVER_TOKEN.
 """
 
 ########################################################################
@@ -65,6 +67,32 @@ MIN_SOURCE_BYTES = 1000
 KEYWORD_MODE: Final = "keyword"
 # log.debug("Sets the milliseconds in a second")
 MS_PER_SECOND = 1000
+# log.debug("Sets the address that means this machine only")
+LOCALHOST: Final = "127.0.0.1"
+# log.debug("Sets the highest port number")
+MAX_PORT = 65535
+# log.debug("Sets the most runs a chart compares: one per step of the run ramp")
+MAX_RUNS = 3
+# log.debug("Sets the size of chart text, in pixels")
+FONT_SIZE = 12
+# log.debug("Sets the decimals a cost is written with")
+COST_PLACES = 4
+# log.debug("Names each kind of question, by its tag, in the order the charts list them")
+KIND_NAMES: Final = {
+    "direct": "Direct",
+    "paraphrased": "Everyday words",
+    "unanswerable": "Unanswerable",
+    "adversarial": "Adversarial",
+}
+# log.debug("Names how a question can end, in the order the outcome chart stacks them")
+OUTCOME_NAMES: Final = {
+    "right": "Right",
+    "missed": "Missed a fact",
+    "refused_wrongly": "Refused wrongly",
+    "refused_rightly": "Refused rightly",
+    "should_have_refused": "Should have refused",
+    "failed": "Failed",
+}
 
 
 ########################################################################
@@ -86,6 +114,10 @@ class AppSettings(Settings):
     data_results: Path = Path("data/evals/results")
     # log.debug("Holds the append-only log of source changes")
     data_audit: Path = Path("data/generated/audit.sqlite")
+    # log.debug("Holds where the CSV files for Tableau go")
+    data_export: Path = Path("data/export")
+    # log.debug("Holds the name of the figures file in the results folder")
+    data_figures: str = "figures.json"
 
     # log.debug("Holds how passages are found")
     retrieval_mode: Mode = KEYWORD_MODE
@@ -122,9 +154,9 @@ class AppSettings(Settings):
     llm_offline_provider: str = "fake"
 
     # log.debug("Holds the address the server listens on; local only by default")
-    api_host: str = "127.0.0.1"
+    api_host: str = LOCALHOST
     # log.debug("Holds the port the server listens on")
-    api_port: int = Field(default=8000, ge=1, le=65535)
+    api_port: int = Field(default=8000, ge=1, le=MAX_PORT)
     # log.debug("Holds the shortest question accepted")
     api_min_question_chars: int = Field(default=3, ge=1)
     # log.debug("Holds the longest question accepted")
@@ -146,6 +178,104 @@ class AppSettings(Settings):
     time_ms_per_second: int = MS_PER_SECOND
     # log.debug("Holds how many characters of a SHA-256 the web app shows")
     web_hash_chars: int = Field(default=12, ge=1, le=64)
+
+    # log.debug("Holds the address the dashboard listens on; local only by default")
+    dashboard_host: str = LOCALHOST
+    # log.debug("Holds the dashboard port")
+    dashboard_port: int = Field(default=8050, ge=1, le=MAX_PORT)
+
+    # log.debug("Holds the id of the location, whose first change reads the scheme")
+    dashboard_ids_url: str = "url"
+    # log.debug("Holds the id of the store that holds the browser's colour scheme")
+    dashboard_ids_scheme: str = "scheme"
+    # log.debug("Holds the id of the run picker")
+    dashboard_ids_runs: str = "runs"
+    # log.debug("Holds the id of the runs' key")
+    dashboard_ids_legend: str = "legend"
+    # log.debug("Holds the id of the headline numbers")
+    dashboard_ids_tiles: str = "tiles"
+    # log.debug("Holds the id of the outcomes chart")
+    dashboard_ids_outcomes: str = "outcomes"
+    # log.debug("Holds the id of the retrieval chart")
+    dashboard_ids_retrieval: str = "retrieval"
+    # log.debug("Holds the id of the time chart")
+    dashboard_ids_latency: str = "latency"
+    # log.debug("Holds the id of the cost chart")
+    dashboard_ids_cost: str = "cost"
+    # log.debug("Holds the id of the table of questions that went wrong")
+    dashboard_ids_wrong_table: str = "wrong-table"
+
+    # log.debug("Holds the run id column")
+    columns_run_id: str = "run_id"
+    # log.debug("Holds the column of each run's long label")
+    columns_run: str = "run"
+    # log.debug("Holds the model column")
+    columns_model: str = "model"
+    # log.debug("Holds the retrieval mode column")
+    columns_mode: str = "mode"
+    # log.debug("Holds the start time column")
+    columns_started_at: str = "started_at"
+    # log.debug("Holds the column that says whether a run is live or offline")
+    columns_kind: str = "kind"
+    # log.debug("Holds the column of the date of the list prices a run's costs use")
+    columns_prices_as_of: str = "prices_as_of"
+    # log.debug("Holds the question id column")
+    columns_case_id: str = "case_id"
+    # log.debug("Holds the kind of question column")
+    columns_case_kind: str = "case_kind"
+    # log.debug("Holds the column that says how a question ended")
+    columns_outcome: str = "outcome"
+    # log.debug("Holds the column of each question's time, in milliseconds")
+    columns_latency_ms: str = "latency_ms"
+    # log.debug("Holds the runs table's cost per question column")
+    columns_cost_per_case: str = "cost_per_case_usd"
+
+    # log.debug("Holds the name of the light scheme, which the exported figures use")
+    charts_light_scheme: str = "light"
+    # log.debug("Holds the name of the dark scheme")
+    charts_dark_scheme: str = "dark"
+    # log.debug("Holds the most runs a chart compares")
+    charts_max_runs: int = Field(default=MAX_RUNS, ge=1)
+    # log.debug("Holds the size of chart text")
+    charts_font_size: int = FONT_SIZE
+    # log.debug("Holds the size of value-axis ticks and small notes")
+    charts_tick_size: int = 11
+    # log.debug("Holds the margin every chart keeps at its edges")
+    charts_edge: int = 8
+    # log.debug("Holds the colour that lets the card show through")
+    charts_clear: str = "rgba(0,0,0,0)"
+    # log.debug("Holds the edge titles and notes line up on")
+    charts_align: str = "left"
+    # log.debug("Holds the decimals a cost is written with")
+    charts_cost_places: int = COST_PLACES
+    # log.debug("Holds the tick format of a share axis")
+    charts_percent_ticks: str = ".0%"
+    # log.debug("Holds the title of the outcomes chart")
+    charts_outcomes_title: str = "How each kind of question ended"
+    # log.debug("Holds the title of the retrieval chart")
+    charts_retrieval_title: str = "Retrieval: recall at k and MRR"
+    # log.debug("Holds the title of the time chart")
+    charts_latency_title: str = "Seconds per question"
+    # log.debug("Holds the title of the cost chart")
+    charts_cost_title: str = "Cost per question, at list prices"
+
+    # log.debug("Holds the outcome of a question answered with every expected fact")
+    outcomes_right: str = "right"
+    # log.debug("Holds the outcome of a question answered without every expected fact")
+    outcomes_missed: str = "missed"
+    # log.debug("Holds the outcome of an answerable question the service refused")
+    outcomes_refused_wrongly: str = "refused_wrongly"
+    # log.debug("Holds the outcome of an unanswerable question the service refused")
+    outcomes_refused_rightly: str = "refused_rightly"
+    # log.debug("Holds the outcome of an unanswerable question the service answered")
+    outcomes_should_have_refused: str = "should_have_refused"
+    # log.debug("Holds the outcome of a question the run could not finish")
+    outcomes_failed: str = "failed"
+
+    # log.debug("Holds the name of each kind of question, by its tag, in chart order")
+    labels_kinds: dict[str, str] = Field(default=KIND_NAMES)
+    # log.debug("Holds the name of each way a question can end, in stack order")
+    labels_outcomes: dict[str, str] = Field(default=OUTCOME_NAMES)
 
     # log.debug("Holds the approver's bearer token, a secret; unset turns admin off")
     approver_token: SecretStr | None = None
