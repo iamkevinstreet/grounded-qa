@@ -1,16 +1,20 @@
 # backend
 
-The service and the evaluation, in Python 3.12: the `grounded_qa` package in `src/`, its tests,
-and its locked dependencies. Run everything from the repository root (`make` targets do), where
-`config/config.toml`, `config/.env` and `data/` are found.
+The service, the evaluation and the evaluation dashboard, in Python 3.12: the `grounded_qa`
+package in `src/`, its tests, and its locked dependencies. Run everything from the repository root
+(`make` targets do), where `config/config.toml`, `config/.env` and `data/` are found.
 
 ## Run it
 
 ```sh
-uv sync --project backend --locked             # the locked environment, hashes checked
+uv sync --project backend --locked --all-extras      # the locked environment, hashes checked
 uv run --project backend python -m grounded_qa.api   # the API on http://127.0.0.1:8000
-uv sync --project backend --locked --extra local     # adds the local embedding model
+uv run --project backend python -m grounded_qa.dashboard   # the dashboard on http://127.0.0.1:8050
 ```
+
+The `local` extra adds the local embedding model for semantic and hybrid retrieval; the `dashboard`
+extra adds Dash, Plotly and pandas for the dashboard, the figures and the Tableau files.
+`uv sync --project backend --locked` alone installs neither.
 
 With the default `[llm] provider = "fake"`, the offline stand-in answers: no key, no network. Set a
 provider and its key (see [config/README.md](../config/README.md)) for real answers.
@@ -22,12 +26,28 @@ provider and its key (see [config/README.md](../config/README.md)) for real answ
 | `src/grounded_qa/config.py` | The one place settings are read: `AppSettings`, and `SETTINGS`, loaded once, for the values modules take from the config |
 | `src/grounded_qa/core/` | The logic, free of HTTP: sources, the guard, passages, retrieval, the prompt, the quote check, the answerer, the library and the audit log |
 | `src/grounded_qa/api/` | The FastAPI app: routes, the approver check, rate and size limits, headers, request ids |
-| `src/grounded_qa/evals/` | The scorers and `python -m grounded_qa.evals.run answers\|retrieval` |
-| `tests/` | 109 tests, offline; `support.py` holds shared helpers, `conftest.py` the fixtures |
+| `src/grounded_qa/evals/` | The scorers and `python -m grounded_qa.evals.run answers\|retrieval`; `shares.py`, how a number and a share are written, by the same rules as the case study; `export.py` and `index.py`, the Tableau CSV files and the index the case study reads |
+| `src/grounded_qa/dashboard/` | The Dash dashboard and the Plotly figures the case study draws: `data.py` and `rows.py` read the run files into the tables the dashboard and the export share; `views.py` picks what the page shows; `theme.py`, `outcome_charts.py`, `retrieval_charts.py`, `run_charts.py` and `tiles.py` draw it; `layout.py`, `page.py` and `app.py` lay out and serve the page; `export.py` writes the figures |
+| `tests/` | 125 tests, offline; `support.py` holds shared helpers, `conftest.py` the fixtures |
 
 The core depends on interfaces, not libraries: the answerer takes anything that can `search`, and
 the retriever takes any `Embedder`, so tests pass small stand-ins and the real choice is made once,
 from settings.
+
+## Commands
+
+| Command | What it does |
+| --- | --- |
+| `python -m grounded_qa.api` | Serves the API |
+| `python -m grounded_qa.evals.run answers --mode <mode> --name <name>` | Answers and scores every case; offline with the fake provider, live otherwise |
+| `python -m grounded_qa.evals.run retrieval --modes <modes>` | Scores retrieval alone, with no model |
+| `python -m grounded_qa.dashboard` | Serves the dashboard; `--export-figures` writes the case study's figures instead |
+| `python -m grounded_qa.evals.export` | Writes the three Tableau CSV files |
+| `python -m grounded_qa.evals.index` | Writes the index of committed live results |
+
+Run them as `uv run --project backend --no-sync python -m ...`, or through the Makefile:
+`make dashboard` serves the dashboard and `make publish` writes the figures, the CSV files and the
+index after a live run.
 
 ## The API
 
@@ -68,5 +88,7 @@ Approver routes take `Authorization: Bearer <APPROVER_TOKEN>`. Every response ca
 make check-backend   # ruff, format, mypy, kds-standards
 make test-backend    # pytest -W error
 make eval            # the offline evaluation
+make dashboard       # the evaluation dashboard on http://127.0.0.1:8050
+make publish         # the figures, the Tableau CSV files and the index, after a live run
 make audit-backend   # pip-audit over the locked dependencies
 ```

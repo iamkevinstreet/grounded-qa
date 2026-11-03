@@ -14,7 +14,7 @@ Case study: <https://kevindstreet.com/projects/grounded-employment-law-qa/>
 
 | | |
 | --- | --- |
-| Works today | The service, the web app, approver-only source changes with an audit log, and the evaluation, offline and in CI |
+| Works today | The service, the web app, approver-only source changes with an audit log, the evaluation (offline and in CI, live by hand), the evaluation dashboard, and the figures and Tableau files the case study reads |
 | Measured | Live answers with `claude-sonnet-5-5` and retrieval in all three modes, on GitHub's runner on Oct 29, 2026, beside the offline baseline (below) |
 | Next | Questions asked in everyday words and false premises, where the live misses cluster; a demo of saved live answers on the case study |
 
@@ -34,7 +34,9 @@ make run    # the web app on http://localhost:5173, the API on http://127.0.0.1:
 
 For real answers, set `[llm] provider = "anthropic"` in `config/config.toml` and
 `ANTHROPIC_API_KEY` in `config/.env` (copy `config/.env.example`). To manage sources, set
-`APPROVER_TOKEN` there too.
+`APPROVER_TOKEN` there too. `make dashboard` serves the evaluation dashboard on
+http://127.0.0.1:8050 over the saved runs: compare up to three, see how each kind of question
+ended, and read every question a run got wrong.
 
 ## Architecture at a glance
 
@@ -72,7 +74,7 @@ For real answers, set `[llm] provider = "anthropic"` in `config/config.toml` and
   model gives semantic and hybrid modes instead.
 - **Chosen solution:** retrieve, fence, draft as JSON, check every quote, and return only what held,
   over sources that carry their own SHA-256 and change only through audited approver routes.
-- **Test plan:** 109 backend and 14 frontend tests, a test proving every expected answer's evidence
+- **Test plan:** 125 backend and 14 frontend tests, a test proving every expected answer's evidence
   is in its source, and a 56-case evaluation, offline in CI and live by hand. Targets set before the
   first live run: at least 85% correct on answerable cases, at least 90% of unanswerable cases
   refused, citation precision of at least 90%, and no planted canary in any answer.
@@ -135,6 +137,12 @@ called), from [offline-keyword-latest.md](data/evals/results/offline-keyword-lat
 correct, 100% answered, 55.6% citation precision, 27.3% of the 11 refused, no canary, $0. It
 answers everything and refuses too rarely, which is what the model had to beat.
 
+The same numbers, drawn: `make dashboard` serves them over every saved run, and `make publish`
+writes [`figures.json`](data/evals/results/figures.json) (the four charts the case study draws),
+[`index.json`](data/evals/results/index.json) and the Tableau files in
+[`data/export/`](data/README.md) from the same tables, so every view agrees. The live workflow
+does the same after each run.
+
 ## Configuration
 
 Everything the project configures lives in `config/`: `config.toml` holds every setting and
@@ -174,7 +182,7 @@ Any setting can be overridden by an environment variable named for its section a
 
 ```sh
 make check   # ruff, mypy (strict), kds-standards, ESLint, Stylelint, Prettier, tsc
-make test    # 109 backend and 14 frontend tests
+make test    # 125 backend and 14 frontend tests
 make eval    # the offline evaluation
 ```
 
@@ -195,14 +203,16 @@ is recorded in an append-only log. Report a vulnerability privately as described
 
 ```text
 grounded-qa/
-├── backend/              the service and the evaluation (Python 3.12, uv)
-│   ├── src/grounded_qa/  config.py, core/ (the logic), api/ (FastAPI), evals/ (scorers, runner)
-│   └── tests/            109 tests, offline
+├── backend/              the service, the evaluation and the dashboard (Python 3.12, uv)
+│   ├── src/grounded_qa/  config.py, core/ (the logic), api/ (FastAPI), evals/ (scorers, runner,
+│   │                     exports), dashboard/ (the Dash app, the case study's figures)
+│   └── tests/            125 tests, offline
 ├── frontend/             the web app (React, TypeScript, Vite)
 │   ├── src/              pages/, components/, lib/, styles/, the API client, config.ts
 │   └── tests/            14 tests
 ├── config/               config.toml (every setting and shared value), .env.example, README.md
-├── data/                 sources/ (22 fact sheets), samples/ (2 synthetic), evals/ (cases, results)
+├── data/                 sources/ (22 fact sheets), samples/ (2 synthetic), evals/ (cases,
+│                         results, figures, index), export/ (the Tableau files)
 ├── docs/                 diagrams.toml and the two SVGs it draws
 └── .github/              CI, CodeQL, the live evaluation, Dependabot
 ```

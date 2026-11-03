@@ -2,6 +2,25 @@
 
 ## Unreleased
 
+- **The evaluation dashboard:** `make dashboard` serves a Dash app on `127.0.0.1:8050` over the
+  saved answer runs, the offline baseline among them. Pick up to three runs; the first is in focus.
+  The headline tiles show its measures and how each moved against the second run; four charts show
+  how each kind of question ended (stacked by outcome, a panel per run), recall at k and MRR (a bar
+  per run), seconds per question (a dot per question over its run's box) and cost per question at
+  list prices; the runs table and the table of every question that went wrong follow. The design
+  is kevindstreet.com's, in light and dark.
+- **The case study's figures:** `python -m grounded_qa.dashboard --export-figures` writes
+  `data/evals/results/figures.json`, the four charts of the latest live runs as Plotly JSON, each
+  trace naming its part so the site can restyle it; `python -m grounded_qa.evals.index` writes
+  `index.json`, the live run files newest first and the figures, so the site fetches by name.
+- **The Tableau files:** `python -m grounded_qa.evals.export` writes `data/export/runs.csv`,
+  `questions.csv` and `citations.csv` from the same tables the dashboard draws, each citation
+  marked against the cases' evidence by the scorer's own check. `data/README.md` says what each
+  column holds and which sheets to build.
+- **`make publish`** runs all three; the live workflow runs it after the answer runs and commits
+  what it writes with the results. `make install` and CI sync every extra, so the dashboard's
+  tests run. The new settings (the export and figures paths, the dashboard's address and ids,
+  the column names, the charts' settings, the outcomes and the labels) are in `config/config.toml`.
 - **The box:** every file's header box and every section banner is five lines now: a border, a
   blank walled line, the title, another blank walled line and a border. The shared packages are
   pinned to utils v0.5.0, commit `fcac0477e1caadccf1e2d7580ce648258c5a79fa`, whose checker asks for
