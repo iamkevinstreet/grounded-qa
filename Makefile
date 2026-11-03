@@ -7,9 +7,10 @@
 # Created on:        2026-10-14
 # Last modified on:  2026-11-03
 #
-# One command for each routine task: install, run, check, test, eval,
-# audit, diagrams, build. CI runs the same targets. Run them from the
-# repository root, where config/config.toml and data/ are found.
+# One command for each routine task: install, run, dashboard, check,
+# test, eval, publish, audit, diagrams, build. CI runs the same targets.
+# Run them from the repository root, where config/config.toml and data/
+# are found.
 
 ########################################################################
 #                                                                      #
@@ -27,11 +28,11 @@ AUDIT_FILE := data/generated/requirements-audit.txt
 #                            Routine tasks                             #
 #                                                                      #
 ########################################################################
-.PHONY: install run api web check check-backend check-frontend test test-backend test-frontend \
-	eval eval-retrieval audit audit-backend audit-frontend diagrams build
+.PHONY: install run api web dashboard check check-backend check-frontend test test-backend \
+	test-frontend eval eval-retrieval publish audit audit-backend audit-frontend diagrams build
 
-install:  ## The backend from uv.lock and the frontend from package-lock.json
-	uv sync --project backend --locked
+install:  ## The backend from uv.lock (with the dashboard) and the frontend from package-lock.json
+	uv sync --project backend --locked --all-extras
 	$(NPM) ci
 
 run:  ## The API on :8000 and the web app on :5173 together; Ctrl-C stops both
@@ -42,6 +43,9 @@ api:  ## The API alone
 
 web:  ## The web app alone; it proxies /api to :8000
 	$(NPM) run dev
+
+dashboard:  ## The evaluation dashboard on :8050
+	$(UV) python -m grounded_qa.dashboard
 
 check: check-backend check-frontend  ## Every linter, formatter, type check and the code standard
 
@@ -70,6 +74,11 @@ eval:  ## The offline evaluation: the stand-in answers every case; no key, no ne
 
 eval-retrieval:  ## Retrieval in all three modes; needs the local extra
 	$(UV) python -m grounded_qa.evals.run retrieval --modes keyword semantic hybrid
+
+publish:  ## After a live run: the figures, the Tableau CSV files and the index the case study reads
+	$(UV) python -m grounded_qa.dashboard --export-figures
+	$(UV) python -m grounded_qa.evals.export
+	$(UV) python -m grounded_qa.evals.index
 
 audit: audit-backend audit-frontend  ## Known vulnerabilities in every locked dependency
 

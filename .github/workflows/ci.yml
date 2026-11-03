@@ -54,8 +54,8 @@ jobs:
         with:
           version: "0.13.6"
 
-      - name: Install the locked backend with the local extra (hashes checked)
-        run: uv sync --project backend --locked --extra local  # so mypy sees fastembed's types
+      - name: Install the locked backend with every extra (hashes checked)
+        run: uv sync --project backend --locked --all-extras  # so mypy sees fastembed's types
 
       - name: Lint, format, strict types and the code standard
         run: make check-backend
