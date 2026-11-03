@@ -1,10 +1,12 @@
 ########################################################################
+#                                                                      #
 #               backend/src/grounded_qa/core/sources.py                #
+#                                                                      #
 ########################################################################
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-10-29
+Last modified on:  2026-11-03
 
 Reads and writes the approved source documents: Markdown under front
 matter that carries each one's provenance, checked against the SHA-256
@@ -17,7 +19,9 @@ source can never go unnoticed.
 """
 
 ########################################################################
+#                                                                      #
 #                               Imports                                #
+#                                                                      #
 ########################################################################
 # Standard library
 from __future__ import annotations
@@ -37,14 +41,18 @@ from grounded_qa.config import SETTINGS
 from grounded_qa.core import guard
 
 ########################################################################
+#                                                                      #
 #                           Global constants                           #
+#                                                                      #
 ########################################################################
 log = get_logger(__name__)
 # log.debug("Takes the encoding that turns text into bytes, from the config")
 ENCODING: Final = SETTINGS.text_encoding
 
 ########################################################################
+#                                                                      #
 #                           Local constants                            #
+#                                                                      #
 ########################################################################
 # log.debug("Matches a safe source id: lowercase letters, digits, dashes")
 ID_RE = re.compile(r"^[a-z0-9](?:[a-z0-9-]{0,62}[a-z0-9])?$")
@@ -65,7 +73,9 @@ README = "README.md"
 
 
 ########################################################################
+#                                                                      #
 #                           Source documents                           #
+#                                                                      #
 ########################################################################
 # log.debug("Defines the error for a document that cannot be accepted")
 class SourceError(ValueError):

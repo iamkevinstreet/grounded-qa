@@ -1,12 +1,14 @@
 /*
 ########################################################################
+#                                                                      #
 #                     frontend/src/styles/ask.css                      #
+#                                                                      #
 ########################################################################
 */
 /*
  * Author:            Kevin Street
  * Created on:        2026-10-29
- * Last modified on:  2026-10-29
+ * Last modified on:  2026-11-03
  *
  * The ask page: the question, the answer with its markers, the
  * citations, and the source sheet whose highlighter sweep is the page's
@@ -15,7 +17,9 @@
 
 /*
 ########################################################################
+#                                                                      #
 #                               Ask page                               #
+#                                                                      #
 ########################################################################
 */
 .gq-intro {

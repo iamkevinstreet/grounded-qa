@@ -1,17 +1,21 @@
 // ########################################################################
+// #                                                                      #
 // #               frontend/src/components/CitationList.tsx               #
+// #                                                                      #
 // ########################################################################
 /**
  * Author:            Kevin Street
  * Created on:        2026-10-29
- * Last modified on:  2026-10-29
+ * Last modified on:  2026-11-03
  *
  * The numbered list of checked citations; choosing one shows its
  * passage.
  */
 
 // ########################################################################
+// #                                                                      #
 // #                               Imports                                #
+// #                                                                      #
 // ########################################################################
 // Local
 import { sectionLabel } from '../labels';
@@ -19,7 +23,9 @@ import { required } from '../lib/required';
 import type { Citation } from '../types';
 
 // ########################################################################
+// #                                                                      #
 // #                            Citation list                             #
+// #                                                                      #
 // ########################################################################
 interface Props {
   citations?: Citation[] | null;

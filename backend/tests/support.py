@@ -1,10 +1,12 @@
 ########################################################################
+#                                                                      #
 #                       backend/tests/support.py                       #
+#                                                                      #
 ########################################################################
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-10-29
+Last modified on:  2026-11-03
 
 The helpers and values tests share: where the repository's data is,
 an approver token, two small sources, and helpers that build and write
@@ -12,7 +14,9 @@ sources with true hashes. Fixtures live in conftest.py.
 """
 
 ########################################################################
+#                                                                      #
 #                               Imports                                #
+#                                                                      #
 ########################################################################
 # Standard library
 from __future__ import annotations
@@ -29,12 +33,16 @@ from grounded_qa.core import sources
 from grounded_qa.core.sources import Source
 
 ########################################################################
+#                                                                      #
 #                           Global constants                           #
+#                                                                      #
 ########################################################################
 log = get_logger(__name__)
 
 ########################################################################
+#                                                                      #
 #                           Local constants                            #
+#                                                                      #
 ########################################################################
 # log.debug("Points at the repository root, two folders above this one")
 REPO = Path(__file__).resolve().parents[2]
@@ -57,7 +65,9 @@ OVERTIME_BODY = (
 
 
 ########################################################################
+#                                                                      #
 #                             Test helpers                             #
+#                                                                      #
 ########################################################################
 # log.debug("Defines a helper that builds a source with a true hash")
 def make_source(source_id: str | None = None, body: str | None = None, **fields: Any) -> Source:

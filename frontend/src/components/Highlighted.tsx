@@ -1,17 +1,21 @@
 // ########################################################################
+// #                                                                      #
 // #               frontend/src/components/Highlighted.tsx                #
+// #                                                                      #
 // ########################################################################
 /**
  * Author:            Kevin Street
  * Created on:        2026-10-29
- * Last modified on:  2026-10-29
+ * Last modified on:  2026-11-03
  *
  * A passage with its checked quote marked, the way a highlighter would
  * mark it.
  */
 
 // ########################################################################
+// #                                                                      #
 // #                               Imports                                #
+// #                                                                      #
 // ########################################################################
 // Third-party
 import { Fragment } from 'react';
@@ -22,7 +26,9 @@ import { required } from '../lib/required';
 import type { Span } from '../types';
 
 // ########################################################################
+// #                                                                      #
 // #                         Highlighted passage                          #
+// #                                                                      #
 // ########################################################################
 interface Props {
   text?: string | null;

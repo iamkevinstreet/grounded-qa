@@ -1,22 +1,28 @@
 // ########################################################################
+// #                                                                      #
 // #             frontend/src/components/ExampleQuestions.tsx             #
+// #                                                                      #
 // ########################################################################
 /**
  * Author:            Kevin Street
  * Created on:        2026-10-29
- * Last modified on:  2026-10-29
+ * Last modified on:  2026-11-03
  *
  * The example questions under the question box; choosing one asks it.
  */
 
 // ########################################################################
+// #                                                                      #
 // #                               Imports                                #
+// #                                                                      #
 // ########################################################################
 // Local
 import { required } from '../lib/required';
 
 // ########################################################################
+// #                                                                      #
 // #                           Local constants                            #
+// #                                                                      #
 // ########################################################################
 // log.debug('Lists the example questions the ask page offers')
 const EXAMPLES: readonly string[] = [
@@ -27,7 +33,9 @@ const EXAMPLES: readonly string[] = [
 ];
 
 // ########################################################################
+// #                                                                      #
 // #                          Example questions                           #
+// #                                                                      #
 // ########################################################################
 interface Props {
   busy?: boolean;

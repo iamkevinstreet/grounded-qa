@@ -1,17 +1,21 @@
 ########################################################################
+#                                                                      #
 #                     backend/tests/test_verify.py                     #
+#                                                                      #
 ########################################################################
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-10-29
+Last modified on:  2026-11-03
 
 Tests the quote check and the removal of claims whose citations all
 failed.
 """
 
 ########################################################################
+#                                                                      #
 #                               Imports                                #
+#                                                                      #
 ########################################################################
 # Standard library
 from __future__ import annotations
@@ -24,12 +28,16 @@ from kds.logs import get_logger
 from grounded_qa.core.verify import find_quote, prune
 
 ########################################################################
+#                                                                      #
 #                           Global constants                           #
+#                                                                      #
 ########################################################################
 log = get_logger(__name__)
 
 ########################################################################
+#                                                                      #
 #                           Local constants                            #
+#                                                                      #
 ########################################################################
 # log.debug("Sets a passage written as a Markdown list with curly quotes")
 PASSAGE = (
@@ -41,7 +49,9 @@ PASSAGE = (
 
 
 ########################################################################
+#                                                                      #
 #                          Quote check tests                           #
+#                                                                      #
 ########################################################################
 # log.debug("Defines quotes that must pass")
 @pytest.mark.parametrize(

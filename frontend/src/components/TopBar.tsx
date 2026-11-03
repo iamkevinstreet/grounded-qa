@@ -1,23 +1,29 @@
 // ########################################################################
+// #                                                                      #
 // #                  frontend/src/components/TopBar.tsx                  #
+// #                                                                      #
 // ########################################################################
 /**
  * Author:            Kevin Street
  * Created on:        2026-10-29
- * Last modified on:  2026-10-29
+ * Last modified on:  2026-11-03
  *
  * The top bar every view shares: the app's name, which leads back to the
  * ask page, and a link to each view, the current one marked.
  */
 
 // ########################################################################
+// #                                                                      #
 // #                               Imports                                #
+// #                                                                      #
 // ########################################################################
 // Local
 import { required } from '../lib/required';
 
 // ########################################################################
+// #                                                                      #
 // #                               Top bar                                #
+// #                                                                      #
 // ########################################################################
 interface ViewLink {
   id: string;

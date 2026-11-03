@@ -1,10 +1,12 @@
 ########################################################################
+#                                                                      #
 #               backend/src/grounded_qa/core/offline.py                #
+#                                                                      #
 ########################################################################
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-10-29
+Last modified on:  2026-11-03
 
 The offline stand-in for a model, used when [llm] provider is "fake".
 It is not a model: it reads the fenced passages and the question from
@@ -16,7 +18,9 @@ gives the live model a simple baseline to beat.
 """
 
 ########################################################################
+#                                                                      #
 #                               Imports                                #
+#                                                                      #
 ########################################################################
 # Standard library
 from __future__ import annotations
@@ -37,14 +41,18 @@ from grounded_qa.core.models import Draft, DraftCitation
 from grounded_qa.core.text import terms, word_count
 
 ########################################################################
+#                                                                      #
 #                           Global constants                           #
+#                                                                      #
 ########################################################################
 log = get_logger(__name__)
 # log.debug("Takes the provider name that selects the stand-in, from the config")
 FAKE: Final = SETTINGS.llm_offline_provider
 
 ########################################################################
+#                                                                      #
 #                           Local constants                            #
+#                                                                      #
 ########################################################################
 # log.debug("Matches one fenced passage; captures its id and text")
 PASSAGE_RE = re.compile(r'<passage id="(?P<id>[^"]+)"[^>]*>\n(?P<text>.*?)\n</passage>', re.DOTALL)
@@ -61,7 +69,9 @@ STAND_IN = "fake-model"
 
 
 ########################################################################
+#                                                                      #
 #                           Offline stand-in                           #
+#                                                                      #
 ########################################################################
 # log.debug("Defines the stand-in's answer to one prompt")
 def respond(messages: list[Message] | None = None) -> dict[str, Any]:

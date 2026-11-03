@@ -1,17 +1,21 @@
 ########################################################################
+#                                                                      #
 #                      backend/tests/test_text.py                      #
+#                                                                      #
 ########################################################################
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-10-29
+Last modified on:  2026-11-03
 
 Tests normalising for quote checks, the plural stemmer, and search
 terms.
 """
 
 ########################################################################
+#                                                                      #
 #                               Imports                                #
+#                                                                      #
 ########################################################################
 # Standard library
 from __future__ import annotations
@@ -24,13 +28,17 @@ from kds.logs import get_logger
 from grounded_qa.core.text import normalize, plain_map, stem, terms, word_count
 
 ########################################################################
+#                                                                      #
 #                           Global constants                           #
+#                                                                      #
 ########################################################################
 log = get_logger(__name__)
 
 
 ########################################################################
+#                                                                      #
 #                          Text helper tests                           #
+#                                                                      #
 ########################################################################
 # log.debug("Defines the test that formatting does not change the plain form")
 def test_normalize_ignores_case_quotes_dashes_and_markup() -> None:

@@ -1,10 +1,12 @@
 ########################################################################
+#                                                                      #
 #                  backend/src/grounded_qa/config.py                   #
+#                                                                      #
 ########################################################################
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-10-29
+Last modified on:  2026-11-03
 
 Loads the service's settings, the one place they are read: the shared
 kds settings plus the service's own data, retrieval, answer, evaluation
@@ -19,7 +21,9 @@ only secret this service adds, lives in config/.env as APPROVER_TOKEN.
 """
 
 ########################################################################
+#                                                                      #
 #                               Imports                                #
+#                                                                      #
 ########################################################################
 # Standard library
 from __future__ import annotations
@@ -34,12 +38,16 @@ from kds.settings import Settings
 from pydantic import Field, SecretStr, field_validator
 
 ########################################################################
+#                                                                      #
 #                           Global constants                           #
+#                                                                      #
 ########################################################################
 log = get_logger(__name__)
 
 ########################################################################
+#                                                                      #
 #                           Local constants                            #
+#                                                                      #
 ########################################################################
 # log.debug("Lists how passages can be found: by words, by meaning, or both")
 Mode = Literal["keyword", "semantic", "hybrid"]
@@ -60,7 +68,9 @@ MS_PER_SECOND = 1000
 
 
 ########################################################################
+#                                                                      #
 #                           Service settings                           #
+#                                                                      #
 ########################################################################
 # log.debug("Defines the service's settings on top of the shared ones")
 class AppSettings(Settings):

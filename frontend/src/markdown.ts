@@ -1,23 +1,29 @@
 // ########################################################################
+// #                                                                      #
 // #                       frontend/src/markdown.ts                       #
+// #                                                                      #
 // ########################################################################
 /**
  * Author:            Kevin Street
  * Created on:        2026-10-29
- * Last modified on:  2026-10-29
+ * Last modified on:  2026-11-03
  *
  * Reads a source document's Markdown into the blocks the reader renders
  * as elements: headings, paragraphs, lists and tables.
  */
 
 // ########################################################################
+// #                                                                      #
 // #                               Imports                                #
+// #                                                                      #
 // ########################################################################
 // Local
 import { required } from './lib/required';
 
 // ########################################################################
+// #                                                                      #
 // #                           Local constants                            #
+// #                                                                      #
 // ########################################################################
 // log.debug('Matches a heading block; captures its marks and text')
 const HEADING = /^(#{1,6})\s+(.+)$/;
@@ -29,7 +35,9 @@ const INDENT = 2;
 const BAR = '|';
 
 // ########################################################################
+// #                                                                      #
 // #                           Markdown blocks                            #
+// #                                                                      #
 // ########################################################################
 export type Block =
   | { kind: 'heading'; level: number; text: string }

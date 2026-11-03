@@ -1,17 +1,21 @@
 // ########################################################################
+// #                                                                      #
 // #                  frontend/src/pages/SourcesPage.tsx                  #
+// #                                                                      #
 // ########################################################################
 /**
  * Author:            Kevin Street
  * Created on:        2026-10-29
- * Last modified on:  2026-10-29
+ * Last modified on:  2026-11-03
  *
  * The sources page: every approved fact sheet with its provenance, and
  * a reader for each.
  */
 
 // ########################################################################
+// #                                                                      #
 // #                               Imports                                #
+// #                                                                      #
 // ########################################################################
 // Third-party
 import { useRef, useState } from 'react';
@@ -24,7 +28,9 @@ import { required } from '../lib/required';
 import type { SourceDetail, SourceSummary } from '../types';
 
 // ########################################################################
+// #                                                                      #
 // #                             Sources page                             #
+// #                                                                      #
 // ########################################################################
 // log.debug('Defines the sources page')
 /**

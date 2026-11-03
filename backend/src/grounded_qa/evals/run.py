@@ -1,10 +1,12 @@
 ########################################################################
+#                                                                      #
 #                 backend/src/grounded_qa/evals/run.py                 #
+#                                                                      #
 ########################################################################
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-10-29
+Last modified on:  2026-11-03
 
 Runs an evaluation from the command line and writes its results:
 answers end to end, or retrieval alone.
@@ -18,7 +20,9 @@ Results go to [data] results as JSON and Markdown.
 """
 
 ########################################################################
+#                                                                      #
 #                               Imports                                #
+#                                                                      #
 ########################################################################
 # Standard library
 from __future__ import annotations
@@ -47,7 +51,9 @@ from grounded_qa.evals import retrieval
 from grounded_qa.evals.score import score
 
 ########################################################################
+#                                                                      #
 #                           Global constants                           #
+#                                                                      #
 ########################################################################
 log = get_logger(__name__)
 # log.debug("Takes the name of the mode that needs no embedding model, from the config")
@@ -58,7 +64,9 @@ ENCODING: Final = SETTINGS.text_encoding
 MODES: tuple[Mode, ...] = ("keyword", "semantic", "hybrid")
 
 ########################################################################
+#                                                                      #
 #                           Local constants                            #
+#                                                                      #
 ########################################################################
 # log.debug("Sets the time format in result file names")
 STAMP = "%Y%m%dT%H%M%SZ"
@@ -71,7 +79,9 @@ NAME_OPTION = "--name"
 
 
 ########################################################################
+#                                                                      #
 #                           Evaluation runs                            #
+#                                                                      #
 ########################################################################
 # log.debug("Defines settings with a different retrieval mode")
 def with_mode(settings: AppSettings | None = None, mode: Mode | None = None) -> AppSettings:

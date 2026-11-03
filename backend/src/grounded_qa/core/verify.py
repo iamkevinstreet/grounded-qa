@@ -1,10 +1,12 @@
 ########################################################################
+#                                                                      #
 #                backend/src/grounded_qa/core/verify.py                #
+#                                                                      #
 ########################################################################
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-10-29
+Last modified on:  2026-11-03
 
 Checks each quote is in the passage it cites, and removes the claims
 whose citations all failed: the model must show its evidence, word for
@@ -16,7 +18,9 @@ order.
 """
 
 ########################################################################
+#                                                                      #
 #                               Imports                                #
+#                                                                      #
 ########################################################################
 # Standard library
 from __future__ import annotations
@@ -31,12 +35,16 @@ from kds.logs import get_logger
 from grounded_qa.core.text import normalize, plain_map, word_count
 
 ########################################################################
+#                                                                      #
 #                           Global constants                           #
+#                                                                      #
 ########################################################################
 log = get_logger(__name__)
 
 ########################################################################
+#                                                                      #
 #                           Local constants                            #
+#                                                                      #
 ########################################################################
 # log.debug("Describes a range of a passage: start and end characters")
 Span = tuple[int, int]
@@ -53,7 +61,9 @@ CLAIM_RE = re.compile(r".*?\[\d+(?:\s*,\s*\d+)*\][.!?,;:]?", re.DOTALL)
 
 
 ########################################################################
+#                                                                      #
 #                             Quote check                              #
+#                                                                      #
 ########################################################################
 # log.debug("Defines the check of one quote against one passage")
 def find_quote(

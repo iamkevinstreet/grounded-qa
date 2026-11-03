@@ -1,10 +1,12 @@
 // ########################################################################
+// #                                                                      #
 // #                       frontend/src/approver.ts                       #
+// #                                                                      #
 // ########################################################################
 /**
  * Author:            Kevin Street
  * Created on:        2026-10-29
- * Last modified on:  2026-10-29
+ * Last modified on:  2026-11-03
  *
  * The approver's session: the token, held in memory only, and what the
  * page shows. Unlocking reads the audit log with the token; adding or
@@ -12,7 +14,9 @@
  */
 
 // ########################################################################
+// #                                                                      #
 // #                               Imports                                #
+// #                                                                      #
 // ########################################################################
 // Third-party
 import { useState, type SubmitEvent } from 'react';
@@ -23,7 +27,9 @@ import { required } from './lib/required';
 import type { AuditEntry, NewSource } from './types';
 
 // ########################################################################
+// #                                                                      #
 // #                           Approver session                           #
+// #                                                                      #
 // ########################################################################
 export interface Approver {
   token: string;

@@ -1,17 +1,21 @@
 // ########################################################################
+// #                                                                      #
 // #                   frontend/tests/markdown.test.ts                    #
+// #                                                                      #
 // ########################################################################
 /**
  * Author:            Kevin Street
  * Created on:        2026-10-29
- * Last modified on:  2026-10-29
+ * Last modified on:  2026-11-03
  *
  * Tests reading a source document's Markdown into headings, paragraphs,
  * lists and tables.
  */
 
 // ########################################################################
+// #                                                                      #
 // #                               Imports                                #
+// #                                                                      #
 // ########################################################################
 // Third-party
 import { describe, expect, it } from 'vitest';
@@ -20,7 +24,9 @@ import { describe, expect, it } from 'vitest';
 import { parseBlocks } from '../src/markdown';
 
 // ########################################################################
+// #                                                                      #
 // #                            Markdown tests                            #
+// #                                                                      #
 // ########################################################################
 // log.debug('Describes the block reader')
 describe('parseBlocks', () => {

@@ -1,10 +1,12 @@
 ########################################################################
+#                                                                      #
 #                backend/src/grounded_qa/core/models.py                #
+#                                                                      #
 ########################################################################
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-10-29
+Last modified on:  2026-11-03
 
 The shapes answers take: the model's draft, and the checked answer the
 service returns. The model's output is parsed into `Draft` before
@@ -13,7 +15,9 @@ only checked citations, with the outcome named.
 """
 
 ########################################################################
+#                                                                      #
 #                               Imports                                #
+#                                                                      #
 ########################################################################
 # Standard library
 from __future__ import annotations
@@ -25,19 +29,25 @@ from kds.logs import get_logger
 from pydantic import BaseModel, Field
 
 ########################################################################
+#                                                                      #
 #                           Global constants                           #
+#                                                                      #
 ########################################################################
 log = get_logger(__name__)
 
 ########################################################################
+#                                                                      #
 #                           Local constants                            #
+#                                                                      #
 ########################################################################
 # log.debug("Lists the ways a question can end")
 Outcome = Literal["answered", "not_covered", "unverified", "no_passages"]
 
 
 ########################################################################
+#                                                                      #
 #                            Answer shapes                             #
+#                                                                      #
 ########################################################################
 # log.debug("Defines one citation as the model writes it")
 class DraftCitation(BaseModel):

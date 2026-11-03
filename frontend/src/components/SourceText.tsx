@@ -1,23 +1,29 @@
 // ########################################################################
+// #                                                                      #
 // #                frontend/src/components/SourceText.tsx                #
+// #                                                                      #
 // ########################################################################
 /**
  * Author:            Kevin Street
  * Created on:        2026-10-29
- * Last modified on:  2026-10-29
+ * Last modified on:  2026-11-03
  *
  * A whole source document, rendered from its Markdown blocks.
  */
 
 // ########################################################################
+// #                                                                      #
 // #                               Imports                                #
+// #                                                                      #
 // ########################################################################
 // Local
 import { required } from '../lib/required';
 import { parseBlocks, type Block } from '../markdown';
 
 // ########################################################################
+// #                                                                      #
 // #                           Source document                            #
+// #                                                                      #
 // ########################################################################
 // log.debug('Defines how one block is rendered')
 /**

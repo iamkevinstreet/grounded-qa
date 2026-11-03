@@ -1,10 +1,12 @@
 // ########################################################################
+// #                                                                      #
 // #                frontend/src/components/AskResult.tsx                 #
+// #                                                                      #
 // ########################################################################
 /**
  * Author:            Kevin Street
  * Created on:        2026-10-29
- * Last modified on:  2026-10-29
+ * Last modified on:  2026-11-03
  *
  * What the ask page shows under the question: that it is searching, what
  * went wrong, an abstention, or the checked answer with its citations,
@@ -12,7 +14,9 @@
  */
 
 // ########################################################################
+// #                                                                      #
 // #                               Imports                                #
+// #                                                                      #
 // ########################################################################
 // Local
 import { required } from '../lib/required';
@@ -24,7 +28,9 @@ import { CitationList } from './CitationList';
 import { SourceSheet } from './SourceSheet';
 
 // ########################################################################
+// #                                                                      #
 // #                              Ask result                              #
+// #                                                                      #
 // ########################################################################
 export type AskState =
   | { kind: 'idle' }

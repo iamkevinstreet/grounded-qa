@@ -1,10 +1,12 @@
 ########################################################################
+#                                                                      #
 #                backend/src/grounded_qa/core/guard.py                 #
+#                                                                      #
 ########################################################################
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-10-29
+Last modified on:  2026-11-03
 
 Finds text in a document that reads like orders to an AI model, so it
 can be refused or held.
@@ -20,7 +22,9 @@ is no sign of anything. A test keeps every approved source unflagged.
 """
 
 ########################################################################
+#                                                                      #
 #                               Imports                                #
+#                                                                      #
 ########################################################################
 # Standard library
 from __future__ import annotations
@@ -32,12 +36,16 @@ from kds.args import required
 from kds.logs import get_logger
 
 ########################################################################
+#                                                                      #
 #                           Global constants                           #
+#                                                                      #
 ########################################################################
 log = get_logger(__name__)
 
 ########################################################################
+#                                                                      #
 #                           Local constants                            #
+#                                                                      #
 ########################################################################
 # log.debug("Lists patterns of text that gives orders to a model")
 PATTERNS = tuple(
@@ -60,7 +68,9 @@ SHOWN_CHARS = 160
 
 
 ########################################################################
+#                                                                      #
 #                             Ingest guard                             #
+#                                                                      #
 ########################################################################
 # log.debug("Defines the check that finds instruction-like lines")
 def flag(text: str | None = None) -> list[str]:

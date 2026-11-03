@@ -1,12 +1,14 @@
 /*
 ########################################################################
+#                                                                      #
 #                    frontend/src/styles/tokens.css                    #
+#                                                                      #
 ########################################################################
 */
 /*
  * Author:            Kevin Street
  * Created on:        2026-10-29
- * Last modified on:  2026-10-29
+ * Last modified on:  2026-11-03
  *
  * Design tokens: colour for light and dark, the type scale, spacing and
  * shapes. Government paper, navy ink, and one highlighter yellow kept
@@ -16,7 +18,9 @@
 
 /*
 ########################################################################
+#                                                                      #
 #                           Global constants                           #
+#                                                                      #
 ########################################################################
 */
 :root {

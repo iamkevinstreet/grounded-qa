@@ -1,10 +1,12 @@
 ########################################################################
+#                                                                      #
 #                backend/src/grounded_qa/core/answer.py                #
+#                                                                      #
 ########################################################################
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-10-29
+Last modified on:  2026-11-03
 
 Answers a question from the approved sources only and abstains when they
 do not cover it.
@@ -18,7 +20,9 @@ do not cover it.
 """
 
 ########################################################################
+#                                                                      #
 #                               Imports                                #
+#                                                                      #
 ########################################################################
 # Standard library
 from __future__ import annotations
@@ -39,12 +43,16 @@ from grounded_qa.core.retrieve import Hit
 from grounded_qa.core.verify import find_quote, prune
 
 ########################################################################
+#                                                                      #
 #                           Global constants                           #
+#                                                                      #
 ########################################################################
 log = get_logger(__name__)
 
 ########################################################################
+#                                                                      #
 #                           Local constants                            #
+#                                                                      #
 ########################################################################
 # log.debug("Sets the reply when nothing in the sources matched at all")
 NO_PASSAGES_TEXT = "Nothing in the approved sources matches this question."
@@ -58,7 +66,9 @@ UNVERIFIED: Outcome = "unverified"
 
 
 ########################################################################
+#                                                                      #
 #                           Grounded answers                           #
+#                                                                      #
 ########################################################################
 # log.debug("Defines what the answerer needs from retrieval")
 class Searcher(Protocol):

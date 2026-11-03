@@ -1,17 +1,21 @@
 ########################################################################
+#                                                                      #
 #                     backend/tests/test_audit.py                      #
+#                                                                      #
 ########################################################################
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-10-29
+Last modified on:  2026-11-03
 
 Tests the audit log records changes in order and refuses any edit or
 deletion of its rows.
 """
 
 ########################################################################
+#                                                                      #
 #                               Imports                                #
+#                                                                      #
 ########################################################################
 # Standard library
 from __future__ import annotations
@@ -29,19 +33,25 @@ from kds.logs import get_logger
 from grounded_qa.core.audit import AuditLog
 
 ########################################################################
+#                                                                      #
 #                           Global constants                           #
+#                                                                      #
 ########################################################################
 log = get_logger(__name__)
 
 ########################################################################
+#                                                                      #
 #                           Local constants                            #
+#                                                                      #
 ########################################################################
 # log.debug("Sets a fixed time, so entries are predictable")
 FIXED = datetime(2026, 10, 29, 12, 0, tzinfo=UTC)
 
 
 ########################################################################
+#                                                                      #
 #                           Audit log tests                            #
+#                                                                      #
 ########################################################################
 # log.debug("Defines the test that changes come back newest first")
 def test_entries_are_newest_first(tmp_path: Path) -> None:

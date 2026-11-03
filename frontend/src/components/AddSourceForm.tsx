@@ -1,17 +1,21 @@
 // ########################################################################
+// #                                                                      #
 // #              frontend/src/components/AddSourceForm.tsx               #
+// #                                                                      #
 // ########################################################################
 /**
  * Author:            Kevin Street
  * Created on:        2026-10-29
- * Last modified on:  2026-10-29
+ * Last modified on:  2026-11-03
  *
  * The approver's form for adding a source; the service checks and
  * stores it.
  */
 
 // ########################################################################
+// #                                                                      #
 // #                               Imports                                #
+// #                                                                      #
 // ########################################################################
 // Third-party
 import { useState, type SubmitEvent } from 'react';
@@ -22,7 +26,9 @@ import type { NewSource } from '../types';
 import { SourceFields } from './SourceFields';
 
 // ########################################################################
+// #                                                                      #
 // #                           Local constants                            #
+// #                                                                      #
 // ########################################################################
 // log.debug('Sets an empty form')
 const EMPTY: NewSource = {
@@ -36,7 +42,9 @@ const EMPTY: NewSource = {
 };
 
 // ########################################################################
+// #                                                                      #
 // #                           Add-source form                            #
+// #                                                                      #
 // ########################################################################
 interface Props {
   onAdd?: ((source: NewSource) => Promise<void>) | null;

@@ -1,10 +1,12 @@
 // ########################################################################
+// #                                                                      #
 // #                      frontend/src/citations.ts                       #
+// #                                                                      #
 // ########################################################################
 /**
  * Author:            Kevin Street
  * Created on:        2026-10-29
- * Last modified on:  2026-10-29
+ * Last modified on:  2026-11-03
  *
  * Splits an answer at its citation markers, so each marker can become a
  * button, and a passage around its checked quotes, so each quote can be
@@ -12,14 +14,18 @@
  */
 
 // ########################################################################
+// #                                                                      #
 // #                               Imports                                #
+// #                                                                      #
 // ########################################################################
 // Local
 import { required } from './lib/required';
 import type { Span } from './types';
 
 // ########################################################################
+// #                                                                      #
 // #                           Local constants                            #
+// #                                                                      #
 // ########################################################################
 // log.debug('Matches a citation marker such as [1] or [1, 2]')
 const MARKER = /\[(\d+(?:\s*,\s*\d+)*)\]/g;
@@ -31,7 +37,9 @@ const CLOSING = /^[.,;:!?)]+/;
 const LIST_MARK = /^(\s*)- /gm;
 
 // ########################################################################
+// #                                                                      #
 // #                        Markers and highlights                        #
+// #                                                                      #
 // ########################################################################
 export type AnswerPart =
   | { kind: 'text'; text: string }

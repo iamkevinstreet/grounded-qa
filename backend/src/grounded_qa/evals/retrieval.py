@@ -1,10 +1,12 @@
 ########################################################################
+#                                                                      #
 #              backend/src/grounded_qa/evals/retrieval.py              #
+#                                                                      #
 ########################################################################
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-10-29
+Last modified on:  2026-11-03
 
 Measures retrieval alone, with no model: recall at 1, 3, 6 and 10, and
 mean reciprocal rank. For each answerable case, search returns the top
@@ -16,7 +18,9 @@ questions on their own.
 """
 
 ########################################################################
+#                                                                      #
 #                               Imports                                #
+#                                                                      #
 ########################################################################
 # Standard library
 from __future__ import annotations
@@ -37,14 +41,18 @@ from grounded_qa.core.text import normalize
 from grounded_qa.evals.score import recall, reciprocal_rank
 
 ########################################################################
+#                                                                      #
 #                           Global constants                           #
+#                                                                      #
 ########################################################################
 log = get_logger(__name__)
 # log.debug("Takes the field that says whether a case is answerable, from the config")
 ANSWERABLE: Final = SETTINGS.eval_answerable_field
 
 ########################################################################
+#                                                                      #
 #                           Local constants                            #
+#                                                                      #
 ########################################################################
 # log.debug("Lists the cut-offs recall is reported at")
 CUTOFFS = (1, 3, 6, 10)
@@ -61,7 +69,9 @@ TAGS = "tags"
 
 
 ########################################################################
+#                                                                      #
 #                         Retrieval evaluation                         #
+#                                                                      #
 ########################################################################
 # log.debug("Defines the retrieval scores of every answerable case")
 def evaluate(

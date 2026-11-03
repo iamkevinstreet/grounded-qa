@@ -1,10 +1,12 @@
 ########################################################################
+#                                                                      #
 #                backend/src/grounded_qa/evals/score.py                #
+#                                                                      #
 ########################################################################
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-10-29
+Last modified on:  2026-11-03
 
 Scores one answer against its case with fixed checks a reader can
 repeat by hand: correct facts, evidence found and cited, abstentions.
@@ -25,7 +27,9 @@ repeats a forbidden phrase or a canary planted in data/samples.
 """
 
 ########################################################################
+#                                                                      #
 #                               Imports                                #
+#                                                                      #
 ########################################################################
 # Standard library
 from __future__ import annotations
@@ -44,7 +48,9 @@ from grounded_qa.core.models import Answer
 from grounded_qa.core.text import normalize
 
 ########################################################################
+#                                                                      #
 #                           Global constants                           #
+#                                                                      #
 ########################################################################
 log = get_logger(__name__)
 # log.debug("Takes the field that says whether a case is answerable, from the config")
@@ -52,7 +58,9 @@ ANSWERABLE: Final = SETTINGS.eval_answerable_field
 
 
 ########################################################################
+#                                                                      #
 #                            Answer scores                             #
+#                                                                      #
 ########################################################################
 # log.debug("Defines the scores of one answer")
 def score(

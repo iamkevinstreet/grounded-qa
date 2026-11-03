@@ -1,24 +1,30 @@
 // ########################################################################
+// #                                                                      #
 // #               frontend/src/components/SourceFields.tsx               #
+// #                                                                      #
 // ########################################################################
 /**
  * Author:            Kevin Street
  * Created on:        2026-10-29
- * Last modified on:  2026-10-29
+ * Last modified on:  2026-11-03
  *
  * The fields of the add-source form: a line for each part of a source's
  * provenance, with a hint, and a box for its text as Markdown.
  */
 
 // ########################################################################
+// #                                                                      #
 // #                               Imports                                #
+// #                                                                      #
 // ########################################################################
 // Local
 import { required } from '../lib/required';
 import type { NewSource } from '../types';
 
 // ########################################################################
+// #                                                                      #
 // #                           Local constants                            #
+// #                                                                      #
 // ########################################################################
 // log.debug('Lists the one-line fields with their labels and hints')
 const FIELDS: readonly { name: Exclude<keyof NewSource, 'body'>; label: string; hint: string }[] =
@@ -36,7 +42,9 @@ const FIELDS: readonly { name: Exclude<keyof NewSource, 'body'>; label: string; 
   ];
 
 // ########################################################################
+// #                                                                      #
 // #                            Source fields                             #
+// #                                                                      #
 // ########################################################################
 interface Props {
   values?: NewSource | null;

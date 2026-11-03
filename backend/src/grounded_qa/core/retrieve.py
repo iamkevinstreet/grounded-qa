@@ -1,10 +1,12 @@
 ########################################################################
+#                                                                      #
 #               backend/src/grounded_qa/core/retrieve.py               #
+#                                                                      #
 ########################################################################
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-10-29
+Last modified on:  2026-11-03
 
 Finds the passages most likely to answer a question: by words
 (keyword, BM25), by meaning (semantic, embeddings), or both fused
@@ -15,7 +17,9 @@ raw scores need to be put on a common scale.
 """
 
 ########################################################################
+#                                                                      #
 #                               Imports                                #
+#                                                                      #
 ########################################################################
 # Standard library
 from __future__ import annotations
@@ -35,21 +39,27 @@ from grounded_qa.core.embed import Embedder, cosine
 from grounded_qa.core.keyword import Bm25
 
 ########################################################################
+#                                                                      #
 #                           Global constants                           #
+#                                                                      #
 ########################################################################
 log = get_logger(__name__)
 # log.debug("Takes the name of the mode that ranks by shared words only, from the config")
 KEYWORD: Final = SETTINGS.retrieval_keyword_mode
 
 ########################################################################
+#                                                                      #
 #                           Local constants                            #
+#                                                                      #
 ########################################################################
 # log.debug("Names the mode that ranks by meaning only")
 SEMANTIC = "semantic"
 
 
 ########################################################################
+#                                                                      #
 #                              Retrieval                               #
+#                                                                      #
 ########################################################################
 # log.debug("Defines one retrieved passage and how it ranked")
 @dataclass(frozen=True)

@@ -1,10 +1,12 @@
 ########################################################################
+#                                                                      #
 #                backend/src/grounded_qa/core/prompt.py                #
+#                                                                      #
 ########################################################################
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-10-29
+Last modified on:  2026-11-03
 
 Writes what the model is sent: the fixed rules in the system message,
 then the fenced passages and the question in the user message.
@@ -15,7 +17,9 @@ a source cannot close its own fence.
 """
 
 ########################################################################
+#                                                                      #
 #                               Imports                                #
+#                                                                      #
 ########################################################################
 # Standard library
 from __future__ import annotations
@@ -30,12 +34,16 @@ from kds.logs import get_logger
 from grounded_qa.core.retrieve import Hit
 
 ########################################################################
+#                                                                      #
 #                           Global constants                           #
+#                                                                      #
 ########################################################################
 log = get_logger(__name__)
 
 ########################################################################
+#                                                                      #
 #                           Local constants                            #
+#                                                                      #
 ########################################################################
 # log.debug("Sets the prompt's version, recorded with every answer")
 VERSION = "2026-10-29"
@@ -66,7 +74,9 @@ FENCE_RE = re.compile(r"</?\s*passages?\b[^>]*>?", re.IGNORECASE)
 
 
 ########################################################################
+#                                                                      #
 #                             Model prompt                             #
+#                                                                      #
 ########################################################################
 # log.debug("Defines the system message for given limits")
 def system_prompt(*, min_quote_words: int | None = None, max_words: int | None = None) -> str:

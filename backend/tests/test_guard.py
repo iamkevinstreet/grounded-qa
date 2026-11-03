@@ -1,17 +1,21 @@
 ########################################################################
+#                                                                      #
 #                     backend/tests/test_guard.py                      #
+#                                                                      #
 ########################################################################
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-10-29
+Last modified on:  2026-11-03
 
 Tests the ingest guard flags orders to a model and leaves ordinary
 workplace text alone.
 """
 
 ########################################################################
+#                                                                      #
 #                               Imports                                #
+#                                                                      #
 ########################################################################
 # Standard library
 from __future__ import annotations
@@ -25,13 +29,17 @@ from grounded_qa.core import guard, sources
 from support import REPO
 
 ########################################################################
+#                                                                      #
 #                           Global constants                           #
+#                                                                      #
 ########################################################################
 log = get_logger(__name__)
 
 
 ########################################################################
+#                                                                      #
 #                             Guard tests                              #
+#                                                                      #
 ########################################################################
 # log.debug("Defines the injections the guard must flag")
 @pytest.mark.parametrize(

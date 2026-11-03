@@ -1,10 +1,12 @@
 ########################################################################
+#                                                                      #
 #                      backend/tests/conftest.py                       #
+#                                                                      #
 ########################################################################
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-10-29
+Last modified on:  2026-11-03
 
 The fixtures every test shares: each test runs offline from its own
 empty folder, and may take settings over two small sources with true
@@ -12,7 +14,9 @@ hashes, or over the repository's real data.
 """
 
 ########################################################################
+#                                                                      #
 #                               Imports                                #
+#                                                                      #
 ########################################################################
 # Standard library
 from __future__ import annotations
@@ -29,13 +33,17 @@ from grounded_qa.config import AppSettings, get_app_settings
 from support import LEAVE_BODY, OVERTIME_BODY, REPO, make_source, write_source
 
 ########################################################################
+#                                                                      #
 #                           Global constants                           #
+#                                                                      #
 ########################################################################
 log = get_logger(__name__)
 
 
 ########################################################################
+#                                                                      #
 #                               Fixtures                               #
+#                                                                      #
 ########################################################################
 # log.debug("Defines the isolation every test gets")
 @pytest.fixture(autouse=True)

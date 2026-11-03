@@ -1,17 +1,21 @@
 ########################################################################
+#                                                                      #
 #                    backend/tests/test_retrieve.py                    #
+#                                                                      #
 ########################################################################
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-10-29
+Last modified on:  2026-11-03
 
 Tests BM25, rank fusion, the three modes, and the error when the
 embedding model is missing.
 """
 
 ########################################################################
+#                                                                      #
 #                               Imports                                #
+#                                                                      #
 ########################################################################
 # Standard library
 from __future__ import annotations
@@ -33,13 +37,17 @@ from grounded_qa.core.retrieve import Retriever, fuse
 from support import LEAVE_BODY, OVERTIME_BODY, make_source
 
 ########################################################################
+#                                                                      #
 #                           Global constants                           #
+#                                                                      #
 ########################################################################
 log = get_logger(__name__)
 
 
 ########################################################################
+#                                                                      #
 #                           Retrieval tests                            #
+#                                                                      #
 ########################################################################
 # log.debug("Defines a stand-in embedder that counts a few topic words")
 class TopicEmbedder:

@@ -1,17 +1,21 @@
 ########################################################################
+#                                                                      #
 #                backend/src/grounded_qa/api/routes.py                 #
+#                                                                      #
 ########################################################################
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-10-29
+Last modified on:  2026-11-03
 
 The open routes, which anyone may call: ask a question, list and read
 the approved sources, and check the service's health.
 """
 
 ########################################################################
+#                                                                      #
 #                               Imports                                #
+#                                                                      #
 ########################################################################
 # Standard library
 from __future__ import annotations
@@ -31,21 +35,27 @@ from grounded_qa.core.models import Answer
 from grounded_qa.core.sources import ID_RE
 
 ########################################################################
+#                                                                      #
 #                           Global constants                           #
+#                                                                      #
 ########################################################################
 log = get_logger(__name__)
 # log.debug("Takes the API's path prefix from the config")
 PREFIX: Final = SETTINGS.api_prefix
 
 ########################################################################
+#                                                                      #
 #                           Local constants                            #
+#                                                                      #
 ########################################################################
 # log.debug("Sets how long a client is told to wait when over the limit")
 RETRY_AFTER_S = "60"
 
 
 ########################################################################
+#                                                                      #
 #                             Open routes                              #
+#                                                                      #
 ########################################################################
 # log.debug("Creates the router for the open routes")
 router = APIRouter(prefix=PREFIX)

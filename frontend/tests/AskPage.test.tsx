@@ -1,17 +1,21 @@
 // ########################################################################
+// #                                                                      #
 // #                   frontend/tests/AskPage.test.tsx                    #
+// #                                                                      #
 // ########################################################################
 /**
  * Author:            Kevin Street
  * Created on:        2026-10-29
- * Last modified on:  2026-10-29
+ * Last modified on:  2026-11-03
  *
  * Tests the ask page end to end against a stubbed API: answers,
  * highlights, abstentions.
  */
 
 // ########################################################################
+// #                                                                      #
 // #                               Imports                                #
+// #                                                                      #
 // ########################################################################
 // Third-party
 import { render, screen } from '@testing-library/react';
@@ -25,7 +29,9 @@ import { AskPage } from '../src/pages/AskPage';
 import type { Answer, Citation } from '../src/types';
 
 // ########################################################################
+// #                                                                      #
 // #                           Local constants                            #
+// #                                                                      #
 // ########################################################################
 // log.debug('Sets an answered response with two citations')
 const ANSWERED: Answer = {
@@ -45,7 +51,9 @@ const ANSWERED: Answer = {
 };
 
 // ########################################################################
+// #                                                                      #
 // #                            Ask page tests                            #
+// #                                                                      #
 // ########################################################################
 // log.debug('Defines a checked citation for the stubbed answers')
 /**

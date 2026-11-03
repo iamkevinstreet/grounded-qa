@@ -1,17 +1,21 @@
 // ########################################################################
+// #                                                                      #
 // #                        frontend/src/main.tsx                         #
+// #                                                                      #
 // ########################################################################
 /**
  * Author:            Kevin Street
  * Created on:        2026-10-29
- * Last modified on:  2026-10-29
+ * Last modified on:  2026-11-03
  *
  * The entry point: the fonts, the trace logger and the styles, then the
  * app, rendered in strict mode.
  */
 
 // ########################################################################
+// #                                                                      #
 // #                               Imports                                #
+// #                                                                      #
 // ########################################################################
 // Third-party
 import '@fontsource-variable/public-sans';
@@ -28,7 +32,9 @@ import './styles/library.css';
 import { App } from './App';
 
 // ########################################################################
+// #                                                                      #
 // #                             Entry point                              #
+// #                                                                      #
 // ########################################################################
 // log.debug('Finds the element the app renders into')
 const root = document.getElementById('root');

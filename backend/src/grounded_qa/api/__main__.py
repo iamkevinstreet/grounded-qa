@@ -1,17 +1,21 @@
 ########################################################################
+#                                                                      #
 #               backend/src/grounded_qa/api/__main__.py                #
+#                                                                      #
 ########################################################################
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-10-29
+Last modified on:  2026-11-03
 
 Runs the service: python -m grounded_qa.api, on the host and port in
 settings.
 """
 
 ########################################################################
+#                                                                      #
 #                               Imports                                #
+#                                                                      #
 ########################################################################
 # Standard library
 from __future__ import annotations
@@ -25,13 +29,17 @@ from grounded_qa.api.app import create_app
 from grounded_qa.config import get_app_settings
 
 ########################################################################
+#                                                                      #
 #                           Global constants                           #
+#                                                                      #
 ########################################################################
 log = get_logger(__name__)
 
 
 ########################################################################
+#                                                                      #
 #                         Service entry point                          #
+#                                                                      #
 ########################################################################
 # log.debug("Defines the entry point")
 def main() -> None:

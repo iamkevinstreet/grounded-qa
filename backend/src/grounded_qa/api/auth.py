@@ -1,10 +1,12 @@
 ########################################################################
+#                                                                      #
 #                 backend/src/grounded_qa/api/auth.py                  #
+#                                                                      #
 ########################################################################
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-10-29
+Last modified on:  2026-11-03
 
 Lets only the approver change sources: the routes that change them
 need the bearer token set as APPROVER_TOKEN in config/.env (at least 32
@@ -15,7 +17,9 @@ token.
 """
 
 ########################################################################
+#                                                                      #
 #                               Imports                                #
+#                                                                      #
 ########################################################################
 # Standard library
 from __future__ import annotations
@@ -32,14 +36,18 @@ from kds.logs import get_logger, log_event
 from grounded_qa.config import SETTINGS, AppSettings
 
 ########################################################################
+#                                                                      #
 #                           Global constants                           #
+#                                                                      #
 ########################################################################
 log = get_logger(__name__)
 # log.debug("Takes the encoding that turns text into bytes, from the config")
 ENCODING: Final = SETTINGS.text_encoding
 
 ########################################################################
+#                                                                      #
 #                           Local constants                            #
+#                                                                      #
 ########################################################################
 # log.debug("Sets the scheme an Authorization header must use")
 SCHEME = "Bearer "
@@ -48,7 +56,9 @@ CHALLENGE = {"WWW-Authenticate": "Bearer"}
 
 
 ########################################################################
+#                                                                      #
 #                            Approver check                            #
+#                                                                      #
 ########################################################################
 # log.debug("Defines the dependency every approver route declares")
 def require_approver(  # fixed: FastAPI's dependency signature

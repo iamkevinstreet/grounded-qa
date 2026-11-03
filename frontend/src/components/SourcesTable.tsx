@@ -1,10 +1,12 @@
 // ########################################################################
+// #                                                                      #
 // #               frontend/src/components/SourcesTable.tsx               #
+// #                                                                      #
 // ########################################################################
 /**
  * Author:            Kevin Street
  * Created on:        2026-10-29
- * Last modified on:  2026-10-29
+ * Last modified on:  2026-11-03
  *
  * The table of approved fact sheets on the sources page: each one's
  * title, as a button that opens it in the reader, whether the guard held
@@ -12,14 +14,18 @@
  */
 
 // ########################################################################
+// #                                                                      #
 // #                               Imports                                #
+// #                                                                      #
 // ########################################################################
 // Local
 import { required } from '../lib/required';
 import type { SourceSummary } from '../types';
 
 // ########################################################################
+// #                                                                      #
 // #                            Sources table                             #
+// #                                                                      #
 // ########################################################################
 interface Props {
   sources?: SourceSummary[] | null;

@@ -1,10 +1,12 @@
 // ########################################################################
+// #                                                                      #
 // #                        frontend/src/config.ts                        #
+// #                                                                      #
 // ########################################################################
 /**
  * Author:            Kevin Street
  * Created on:        2026-10-29
- * Last modified on:  2026-10-29
+ * Last modified on:  2026-11-03
  *
  * The web app's config module, the only one that reads the build's
  * settings: the keys the browser needs from config/config.toml, which
@@ -15,7 +17,9 @@
  */
 
 // ########################################################################
+// #                                                                      #
 // #                           Local constants                            #
+// #                                                                      #
 // ########################################################################
 // log.debug('Takes the settings the build read from config/config.toml')
 const BUILT = __CONFIG__;

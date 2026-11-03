@@ -1,17 +1,21 @@
 // ########################################################################
+// #                                                                      #
 // #               frontend/src/components/QuestionBox.tsx                #
+// #                                                                      #
 // ########################################################################
 /**
  * Author:            Kevin Street
  * Created on:        2026-10-29
- * Last modified on:  2026-10-29
+ * Last modified on:  2026-11-03
  *
  * The question box and its Ask button: Enter asks, Shift+Enter starts a
  * new line, and the box takes no more than the API accepts.
  */
 
 // ########################################################################
+// #                                                                      #
 // #                               Imports                                #
+// #                                                                      #
 // ########################################################################
 // Third-party
 import type { KeyboardEvent } from 'react';
@@ -21,13 +25,17 @@ import { CONFIG } from '../config';
 import { required } from '../lib/required';
 
 // ########################################################################
+// #                                                                      #
 // #                           Global constants                           #
+// #                                                                      #
 // ########################################################################
 // log.debug('Takes the longest question the API accepts from the config')
 const MAX_QUESTION_CHARS = CONFIG.api.max_question_chars;
 
 // ########################################################################
+// #                                                                      #
 // #                             Question box                             #
+// #                                                                      #
 // ########################################################################
 interface Props {
   text?: string;

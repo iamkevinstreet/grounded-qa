@@ -1,17 +1,21 @@
 // ########################################################################
+// #                                                                      #
 // #                         frontend/src/App.tsx                         #
+// #                                                                      #
 // ########################################################################
 /**
  * Author:            Kevin Street
  * Created on:        2026-10-29
- * Last modified on:  2026-10-29
+ * Last modified on:  2026-11-03
  *
  * The app shell: the top bar, the three views, and the health and
  * sources they share.
  */
 
 // ########################################################################
+// #                                                                      #
 // #                               Imports                                #
+// #                                                                      #
 // ########################################################################
 // Third-party
 import { useEffect, useState } from 'react';
@@ -26,7 +30,9 @@ import { SourcesPage } from './pages/SourcesPage';
 import type { Health, SourceSummary } from './types';
 
 // ########################################################################
+// #                                                                      #
 // #                           Local constants                            #
+// #                                                                      #
 // ########################################################################
 // log.debug('Lists the views in the order the bar shows them')
 const VIEWS: readonly { id: View; label: string }[] = [
@@ -36,7 +42,9 @@ const VIEWS: readonly { id: View; label: string }[] = [
 ];
 
 // ########################################################################
+// #                                                                      #
 // #                              App shell                               #
+// #                                                                      #
 // ########################################################################
 type View = 'ask' | 'sources' | 'approver';
 

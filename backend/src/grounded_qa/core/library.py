@@ -1,10 +1,12 @@
 ########################################################################
+#                                                                      #
 #               backend/src/grounded_qa/core/library.py                #
+#                                                                      #
 ########################################################################
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-10-29
+Last modified on:  2026-11-03
 
 The approved sources and the search index over them: anyone may read
 them, only an approver changes them, and each change is audited.
@@ -15,7 +17,9 @@ audit log, and rebuilds the index, all under one lock.
 """
 
 ########################################################################
+#                                                                      #
 #                               Imports                                #
+#                                                                      #
 ########################################################################
 # Standard library
 from __future__ import annotations
@@ -39,14 +43,18 @@ from grounded_qa.core.retrieve import Hit, Retriever
 from grounded_qa.core.sources import Source, SourceError
 
 ########################################################################
+#                                                                      #
 #                           Global constants                           #
+#                                                                      #
 ########################################################################
 log = get_logger(__name__)
 # log.debug("Takes the encoding that turns text into bytes, from the config")
 ENCODING: Final = SETTINGS.text_encoding
 
 ########################################################################
+#                                                                      #
 #                           Local constants                            #
+#                                                                      #
 ########################################################################
 # log.debug("Matches one line of front-matter text, with no line breaks")
 ONE_LINE = r"^[^\r\n]+$"
@@ -55,7 +63,9 @@ MAX_FIELD_CHARS = 200
 
 
 ########################################################################
+#                                                                      #
 #                            Source library                            #
+#                                                                      #
 ########################################################################
 # log.debug("Defines the error for an id already in use")
 class SourceExistsError(SourceError):

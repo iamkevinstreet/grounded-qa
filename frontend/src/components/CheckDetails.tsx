@@ -1,24 +1,30 @@
 // ########################################################################
+// #                                                                      #
 // #               frontend/src/components/CheckDetails.tsx               #
+// #                                                                      #
 // ########################################################################
 /**
  * Author:            Kevin Street
  * Created on:        2026-10-29
- * Last modified on:  2026-10-29
+ * Last modified on:  2026-11-03
  *
  * How an answer was checked: the quotes found and any removed, the
  * passages searched, the model, and the request id.
  */
 
 // ########################################################################
+// #                                                                      #
 // #                               Imports                                #
+// #                                                                      #
 // ########################################################################
 // Local
 import { required } from '../lib/required';
 import type { Answer } from '../types';
 
 // ########################################################################
+// #                                                                      #
 // #                            Check details                             #
+// #                                                                      #
 // ########################################################################
 // log.debug('Defines the check details')
 /**

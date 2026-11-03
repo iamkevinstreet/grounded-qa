@@ -1,17 +1,21 @@
 // ########################################################################
+// #                                                                      #
 // #              frontend/src/components/OfflineNotice.tsx               #
+// #                                                                      #
 // ########################################################################
 /**
  * Author:            Kevin Street
  * Created on:        2026-10-29
- * Last modified on:  2026-10-29
+ * Last modified on:  2026-11-03
  *
  * The notice shown while the service runs on the offline stand-in, not
  * a model.
  */
 
 // ########################################################################
+// #                                                                      #
 // #                            Offline notice                            #
+// #                                                                      #
 // ########################################################################
 // log.debug('Defines the offline notice')
 /**

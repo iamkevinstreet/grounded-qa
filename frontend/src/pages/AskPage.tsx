@@ -1,17 +1,21 @@
 // ########################################################################
+// #                                                                      #
 // #                    frontend/src/pages/AskPage.tsx                    #
+// #                                                                      #
 // ########################################################################
 /**
  * Author:            Kevin Street
  * Created on:        2026-10-29
- * Last modified on:  2026-10-29
+ * Last modified on:  2026-11-03
  *
  * The ask page: a question in; a checked answer, its citations and the
  * cited passage out, or an abstention that says why.
  */
 
 // ########################################################################
+// #                                                                      #
 // #                               Imports                                #
+// #                                                                      #
 // ########################################################################
 // Third-party
 import { useState } from 'react';
@@ -26,13 +30,17 @@ import { required } from '../lib/required';
 import type { Health } from '../types';
 
 // ########################################################################
+// #                                                                      #
 // #                           Global constants                           #
+// #                                                                      #
 // ########################################################################
 // log.debug('Takes the provider name that means the offline stand-in from the config')
 const OFFLINE_PROVIDER = CONFIG.llm.offline_provider;
 
 // ########################################################################
+// #                                                                      #
 // #                               Ask page                               #
+// #                                                                      #
 // ########################################################################
 interface Props {
   health?: Health | null;

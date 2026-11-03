@@ -1,10 +1,12 @@
 ########################################################################
+#                                                                      #
 #                backend/src/grounded_qa/core/embed.py                 #
+#                                                                      #
 ########################################################################
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-10-29
+Last modified on:  2026-11-03
 
 Turns text into vectors for search by meaning: the `Embedder` interface
 retrieval depends on, and a local model behind it. Because retrieval
@@ -16,7 +18,9 @@ fastembed (the optional `local` extra); it downloads the model, about
 """
 
 ########################################################################
+#                                                                      #
 #                               Imports                                #
+#                                                                      #
 ########################################################################
 # Standard library
 from __future__ import annotations
@@ -30,12 +34,16 @@ from kds.args import required
 from kds.logs import get_logger
 
 ########################################################################
+#                                                                      #
 #                           Global constants                           #
+#                                                                      #
 ########################################################################
 log = get_logger(__name__)
 
 ########################################################################
+#                                                                      #
 #                           Local constants                            #
+#                                                                      #
 ########################################################################
 # log.debug("Sets the message when the optional model is not installed")
 MISSING = (
@@ -45,7 +53,9 @@ MISSING = (
 
 
 ########################################################################
+#                                                                      #
 #                              Embeddings                              #
+#                                                                      #
 ########################################################################
 # log.debug("Defines what any embedder must offer")
 class Embedder(Protocol):

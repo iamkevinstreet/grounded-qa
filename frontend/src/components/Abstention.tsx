@@ -1,24 +1,30 @@
 // ########################################################################
+// #                                                                      #
 // #                frontend/src/components/Abstention.tsx                #
+// #                                                                      #
 // ########################################################################
 /**
  * Author:            Kevin Street
  * Created on:        2026-10-29
- * Last modified on:  2026-10-29
+ * Last modified on:  2026-11-03
  *
  * What the ask page says when there is no checked answer: why, which
  * fact sheets were searched, and what the sources do cover.
  */
 
 // ########################################################################
+// #                                                                      #
 // #                               Imports                                #
+// #                                                                      #
 // ########################################################################
 // Local
 import { required } from '../lib/required';
 import type { Answer, Outcome } from '../types';
 
 // ########################################################################
+// #                                                                      #
 // #                           Local constants                            #
+// #                                                                      #
 // ########################################################################
 // log.debug('Sets the heading and explanation for each kind of abstention')
 const COPY: Record<Exclude<Outcome, 'answered'>, { heading: string; body: string }> = {
@@ -37,7 +43,9 @@ const COPY: Record<Exclude<Outcome, 'answered'>, { heading: string; body: string
 };
 
 // ########################################################################
+// #                                                                      #
 // #                              Abstention                              #
+// #                                                                      #
 // ########################################################################
 interface Props {
   answer?: Answer | null;

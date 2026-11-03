@@ -1,9 +1,11 @@
 ########################################################################
+#                                                                      #
 #                   .github/workflows/eval-live.yml                    #
+#                                                                      #
 ########################################################################
 # Author:            Kevin Street
 # Created on:        2026-10-29
-# Last modified on:  2026-10-29
+# Last modified on:  2026-11-03
 #
 # Runs by hand: retrieval in all three modes, and the answer evaluation
 # against a real model.

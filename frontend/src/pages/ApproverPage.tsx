@@ -1,17 +1,21 @@
 // ########################################################################
+// #                                                                      #
 // #                 frontend/src/pages/ApproverPage.tsx                  #
+// #                                                                      #
 // ########################################################################
 /**
  * Author:            Kevin Street
  * Created on:        2026-10-29
- * Last modified on:  2026-10-29
+ * Last modified on:  2026-11-03
  *
  * The approver page: unlock with the token, add or remove sources, read
  * the audit log.
  */
 
 // ########################################################################
+// #                                                                      #
 // #                               Imports                                #
+// #                                                                      #
 // ########################################################################
 // Local
 import { addSource, removeSource, unlock, useApprover } from '../approver';
@@ -21,7 +25,9 @@ import { required } from '../lib/required';
 import type { Health, SourceSummary } from '../types';
 
 // ########################################################################
+// #                                                                      #
 // #                            Approver page                             #
+// #                                                                      #
 // ########################################################################
 interface Props {
   health?: Health | null;

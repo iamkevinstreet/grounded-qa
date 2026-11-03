@@ -1,17 +1,21 @@
 ########################################################################
+#                                                                      #
 #                     backend/tests/test_chunk.py                      #
+#                                                                      #
 ########################################################################
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-10-29
+Last modified on:  2026-11-03
 
 Tests passages: heading paths, ids, word limits, how long blocks split,
 held-back sources.
 """
 
 ########################################################################
+#                                                                      #
 #                               Imports                                #
+#                                                                      #
 ########################################################################
 # Standard library
 from __future__ import annotations
@@ -26,13 +30,17 @@ from grounded_qa.core.text import word_count
 from support import LEAVE_BODY, REPO, make_source
 
 ########################################################################
+#                                                                      #
 #                           Global constants                           #
+#                                                                      #
 ########################################################################
 log = get_logger(__name__)
 
 
 ########################################################################
+#                                                                      #
 #                            Passage tests                             #
+#                                                                      #
 ########################################################################
 # log.debug("Defines the test of heading paths and ids")
 def test_passages_keep_heading_paths_and_number_in_order() -> None:

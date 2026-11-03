@@ -1,17 +1,21 @@
 ########################################################################
+#                                                                      #
 #                backend/src/grounded_qa/api/schemas.py                #
+#                                                                      #
 ########################################################################
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-10-29
+Last modified on:  2026-11-03
 
 The shapes of the API's requests and responses, validated at the edge
 before the logic sees them.
 """
 
 ########################################################################
+#                                                                      #
 #                               Imports                                #
+#                                                                      #
 ########################################################################
 # Standard library
 from __future__ import annotations
@@ -27,12 +31,16 @@ from pydantic import BaseModel, Field
 from grounded_qa.core.sources import Source
 
 ########################################################################
+#                                                                      #
 #                           Global constants                           #
+#                                                                      #
 ########################################################################
 log = get_logger(__name__)
 
 ########################################################################
+#                                                                      #
 #                           Local constants                            #
+#                                                                      #
 ########################################################################
 # log.debug("Sets a hard ceiling on a question before settings apply")
 CEILING_CHARS = 10_000
@@ -41,7 +49,9 @@ Status = Literal["ok"]
 
 
 ########################################################################
+#                                                                      #
 #                     Request and response bodies                      #
+#                                                                      #
 ########################################################################
 # log.debug("Defines the body of a question")
 class AskRequest(BaseModel):

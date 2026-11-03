@@ -1,17 +1,21 @@
 // ########################################################################
+// #                                                                      #
 // #               frontend/src/components/QuestionForm.tsx               #
+// #                                                                      #
 // ########################################################################
 /**
  * Author:            Kevin Street
  * Created on:        2026-10-29
- * Last modified on:  2026-10-29
+ * Last modified on:  2026-11-03
  *
  * The question form on the ask page: the box, its Ask button and the
  * example questions, asking a question once it is long enough.
  */
 
 // ########################################################################
+// #                                                                      #
 // #                               Imports                                #
+// #                                                                      #
 // ########################################################################
 // Third-party
 import { useState, type SubmitEvent } from 'react';
@@ -23,13 +27,17 @@ import { ExampleQuestions } from './ExampleQuestions';
 import { QuestionBox } from './QuestionBox';
 
 // ########################################################################
+// #                                                                      #
 // #                           Global constants                           #
+// #                                                                      #
 // ########################################################################
 // log.debug('Takes the shortest question the API accepts from the config')
 const MIN_QUESTION_CHARS = CONFIG.api.min_question_chars;
 
 // ########################################################################
+// #                                                                      #
 // #                            Question form                             #
+// #                                                                      #
 // ########################################################################
 interface Props {
   busy?: boolean;

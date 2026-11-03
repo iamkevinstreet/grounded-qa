@@ -1,10 +1,12 @@
 ########################################################################
+#                                                                      #
 #                 backend/src/grounded_qa/core/text.py                 #
+#                                                                      #
 ########################################################################
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-10-29
+Last modified on:  2026-11-03
 
 Text helpers that search and the checks share: the plain form two
 texts are compared in, with a map back to the original for
@@ -12,7 +14,9 @@ highlighting, word counts, and the stemmed search terms of a text.
 """
 
 ########################################################################
+#                                                                      #
 #                               Imports                                #
+#                                                                      #
 ########################################################################
 # Standard library
 from __future__ import annotations
@@ -24,12 +28,16 @@ from kds.args import required
 from kds.logs import get_logger
 
 ########################################################################
+#                                                                      #
 #                           Global constants                           #
+#                                                                      #
 ########################################################################
 log = get_logger(__name__)
 
 ########################################################################
+#                                                                      #
 #                           Local constants                            #
+#                                                                      #
 ########################################################################
 # log.debug("Maps curly quotes, dashes and odd spaces to plain ones")
 PLAIN = str.maketrans(
@@ -68,7 +76,9 @@ MIN_STEM = 4
 
 
 ########################################################################
+#                                                                      #
 #                             Text helpers                             #
+#                                                                      #
 ########################################################################
 # log.debug("Defines the plain form two texts are compared in")
 def normalize(text: str | None = None) -> str:

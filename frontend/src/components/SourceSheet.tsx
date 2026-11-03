@@ -1,17 +1,21 @@
 // ########################################################################
+// #                                                                      #
 // #               frontend/src/components/SourceSheet.tsx                #
+// #                                                                      #
 // ########################################################################
 /**
  * Author:            Kevin Street
  * Created on:        2026-10-29
- * Last modified on:  2026-10-29
+ * Last modified on:  2026-11-03
  *
  * The cited passage on its own sheet: title, section, revision date,
  * quote marked.
  */
 
 // ########################################################################
+// #                                                                      #
 // #                               Imports                                #
+// #                                                                      #
 // ########################################################################
 // Local
 import { sectionLabel } from '../labels';
@@ -20,7 +24,9 @@ import type { Citation } from '../types';
 import { Highlighted } from './Highlighted';
 
 // ########################################################################
+// #                                                                      #
 // #                             Source sheet                             #
+// #                                                                      #
 // ########################################################################
 // log.debug('Defines the source sheet')
 /**

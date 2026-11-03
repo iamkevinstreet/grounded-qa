@@ -1,17 +1,21 @@
 ########################################################################
+#                                                                      #
 #                    backend/tests/test_sources.py                     #
+#                                                                      #
 ########################################################################
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-10-29
+Last modified on:  2026-11-03
 
 Tests reading sources: front matter, the hash check, safe ids and paths,
 and the real corpus.
 """
 
 ########################################################################
+#                                                                      #
 #                               Imports                                #
+#                                                                      #
 ########################################################################
 # Standard library
 from __future__ import annotations
@@ -28,13 +32,17 @@ from grounded_qa.core.sources import SourceError
 from support import REPO, make_source, write_source
 
 ########################################################################
+#                                                                      #
 #                           Global constants                           #
+#                                                                      #
 ########################################################################
 log = get_logger(__name__)
 
 
 ########################################################################
+#                                                                      #
 #                             Source tests                             #
+#                                                                      #
 ########################################################################
 # log.debug("Defines the test that a document survives render and parse")
 def test_render_then_parse_round_trips() -> None:

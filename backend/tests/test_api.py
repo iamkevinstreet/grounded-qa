@@ -1,17 +1,21 @@
 ########################################################################
+#                                                                      #
 #                      backend/tests/test_api.py                       #
+#                                                                      #
 ########################################################################
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-10-29
+Last modified on:  2026-11-03
 
 Tests the HTTP service: answers, limits, headers, the approver routes
 and the audit trail.
 """
 
 ########################################################################
+#                                                                      #
 #                               Imports                                #
+#                                                                      #
 ########################################################################
 # Standard library
 from __future__ import annotations
@@ -34,12 +38,16 @@ from grounded_qa.config import AppSettings
 from support import TOKEN
 
 ########################################################################
+#                                                                      #
 #                           Global constants                           #
+#                                                                      #
 ########################################################################
 log = get_logger(__name__)
 
 ########################################################################
+#                                                                      #
 #                           Local constants                            #
+#                                                                      #
 ########################################################################
 # log.debug("Sets the header that carries the approver token")
 AUTH = {"Authorization": f"Bearer {TOKEN}"}
@@ -56,7 +64,9 @@ NEW_SOURCE = {
 
 
 ########################################################################
+#                                                                      #
 #                              API tests                               #
+#                                                                      #
 ########################################################################
 # log.debug("Defines a client for an app built from given settings")
 def _client(settings: AppSettings | None = None, provider: Any = None) -> Iterator[TestClient]:

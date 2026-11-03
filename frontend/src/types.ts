@@ -1,17 +1,21 @@
 // ########################################################################
+// #                                                                      #
 // #                        frontend/src/types.ts                         #
+// #                                                                      #
 // ########################################################################
 /**
  * Author:            Kevin Street
  * Created on:        2026-10-29
- * Last modified on:  2026-10-29
+ * Last modified on:  2026-11-03
  *
  * The API's request and response shapes, mirroring the backend's
  * pydantic models field for field.
  */
 
 // ########################################################################
+// #                                                                      #
 // #                              API shapes                              #
+// #                                                                      #
 // ########################################################################
 export type Outcome = 'answered' | 'not_covered' | 'unverified' | 'no_passages';
 

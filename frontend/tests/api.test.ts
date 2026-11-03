@@ -1,17 +1,21 @@
 // ########################################################################
+// #                                                                      #
 // #                      frontend/tests/api.test.ts                      #
+// #                                                                      #
 // ########################################################################
 /**
  * Author:            Kevin Street
  * Created on:        2026-10-29
- * Last modified on:  2026-10-29
+ * Last modified on:  2026-11-03
  *
  * Tests the API client: the request it sends, and the errors it turns a
  * failed call into.
  */
 
 // ########################################################################
+// #                                                                      #
 // #                               Imports                                #
+// #                                                                      #
 // ########################################################################
 // Third-party
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -21,7 +25,9 @@ import { ApiError, api, describeError } from '../src/api';
 import { required } from '../src/lib/required';
 
 // ########################################################################
+// #                                                                      #
 // #                           API client tests                           #
+// #                                                                      #
 // ########################################################################
 // log.debug('Defines a fake fetch that answers once with the given response')
 /**

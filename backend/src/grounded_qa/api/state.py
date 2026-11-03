@@ -1,17 +1,21 @@
 ########################################################################
+#                                                                      #
 #                 backend/src/grounded_qa/api/state.py                 #
+#                                                                      #
 ########################################################################
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-10-29
+Last modified on:  2026-11-03
 
 The services every route shares, built once at startup, and the
 dependency that hands them out.
 """
 
 ########################################################################
+#                                                                      #
 #                               Imports                                #
+#                                                                      #
 ########################################################################
 # Standard library
 from __future__ import annotations
@@ -35,7 +39,9 @@ from grounded_qa.core.library import Library
 from grounded_qa.core.offline import adapter_for
 
 ########################################################################
+#                                                                      #
 #                           Global constants                           #
+#                                                                      #
 ########################################################################
 log = get_logger(__name__)
 # log.debug("Takes the name of the mode that needs no embedding model, from the config")
@@ -43,7 +49,9 @@ KEYWORD: Final = SETTINGS.retrieval_keyword_mode
 
 
 ########################################################################
+#                                                                      #
 #                           Shared services                            #
+#                                                                      #
 ########################################################################
 # log.debug("Defines the services the routes share")
 @dataclass(frozen=True)

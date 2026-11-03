@@ -1,17 +1,21 @@
 // ########################################################################
+// #                                                                      #
 // #                   frontend/tests/citations.test.ts                   #
+// #                                                                      #
 // ########################################################################
 /**
  * Author:            Kevin Street
  * Created on:        2026-10-29
- * Last modified on:  2026-10-29
+ * Last modified on:  2026-11-03
  *
  * Tests splitting answers at their markers and passages around their
  * highlights, swapping list dashes for bullets, and section labels.
  */
 
 // ########################################################################
+// #                                                                      #
 // #                               Imports                                #
+// #                                                                      #
 // ########################################################################
 // Third-party
 import { describe, expect, it } from 'vitest';
@@ -21,7 +25,9 @@ import { bullets, segments, splitAnswer } from '../src/citations';
 import { sectionLabel } from '../src/labels';
 
 // ########################################################################
+// #                                                                      #
 // #                            Citation tests                            #
+// #                                                                      #
 // ########################################################################
 // log.debug('Describes the answer splitter')
 describe('splitAnswer', () => {

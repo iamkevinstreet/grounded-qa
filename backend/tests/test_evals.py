@@ -1,17 +1,21 @@
 ########################################################################
+#                                                                      #
 #                     backend/tests/test_evals.py                      #
+#                                                                      #
 ########################################################################
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-10-29
+Last modified on:  2026-11-03
 
 Tests the gold cases are sound, and that the scorers and both kinds of
 run work end to end, offline.
 """
 
 ########################################################################
+#                                                                      #
 #                               Imports                                #
+#                                                                      #
 ########################################################################
 # Standard library
 from __future__ import annotations
@@ -36,12 +40,16 @@ from grounded_qa.evals.score import score
 from support import REPO
 
 ########################################################################
+#                                                                      #
 #                           Global constants                           #
+#                                                                      #
 ########################################################################
 log = get_logger(__name__)
 
 ########################################################################
+#                                                                      #
 #                           Local constants                            #
+#                                                                      #
 ########################################################################
 # log.debug("Lists the tags a case may carry")
 TAGS = {
@@ -70,7 +78,9 @@ PASSAGE = Passage(
 
 
 ########################################################################
+#                                                                      #
 #                           Evaluation tests                           #
+#                                                                      #
 ########################################################################
 # log.debug("Defines the cases every test here reads")
 def _cases() -> list[EvalCase]:

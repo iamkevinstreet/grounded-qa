@@ -1,10 +1,12 @@
 // ########################################################################
+// #                                                                      #
 // #               frontend/src/components/SourceReader.tsx               #
+// #                                                                      #
 // ########################################################################
 /**
  * Author:            Kevin Street
  * Created on:        2026-10-29
- * Last modified on:  2026-10-29
+ * Last modified on:  2026-11-03
  *
  * The reader on the sources page: the fact sheet opened, with its
  * provenance and its whole text, or what went wrong loading it, or a
@@ -12,7 +14,9 @@
  */
 
 // ########################################################################
+// #                                                                      #
 // #                               Imports                                #
+// #                                                                      #
 // ########################################################################
 // Local
 import { CONFIG } from '../config';
@@ -20,13 +24,17 @@ import type { SourceDetail } from '../types';
 import { SourceText } from './SourceText';
 
 // ########################################################################
+// #                                                                      #
 // #                           Global constants                           #
+// #                                                                      #
 // ########################################################################
 // log.debug('Takes how many characters of a hash are shown from the config')
 const HASH_CHARS = CONFIG.web.hash_chars;
 
 // ########################################################################
+// #                                                                      #
 // #                            Source reader                             #
+// #                                                                      #
 // ########################################################################
 interface Props {
   doc?: SourceDetail | null;

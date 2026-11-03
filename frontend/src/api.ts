@@ -1,17 +1,21 @@
 // ########################################################################
+// #                                                                      #
 // #                         frontend/src/api.ts                          #
+// #                                                                      #
 // ########################################################################
 /**
  * Author:            Kevin Street
  * Created on:        2026-10-29
- * Last modified on:  2026-10-29
+ * Last modified on:  2026-11-03
  *
  * The API client: one function per route, and errors that say what
  * happened and what to do.
  */
 
 // ########################################################################
+// #                                                                      #
 // #                               Imports                                #
+// #                                                                      #
 // ########################################################################
 // Local
 import { CONFIG } from './config';
@@ -19,7 +23,9 @@ import { required } from './lib/required';
 import type { Answer, AuditEntry, Health, NewSource, SourceDetail, SourceSummary } from './types';
 
 // ########################################################################
+// #                                                                      #
 // #                           Global constants                           #
+// #                                                                      #
 // ########################################################################
 // log.debug('Takes the address of the API from the config')
 const API_BASE = CONFIG.api.base;
@@ -27,13 +33,17 @@ const API_BASE = CONFIG.api.base;
 const REQUEST_ID = CONFIG.api.request_id_header;
 
 // ########################################################################
+// #                                                                      #
 // #                           Local constants                            #
+// #                                                                      #
 // ########################################################################
 // log.debug('Sets the status of a response with no body')
 const NO_CONTENT = 204;
 
 // ########################################################################
+// #                                                                      #
 // #                              API client                              #
+// #                                                                      #
 // ########################################################################
 // log.debug('Defines the error every failed call raises')
 export class ApiError extends Error {

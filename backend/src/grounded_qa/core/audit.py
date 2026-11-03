@@ -1,10 +1,12 @@
 ########################################################################
+#                                                                      #
 #                backend/src/grounded_qa/core/audit.py                 #
+#                                                                      #
 ########################################################################
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-10-29
+Last modified on:  2026-11-03
 
 Records every change to the approved sources in an append-only SQLite
 log: one row per change, with when it happened, whether a source was
@@ -15,7 +17,9 @@ through the numbered migrations below.
 """
 
 ########################################################################
+#                                                                      #
 #                               Imports                                #
+#                                                                      #
 ########################################################################
 # Standard library
 from __future__ import annotations
@@ -33,12 +37,16 @@ from kds.logs import get_logger
 from pydantic import BaseModel
 
 ########################################################################
+#                                                                      #
 #                           Global constants                           #
+#                                                                      #
 ########################################################################
 log = get_logger(__name__)
 
 ########################################################################
+#                                                                      #
 #                           Local constants                            #
+#                                                                      #
 ########################################################################
 # log.debug("Lists the changes the log records")
 Action = Literal["add", "remove"]
@@ -66,7 +74,9 @@ TIMESPEC = "seconds"
 
 
 ########################################################################
+#                                                                      #
 #                              Audit log                               #
+#                                                                      #
 ########################################################################
 # log.debug("Defines one recorded change")
 class AuditEntry(BaseModel, frozen=True):

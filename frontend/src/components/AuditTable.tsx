@@ -1,10 +1,12 @@
 // ########################################################################
+// #                                                                      #
 // #                frontend/src/components/AuditTable.tsx                #
+// #                                                                      #
 // ########################################################################
 /**
  * Author:            Kevin Street
  * Created on:        2026-10-29
- * Last modified on:  2026-10-29
+ * Last modified on:  2026-11-03
  *
  * The audit log table: every change to the sources, newest first, with
  * its time, the source, the SHA-256 of its text and the request that
@@ -12,7 +14,9 @@
  */
 
 // ########################################################################
+// #                                                                      #
 // #                               Imports                                #
+// #                                                                      #
 // ########################################################################
 // Local
 import { CONFIG } from '../config';
@@ -20,13 +24,17 @@ import { required } from '../lib/required';
 import type { AuditEntry } from '../types';
 
 // ########################################################################
+// #                                                                      #
 // #                           Global constants                           #
+// #                                                                      #
 // ########################################################################
 // log.debug('Takes how many characters of a hash are shown from the config')
 const HASH_CHARS = CONFIG.web.hash_chars;
 
 // ########################################################################
+// #                                                                      #
 // #                             Audit table                              #
+// #                                                                      #
 // ########################################################################
 // log.debug('Defines the audit table')
 /**

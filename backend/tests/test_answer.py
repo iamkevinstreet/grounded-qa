@@ -1,17 +1,21 @@
 ########################################################################
+#                                                                      #
 #                     backend/tests/test_answer.py                     #
+#                                                                      #
 ########################################################################
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-10-29
+Last modified on:  2026-11-03
 
 Tests each way a question can end: answered, not covered, unverified, or
 no passages at all.
 """
 
 ########################################################################
+#                                                                      #
 #                               Imports                                #
+#                                                                      #
 ########################################################################
 # Standard library
 from __future__ import annotations
@@ -33,12 +37,16 @@ from grounded_qa.core.retrieve import Retriever
 from support import LEAVE_BODY, OVERTIME_BODY, make_source
 
 ########################################################################
+#                                                                      #
 #                           Global constants                           #
+#                                                                      #
 ########################################################################
 log = get_logger(__name__)
 
 ########################################################################
+#                                                                      #
 #                           Local constants                            #
+#                                                                      #
 ########################################################################
 # log.debug("Sets the question most tests ask")
 QUESTION = "How many workweeks of leave can eligible employees take?"
@@ -47,7 +55,9 @@ GOOD_QUOTE = "Eligible employees may take up to 12 workweeks of leave"
 
 
 ########################################################################
+#                                                                      #
 #                             Answer tests                             #
+#                                                                      #
 ########################################################################
 # log.debug("Defines an answerer over the two small sources")
 def _answerer(settings: AppSettings | None = None, *drafts: Any) -> tuple[Answerer, FakeProvider]:

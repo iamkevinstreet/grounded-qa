@@ -1,17 +1,21 @@
 // ########################################################################
+// #                                                                      #
 // #                frontend/src/components/AnswerText.tsx                #
+// #                                                                      #
 // ########################################################################
 /**
  * Author:            Kevin Street
  * Created on:        2026-10-29
- * Last modified on:  2026-10-29
+ * Last modified on:  2026-11-03
  *
  * The answer text, with each citation marker a button that shows its
  * source on the sheet beside it.
  */
 
 // ########################################################################
+// #                                                                      #
 // #                               Imports                                #
+// #                                                                      #
 // ########################################################################
 // Third-party
 import { Fragment } from 'react';
@@ -21,7 +25,9 @@ import { splitAnswer } from '../citations';
 import { required } from '../lib/required';
 
 // ########################################################################
+// #                                                                      #
 // #                             Answer text                              #
+// #                                                                      #
 // ########################################################################
 interface Props {
   text?: string | null;

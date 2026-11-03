@@ -1,12 +1,14 @@
 /*
 ########################################################################
+#                                                                      #
 #                     frontend/src/styles/base.css                     #
+#                                                                      #
 ########################################################################
 */
 /*
  * Author:            Kevin Street
  * Created on:        2026-10-29
- * Last modified on:  2026-10-29
+ * Last modified on:  2026-11-03
  *
  * The frame every page shares: the page, the top bar, the footer,
  * controls, tables, focus, and the screen-reader helpers.
@@ -14,7 +16,9 @@
 
 /*
 ########################################################################
+#                                                                      #
 #                              Page frame                              #
+#                                                                      #
 ########################################################################
 */
 *,

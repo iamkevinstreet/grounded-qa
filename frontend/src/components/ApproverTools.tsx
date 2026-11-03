@@ -1,17 +1,21 @@
 // ########################################################################
+// #                                                                      #
 // #              frontend/src/components/ApproverTools.tsx               #
+// #                                                                      #
 // ########################################################################
 /**
  * Author:            Kevin Street
  * Created on:        2026-10-29
- * Last modified on:  2026-10-29
+ * Last modified on:  2026-11-03
  *
  * The approver's tools, once the token is accepted: the add-source form,
  * the sources with a Remove button each, and the audit log.
  */
 
 // ########################################################################
+// #                                                                      #
 // #                               Imports                                #
+// #                                                                      #
 // ########################################################################
 // Local
 import { required } from '../lib/required';
@@ -20,7 +24,9 @@ import { AddSourceForm } from './AddSourceForm';
 import { AuditTable } from './AuditTable';
 
 // ########################################################################
+// #                                                                      #
 // #                            Approver tools                            #
+// #                                                                      #
 // ########################################################################
 interface Props {
   sources?: SourceSummary[] | null;

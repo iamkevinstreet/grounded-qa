@@ -1,10 +1,12 @@
 ########################################################################
+#                                                                      #
 #                backend/src/grounded_qa/core/chunk.py                 #
+#                                                                      #
 ########################################################################
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-10-29
+Last modified on:  2026-11-03
 
 Splits each source into passages, the units retrieval finds and
 answers cite. A passage is a run of whole paragraphs, lists and tables
@@ -15,7 +17,9 @@ sentences.
 """
 
 ########################################################################
+#                                                                      #
 #                               Imports                                #
+#                                                                      #
 ########################################################################
 # Standard library
 from __future__ import annotations
@@ -35,14 +39,18 @@ from grounded_qa.core.sources import Source
 from grounded_qa.core.text import word_count
 
 ########################################################################
+#                                                                      #
 #                           Global constants                           #
+#                                                                      #
 ########################################################################
 log = get_logger(__name__)
 # log.debug("Takes the text between the parts of a heading path, from the config")
 PATH_SEP: Final = SETTINGS.retrieval_section_separator
 
 ########################################################################
+#                                                                      #
 #                           Local constants                            #
+#                                                                      #
 ########################################################################
 # log.debug("Matches a Markdown heading; captures its marks and text")
 HEADING_RE = re.compile(r"^(?P<marks>#{1,6})\s+(?P<name>.+)$")
@@ -55,7 +63,9 @@ ID_SEP = "#"
 
 
 ########################################################################
+#                                                                      #
 #                               Passages                               #
+#                                                                      #
 ########################################################################
 # log.debug("Defines one passage of a source")
 class Passage(BaseModel, frozen=True):

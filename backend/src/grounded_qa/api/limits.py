@@ -1,10 +1,12 @@
 ########################################################################
+#                                                                      #
 #                backend/src/grounded_qa/api/limits.py                 #
+#                                                                      #
 ########################################################################
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-10-29
+Last modified on:  2026-11-03
 
 Limits how often one client may ask, so one caller cannot spend the
 whole model budget. It keeps recent request times in memory, per
@@ -14,7 +16,9 @@ instead; the README lists this under unresolved questions.
 """
 
 ########################################################################
+#                                                                      #
 #                               Imports                                #
+#                                                                      #
 ########################################################################
 # Standard library
 from __future__ import annotations
@@ -29,19 +33,25 @@ from kds.args import required
 from kds.logs import get_logger
 
 ########################################################################
+#                                                                      #
 #                           Global constants                           #
+#                                                                      #
 ########################################################################
 log = get_logger(__name__)
 
 ########################################################################
+#                                                                      #
 #                           Local constants                            #
+#                                                                      #
 ########################################################################
 # log.debug("Sets the window the limit counts over, in seconds")
 WINDOW_S = 60.0
 
 
 ########################################################################
+#                                                                      #
 #                              Rate limit                              #
+#                                                                      #
 ########################################################################
 # log.debug("Defines the limiter")
 class RateLimiter:

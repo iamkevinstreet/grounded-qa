@@ -1,17 +1,21 @@
 ########################################################################
+#                                                                      #
 #                    backend/tests/test_library.py                     #
+#                                                                      #
 ########################################################################
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-10-29
+Last modified on:  2026-11-03
 
 Tests approver changes: stored, audited and searchable at once; bad
 documents refused.
 """
 
 ########################################################################
+#                                                                      #
 #                               Imports                                #
+#                                                                      #
 ########################################################################
 # Standard library
 from __future__ import annotations
@@ -28,13 +32,17 @@ from grounded_qa.core.library import Library, NewSource, SourceExistsError
 from grounded_qa.core.sources import SourceError
 
 ########################################################################
+#                                                                      #
 #                           Global constants                           #
+#                                                                      #
 ########################################################################
 log = get_logger(__name__)
 
 
 ########################################################################
+#                                                                      #
 #                            Library tests                             #
+#                                                                      #
 ########################################################################
 # log.debug("Defines a new document an approver might submit")
 def _new(source_id: str = "pump-breaks", body: str = "") -> NewSource:

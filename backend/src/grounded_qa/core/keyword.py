@@ -1,10 +1,12 @@
 ########################################################################
+#                                                                      #
 #               backend/src/grounded_qa/core/keyword.py                #
+#                                                                      #
 ########################################################################
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-10-29
+Last modified on:  2026-11-03
 
 Ranks passages by the words they share with a question, using BM25; it
 needs no model or network. BM25 scores a passage higher for each
@@ -15,7 +17,9 @@ measured against.
 """
 
 ########################################################################
+#                                                                      #
 #                               Imports                                #
+#                                                                      #
 ########################################################################
 # Standard library
 from __future__ import annotations
@@ -32,19 +36,25 @@ from kds.logs import get_logger
 from grounded_qa.core.text import terms
 
 ########################################################################
+#                                                                      #
 #                           Global constants                           #
+#                                                                      #
 ########################################################################
 log = get_logger(__name__)
 
 ########################################################################
+#                                                                      #
 #                           Local constants                            #
+#                                                                      #
 ########################################################################
 # log.debug("Sets BM25's smoothing, which keeps every term's idf positive")
 SMOOTHING = 0.5
 
 
 ########################################################################
+#                                                                      #
 #                           Keyword ranking                            #
+#                                                                      #
 ########################################################################
 # log.debug("Defines a BM25 index over a fixed list of texts")
 @dataclass(frozen=True)

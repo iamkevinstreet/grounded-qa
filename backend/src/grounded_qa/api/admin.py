@@ -1,10 +1,12 @@
 ########################################################################
+#                                                                      #
 #                 backend/src/grounded_qa/api/admin.py                 #
+#                                                                      #
 ########################################################################
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-10-29
+Last modified on:  2026-11-03
 
 The approver's routes: add or remove a source, and read the audit log
 of every change. Every route on this router needs the approver's
@@ -12,7 +14,9 @@ token, which the approver check reads first.
 """
 
 ########################################################################
+#                                                                      #
 #                               Imports                                #
+#                                                                      #
 ########################################################################
 # Standard library
 from __future__ import annotations
@@ -33,7 +37,9 @@ from grounded_qa.core.library import NewSource, SourceExistsError
 from grounded_qa.core.sources import SourceError
 
 ########################################################################
+#                                                                      #
 #                           Global constants                           #
+#                                                                      #
 ########################################################################
 log = get_logger(__name__)
 # log.debug("Takes the API's path prefix from the config")
@@ -43,7 +49,9 @@ ENCODING: Final = SETTINGS.text_encoding
 
 
 ########################################################################
+#                                                                      #
 #                           Approver routes                            #
+#                                                                      #
 ########################################################################
 # log.debug("Creates the router; every route on it needs the approver")
 router = APIRouter(prefix=f"{PREFIX}/admin", dependencies=[Depends(require_approver)])

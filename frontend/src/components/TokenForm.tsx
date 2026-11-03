@@ -1,17 +1,21 @@
 // ########################################################################
+// #                                                                      #
 // #                frontend/src/components/TokenForm.tsx                 #
+// #                                                                      #
 // ########################################################################
 /**
  * Author:            Kevin Street
  * Created on:        2026-10-29
- * Last modified on:  2026-10-29
+ * Last modified on:  2026-11-03
  *
  * The approver's token form: a password box and an Unlock button. The
  * token stays in the page's memory, never in browser storage.
  */
 
 // ########################################################################
+// #                                                                      #
 // #                               Imports                                #
+// #                                                                      #
 // ########################################################################
 // Third-party
 import type { SubmitEvent } from 'react';
@@ -20,7 +24,9 @@ import type { SubmitEvent } from 'react';
 import { required } from '../lib/required';
 
 // ########################################################################
+// #                                                                      #
 // #                              Token form                              #
+// #                                                                      #
 // ########################################################################
 interface Props {
   token?: string;

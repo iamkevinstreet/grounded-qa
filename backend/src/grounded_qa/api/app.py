@@ -1,10 +1,12 @@
 ########################################################################
+#                                                                      #
 #                  backend/src/grounded_qa/api/app.py                  #
+#                                                                      #
 ########################################################################
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-10-29
+Last modified on:  2026-11-03
 
 Builds the HTTP app: startup, request ids, security headers, size
 limits, CORS and errors. Every response carries the request id and the
@@ -14,7 +16,9 @@ with the request id and nothing from inside the service.
 """
 
 ########################################################################
+#                                                                      #
 #                               Imports                                #
+#                                                                      #
 ########################################################################
 # Standard library
 from __future__ import annotations
@@ -43,7 +47,9 @@ from grounded_qa.config import SETTINGS, AppSettings, get_app_settings
 from grounded_qa.core.embed import Embedder
 
 ########################################################################
+#                                                                      #
 #                           Global constants                           #
+#                                                                      #
 ########################################################################
 log = get_logger(__name__)
 # log.debug("Takes the API's path prefix from the config")
@@ -54,7 +60,9 @@ REQUEST_ID: Final = SETTINGS.api_request_id_header
 MS: Final = SETTINGS.time_ms_per_second
 
 ########################################################################
+#                                                                      #
 #                           Local constants                            #
+#                                                                      #
 ########################################################################
 # log.debug("Matches a request id a client may supply")
 REQUEST_ID_RE = re.compile(r"^[A-Za-z0-9_-]{1,64}$")
@@ -80,7 +88,9 @@ Next = Callable[[Request], Awaitable[Response]]
 
 
 ########################################################################
+#                                                                      #
 #                               HTTP app                               #
+#                                                                      #
 ########################################################################
 # log.debug("Defines the app, whose API schema describes each route by its summary")
 class App(FastAPI):

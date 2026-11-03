@@ -1,30 +1,38 @@
 // ########################################################################
+// #                                                                      #
 // #                        frontend/src/labels.ts                        #
+// #                                                                      #
 // ########################################################################
 /**
  * Author:            Kevin Street
  * Created on:        2026-10-29
- * Last modified on:  2026-10-29
+ * Last modified on:  2026-11-03
  *
  * Display labels: a passage's heading path, written in sentence case
  * where the source shouts it, with acronyms kept in capitals.
  */
 
 // ########################################################################
+// #                                                                      #
 // #                               Imports                                #
+// #                                                                      #
 // ########################################################################
 // Local
 import { CONFIG } from './config';
 import { required } from './lib/required';
 
 // ########################################################################
+// #                                                                      #
 // #                           Global constants                           #
+// #                                                                      #
 // ########################################################################
 // log.debug('Takes the text between the parts of a heading path from the config')
 const PATH_SEP = CONFIG.retrieval.section_separator;
 
 // ########################################################################
+// #                                                                      #
 // #                           Local constants                            #
+// #                                                                      #
 // ########################################################################
 // log.debug('Lists acronyms a heading keeps in capitals')
 const ACRONYMS: readonly string[] = ['FMLA', 'FLSA', 'ADA', 'USERRA', 'PUMP', 'U.S.', 'PTO'];
@@ -34,7 +42,9 @@ const SHOWN_SEP = ' \u203a ';
 const LETTERS = /[A-Za-z.]+/;
 
 // ########################################################################
+// #                                                                      #
 // #                            Display labels                            #
+// #                                                                      #
 // ########################################################################
 // log.debug('Defines the label for a heading path')
 /**
