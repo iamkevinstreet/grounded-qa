@@ -225,6 +225,6 @@ block says what each parameter is for and what comes back.
 
 ## Changelog and license
 
-Changes by release are in [CHANGELOG.md](CHANGELOG.md); this is v0.2.0. Licensed under Apache 2.0
+Changes by release are in [CHANGELOG.md](CHANGELOG.md); this is v0.2.1. Licensed under Apache 2.0
 ([LICENSE](LICENSE), [NOTICE](NOTICE)). The fact sheets in `data/sources/` are works of the U.S.
 federal government and in the public domain.
