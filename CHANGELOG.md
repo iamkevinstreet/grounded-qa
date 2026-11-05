@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.2.2, Nov 5, 2026
+
+- **Dependencies:** the web app moves to ESLint 10.14.0, eslint-plugin-jsdoc 65.4.2 and
+  @types/node 26.6.6. The last two are two major versions on: the plugin's rules are the same,
+  and the Node types still check `vite.config.ts`, the one file that uses them. Nothing had to
+  change: lint, the types, the tests, the build and the audits pass as they were. The health
+  report and the API schema say 0.2.2.
+
 ## v0.2.1, Nov 5, 2026
 
 - **The evaluation dashboard:** `make dashboard` serves a Dash app on `127.0.0.1:8050` over the
