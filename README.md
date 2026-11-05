@@ -214,7 +214,7 @@ grounded-qa/
 ├── data/                 sources/ (22 fact sheets), samples/ (2 synthetic), evals/ (cases,
 │                         results, figures, index), export/ (the Tableau files)
 ├── docs/                 diagrams.toml and the two SVGs it draws
-└── .github/              CI, CodeQL, the live evaluation, Dependabot
+└── .github/              CI, CodeQL, the live evaluation, Dependabot and the workflow that lands its updates
 ```
 
 Every source file opens with a box holding its path and a doc block (author, dates, what the file

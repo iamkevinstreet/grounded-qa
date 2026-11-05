@@ -40,7 +40,7 @@ see "Unresolved questions" in the [README](README.md) before running it anywhere
 | Abuse of the model | A per-client limit on questions, a size limit on every request body, and a spending budget per process |
 | Personal data in logs | Logs never hold question text; `kds.logs` redacts emails, phone numbers and ID-like numbers by default |
 | Browser attacks | Strict security headers and a deny-all content security policy on API responses; CORS allows only configured origins |
-| A vulnerable dependency | Lockfiles with hashes, `pip-audit` and `npm audit` in CI, Dependabot every week |
+| A vulnerable dependency | Lockfiles with hashes, `pip-audit` and `npm audit` in CI, Dependabot every week, its updates landed only once CI passes |
 | A tampered Action or tool | Actions pinned to commit SHAs; the gitleaks download checked against its published SHA-256 |
 | A flaw in the code | CodeQL for Python and TypeScript, ruff's security rules (bandit), least-privilege workflow permissions |
 
