@@ -38,6 +38,9 @@ see "Unresolved questions" in the [README](README.md) before running it anywhere
 | An invented citation | Every quote must appear word for word in the passage it cites, or its claim is removed |
 | A path or id trick | Source ids are 1-64 lowercase letters, digits and dashes, and every file path is checked to stay in its folder |
 | Abuse of the model | A per-client limit on questions, a size limit on every request body, and a spending budget per process |
+| An injection through an MCP client | The MCP server's tools only read; a search returns passages only from sources the guard passed and screens each again; a held-back source is listed by its count of flagged lines, never their text; every MCP client's questions share one per-minute limit |
+| A DNS rebinding attack on the MCP route | The MCP SDK checks the Host header of every request to the route against the address the API listens on |
+| Personal data in spans | Spans hold no question, prompt or answer text unless `[spans] content` is on; text set on a span is redacted as log lines are; a failure is recorded by its type, never its message; spans go only where the Langfuse keys or the standard OpenTelemetry endpoint say |
 | Personal data in logs | Logs never hold question text; `kds.logs` redacts emails, phone numbers and ID-like numbers by default |
 | Browser attacks | Strict security headers and a deny-all content security policy on API responses; CORS allows only configured origins |
 | A vulnerable dependency | Lockfiles with hashes, `pip-audit` and `npm audit` in CI, Dependabot every week, its updates landed only once CI passes |

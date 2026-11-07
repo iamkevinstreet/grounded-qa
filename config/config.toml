@@ -5,7 +5,7 @@
 ########################################################################
 # Author:            Kevin Street
 # Created on:        2026-10-29
-# Last modified on:  2026-11-03
+# Last modified on:  2026-11-07
 #
 # Every setting the service, the dashboard and the web app read, at its
 # default, and every value two of their files share. No secrets: those
@@ -46,6 +46,25 @@ dir = "logs"                              # one YYYY-MM-DD.jsonl file per day
 level = "INFO"                            # DEBUG | INFO | WARNING | ERROR
 redact = true                             # remove emails, phone numbers and IDs from logs
 trace = false                             # print logger lines as HH:MM:SS traces
+
+# Spans: the timed steps of each question, for Langfuse or any tracing
+# tool (shared kds settings, but service and source)
+[spans]
+keep = false                              # write each evaluation run's spans beside its results
+content = false                           # put questions, prompts and answers on spans
+public = false                            # let anyone with a trace's link open it in Langfuse
+service = "grounded-qa"                   # the name spans are recorded under
+source = "approved-sources"               # what a search span says it looked in
+
+# Where spans go once the two Langfuse keys are in config/.env
+[langfuse]
+base_url = "https://cloud.langfuse.com"   # https://us.cloud.langfuse.com for US data
+
+# The MCP server: the library as tools any MCP client can call
+[mcp]
+name = "grounded-qa"                      # the server's name, as clients list it
+path = "/mcp"                             # where the API serves it over Streamable HTTP
+client = "mcp"                            # the name every MCP client's questions count under
 
 # Where the service reads and writes its data, from the repository root
 [data]

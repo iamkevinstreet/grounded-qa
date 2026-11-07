@@ -6,7 +6,7 @@
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-11-03
+Last modified on:  2026-11-07
 
 Builds the HTTP app: startup, request ids, security headers, size
 limits, CORS and errors. Every response carries the request id and the
@@ -27,8 +27,8 @@ import logging
 import re
 import time
 from collections.abc import AsyncIterator, Awaitable, Callable
-from contextlib import asynccontextmanager
-from typing import Any, Final
+from contextlib import AbstractAsyncContextManager, asynccontextmanager
+from typing import Any, Final, cast
 
 # Third-party
 from fastapi import FastAPI, Request, Response, status
@@ -36,15 +36,25 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from kds.args import required
 from kds.llm import BudgetExceededError, ModelAdapter, TransientError
-from kds.logs import current_request_id, get_logger, log_event, new_request_id, setup_logging
+from kds.logs import (
+    current_request_id,
+    flush_spans,
+    get_logger,
+    log_event,
+    new_request_id,
+    setup_logging,
+    setup_spans,
+)
 from kds.settings import describe
+from mcp.server.mcpserver import MCPServer
 
 # Local
 from grounded_qa import __version__
 from grounded_qa.api import admin, routes
-from grounded_qa.api.state import build_services
+from grounded_qa.api.state import Services, build_services
 from grounded_qa.config import SETTINGS, AppSettings, get_app_settings
 from grounded_qa.core.embed import Embedder
+from grounded_qa.mcp_server.server import build_server
 
 ########################################################################
 #                                                                      #
@@ -147,36 +157,15 @@ def create_app(
     """
     # log.debug("Uses the given settings or the configured ones")
     config = settings or get_app_settings()
-
-    # log.debug("Defines startup: logging, the settings record, the services")
-    @asynccontextmanager
-    async def lifespan(app: FastAPI | None = None) -> AsyncIterator[None]:
-        """Sets up logging, logs the settings and builds the services.
-
-        Every setting is logged once, secrets masked.
-
-        Args:
-            app: The app that is starting. Required.
-
-        Yields:
-            Nothing; the app serves requests until it shuts down.
-        """
-        # log.debug("Takes the app, which the caller must give")
-        app = required(app=app)
-        # log.debug("Sets up JSON logging")
-        setup_logging(config)
-        # log.debug("Logs the version and every setting, secrets masked")
-        log_event(log, "service.start", version=__version__, settings=describe(config))
-        # log.debug("Builds the library, model adapter and answerer")
-        app.state.services = build_services(config, adapter, embedder)
-        # log.debug("Serves requests until shutdown")
-        yield
-
+    # log.debug("Sets up JSON logging first, so the MCP SDK adds no console logging of its own")
+    setup_logging(config)
+    # log.debug("Builds the MCP server, which reads the services once they exist")
+    server = build_server(lambda: cast(Services, app.state.services))
     # log.debug("Creates the app, with its schema under the API prefix")
     app = App(
         title="Grounded Q&A",
         version=__version__,
-        lifespan=lifespan,
+        lifespan=_lifespan(config, adapter, embedder, server),
         docs_url=None,
         redoc_url=None,
         openapi_url=f"{PREFIX}/openapi.json",
@@ -201,8 +190,74 @@ def create_app(
     app.add_exception_handler(TransientError, _model_unavailable)
     # log.debug("Treats a spent budget the same way")
     app.add_exception_handler(BudgetExceededError, _model_unavailable)
+    # log.debug("Serves the MCP server over Streamable HTTP at its own path")
+    app.router.routes.extend(
+        server.streamable_http_app(
+            streamable_http_path=config.mcp_path, host=config.api_host
+        ).routes
+    )
     # log.debug("Returns the app")
     return app
+
+
+# log.debug("Defines the startup and shutdown of the app")
+def _lifespan(
+    config: AppSettings | None = None,
+    adapter: ModelAdapter | None = None,
+    embedder: Embedder | None = None,
+    server: MCPServer | None = None,
+) -> Callable[[FastAPI], AbstractAsyncContextManager[None]]:
+    """Returns the app's lifespan: logs, spans, services, MCP sessions.
+
+    Args:
+        config: The settings the app runs with. Required.
+        adapter: The model adapter; built from the settings when None.
+        embedder: The embedding model; built from the settings when
+            None and the retrieval mode needs one.
+        server: The MCP server, whose sessions run while the app does.
+            Required.
+
+    Returns:
+        The lifespan, for FastAPI.
+    """
+    # log.debug("Takes the settings, which the caller must give")
+    config = required(config=config)
+    # log.debug("Takes the MCP server, which the caller must give")
+    server = required(server=server)
+
+    # log.debug("Defines startup: logging, spans, the settings record, the services")
+    @asynccontextmanager
+    async def lifespan(app: FastAPI | None = None) -> AsyncIterator[None]:
+        """Sets up logs and spans, logs the settings, builds services.
+
+        Every setting is logged once, secrets masked. The MCP server's
+        sessions run while the app serves requests.
+
+        Args:
+            app: The app that is starting. Required.
+
+        Yields:
+            Nothing; the app serves requests until it shuts down.
+        """
+        # log.debug("Takes the app, which the caller must give")
+        app = required(app=app)
+        # log.debug("Sets up JSON logging")
+        setup_logging(config)
+        # log.debug("Turns spans on, when they have somewhere to go")
+        setup_spans(config, service=config.spans_service, version=__version__)
+        # log.debug("Logs the version and every setting, secrets masked")
+        log_event(log, "service.start", version=__version__, settings=describe(config))
+        # log.debug("Builds the library, model adapter and answerer")
+        app.state.services = build_services(config, adapter, embedder)
+        # log.debug("Runs the MCP server's sessions while requests are served")
+        async with server.session_manager.run():
+            # log.debug("Serves requests until shutdown")
+            yield
+        # log.debug("Sends any spans still waiting")
+        flush_spans()
+
+    # log.debug("Returns the lifespan")
+    return lifespan
 
 
 # log.debug("Defines the middleware every request passes through")

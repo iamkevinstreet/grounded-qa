@@ -6,7 +6,7 @@
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-11-03
+Last modified on:  2026-11-07
 
 The open routes, which anyone may call: ask a question, list and read
 the approved sources, and check the service's health.
@@ -33,6 +33,7 @@ from grounded_qa.api.state import Services, services
 from grounded_qa.config import SETTINGS
 from grounded_qa.core.models import Answer
 from grounded_qa.core.sources import ID_RE
+from grounded_qa.core.text import tidy
 
 ########################################################################
 #                                                                      #
@@ -109,9 +110,7 @@ def ask(body: AskRequest, request: Request, svc: Svc) -> Answer:
             429 when this client has asked too often.
     """
     # log.debug("Drops control characters and collapses the spacing")
-    question = " ".join(
-        "".join(c for c in body.question if c.isprintable() or c.isspace()).split()
-    )
+    question = tidy(body.question)
     # log.debug("Reads the length limits")
     shortest, longest = svc.settings.api_min_question_chars, svc.settings.api_max_question_chars
     # log.debug("Refuses a question outside the limits")

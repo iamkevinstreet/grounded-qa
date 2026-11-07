@@ -6,7 +6,7 @@
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-11-03
+Last modified on:  2026-11-07
 
 Answers a question from the approved sources only and abstains when they
 do not cover it.
@@ -33,7 +33,7 @@ from typing import Protocol
 # Third-party
 from kds.args import missing, required
 from kds.llm import ModelAdapter, StructuredOutputError
-from kds.logs import current_request_id, get_logger, log_event
+from kds.logs import current_request_id, get_logger, log_event, set_values, step
 
 # Local
 from grounded_qa.config import AppSettings
@@ -63,6 +63,14 @@ UNVERIFIED_TEXT = (
 )
 # log.debug("Names the outcome when no citation survived the check")
 UNVERIFIED: Outcome = "unverified"
+# log.debug("Names the span a question is answered in")
+ANSWER = "answer"
+# log.debug("Names the span the quotes are checked in")
+VERIFY = "verify"
+# log.debug("Names the attribute Langfuse reads a span's kind from")
+GUARDRAIL_TYPE = "langfuse.observation.type"
+# log.debug("Names the kind Langfuse shows the quote check as")
+GUARDRAIL = "guardrail"
 
 
 ########################################################################
@@ -137,6 +145,38 @@ class Answerer:
     def ask(self, question: str | None = None) -> Answer:
         """Returns a checked answer to `question`, or an abstention.
 
+        The question is answered in an "answer" span that records how it
+        ended and holds the search, the model call and the quote check.
+
+        Args:
+            question: The question to answer. Required.
+
+        Returns:
+            The answer with its checked citations, or an abstention
+            that says why.
+        """
+        # log.debug("Takes the question, which the caller must give")
+        question = required(question=question)
+        # log.debug("Answers in a span of its own")
+        with step(ANSWER, mode=self.mode) as span:
+            # log.debug("Answers, or abstains")
+            answer = self._ask(question)
+            # log.debug("Records how the question ended")
+            set_values(
+                span,
+                {
+                    "answer.outcome": answer.outcome,
+                    "answer.cited": len(answer.citations),
+                    "answer.dropped": answer.dropped,
+                },
+            )
+        # log.debug("Returns the answer")
+        return answer
+
+    # log.debug("Defines the work of answering one question")
+    def _ask(self, question: str | None = None) -> Answer:
+        """Returns a checked answer to `question`, or an abstention.
+
         Args:
             question: The question to answer. Required.
 
@@ -163,8 +203,12 @@ class Answerer:
             log_event(log, "answer.unreadable", logging.WARNING, passages=len(hits))
             # log.debug("Returns the unverified abstention")
             return self._answer(question, UNVERIFIED_TEXT, UNVERIFIED, hits)
-        # log.debug("Checks each citation and numbers the ones that pass")
-        citations, renumber = self._check(draft, hits)
+        # log.debug("Checks the quotes in a span Langfuse shows as a guardrail")
+        with step(VERIFY, {GUARDRAIL_TYPE: GUARDRAIL}, quotes=len(draft.citations)) as span:
+            # log.debug("Checks each citation and numbers the ones that pass")
+            citations, renumber = self._check(draft, hits)
+            # log.debug("Records how many quotes were found in their passages")
+            set_values(span, {"verify.kept": len(citations)})
         # log.debug("Keeps only the claims a checked citation supports")
         text = prune(draft.answer, renumber)
         # log.debug("Names the outcome from the draft and the checks")
