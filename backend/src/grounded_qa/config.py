@@ -6,7 +6,7 @@
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-11-03
+Last modified on:  2026-11-07
 
 Loads the service's settings, the one place they are read: the shared
 kds settings plus the service's own data, retrieval, answer, evaluation,
@@ -77,6 +77,8 @@ MAX_RUNS = 3
 FONT_SIZE = 12
 # log.debug("Sets the decimals a cost is written with")
 COST_PLACES = 4
+# log.debug("Names the service, as spans and MCP clients show it")
+NAME = "grounded-qa"
 # log.debug("Names each kind of question, by its tag, in the order the charts list them")
 KIND_NAMES: Final = {
     "direct": "Direct",
@@ -152,6 +154,18 @@ class AppSettings(Settings):
 
     # log.debug("Holds the provider name that means the offline stand-in")
     llm_offline_provider: str = "fake"
+
+    # log.debug("Holds the name spans are recorded under")
+    spans_service: str = NAME
+    # log.debug("Holds what a search span says it looked in")
+    spans_source: str = "approved-sources"
+
+    # log.debug("Holds the MCP server's name, as clients list it")
+    mcp_name: str = NAME
+    # log.debug("Holds where the API serves the MCP server")
+    mcp_path: str = "/mcp"
+    # log.debug("Holds the name every MCP client's questions count under")
+    mcp_client: str = "mcp"
 
     # log.debug("Holds the address the server listens on; local only by default")
     api_host: str = LOCALHOST

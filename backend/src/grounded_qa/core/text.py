@@ -6,7 +6,7 @@
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-11-03
+Last modified on:  2026-11-07
 
 Text helpers that search and the checks share: the plain form two
 texts are compared in, with a map back to the original for
@@ -80,6 +80,22 @@ MIN_STEM = 4
 #                             Text helpers                             #
 #                                                                      #
 ########################################################################
+# log.debug("Defines how a question is tidied before it is checked")
+def tidy(text: str | None = None) -> str:
+    """Returns the text on one line, as a question is checked and asked.
+
+    Args:
+        text: The text as a client sent it. Required.
+
+    Returns:
+        The text with only printable characters, words one space apart.
+    """
+    # log.debug("Takes the text, which the caller must give")
+    text = required(text=text)
+    # log.debug("Drops unprintable characters and joins the words by one space")
+    return " ".join("".join(c for c in text if c.isprintable() or c.isspace()).split())
+
+
 # log.debug("Defines the plain form two texts are compared in")
 def normalize(text: str | None = None) -> str:
     """Returns text lowercased, with plain quotes and no Markdown marks.

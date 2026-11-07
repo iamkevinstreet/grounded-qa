@@ -6,7 +6,7 @@
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-11-03
+Last modified on:  2026-11-07
 
 The approved sources and the search index over them: anyone may read
 them, only an approver changes them, and each change is audited.
@@ -37,7 +37,7 @@ from pydantic import BaseModel, Field
 from grounded_qa.config import SETTINGS, AppSettings
 from grounded_qa.core import sources
 from grounded_qa.core.audit import AuditLog
-from grounded_qa.core.chunk import split_all
+from grounded_qa.core.chunk import Passage, split_all
 from grounded_qa.core.embed import Embedder
 from grounded_qa.core.retrieve import Hit, Retriever
 from grounded_qa.core.sources import Source, SourceError
@@ -181,6 +181,31 @@ class Library:
         source_id = required(source_id=source_id)
         # log.debug("Returns the source; a missing id raises KeyError")
         return self._sources[source_id]
+
+    # log.debug("Defines the lookup of one indexed passage")
+    def passage(self, passage_id: str | None = None) -> Passage:
+        """Returns the indexed passage with this id.
+
+        Args:
+            passage_id: The passage's id, its source's id and number.
+                Required.
+
+        Returns:
+            The passage.
+
+        Raises:
+            KeyError: No indexed passage has this id.
+        """
+        # log.debug("Takes the id, which the caller must give")
+        passage_id = required(passage_id=passage_id)
+        # log.debug("Finds the passage among those the index holds")
+        found = [p for p in self._retriever.passages if p.id == passage_id]
+        # log.debug("Stops when no passage has the id")
+        if not found:
+            # log.debug("Raises the missing-key error")
+            raise KeyError(passage_id)
+        # log.debug("Returns the passage")
+        return found[0]
 
     # log.debug("Defines a search, delegated to the current index")
     def search(self, question: str | None = None, k: int | None = None) -> list[Hit]:

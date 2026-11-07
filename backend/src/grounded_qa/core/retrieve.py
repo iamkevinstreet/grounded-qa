@@ -6,7 +6,7 @@
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-11-03
+Last modified on:  2026-11-07
 
 Finds the passages most likely to answer a question: by words
 (keyword, BM25), by meaning (semantic, embeddings), or both fused
@@ -30,7 +30,8 @@ from typing import Final
 
 # Third-party
 from kds.args import required
-from kds.logs import get_logger
+from kds.llm.spans import documents, retrieval
+from kds.logs import get_logger, set_values
 
 # Local
 from grounded_qa.config import SETTINGS, AppSettings
@@ -179,22 +180,28 @@ class Retriever:
         question = required(question=question)
         # log.debug("Uses the configured k unless one is given")
         limit = k or self.settings.retrieval_k
-        # log.debug("Ranks by shared words unless the mode is semantic")
-        keyword = [] if self.mode == SEMANTIC else self._keyword(question)
-        # log.debug("Ranks by meaning unless the mode is keyword")
-        semantic = [] if self.mode == KEYWORD else self._semantic(question)
-        # log.debug("Notes each passage's rank in each ranking")
-        ranks = (
-            {i: r for r, i in enumerate(keyword, 1)},
-            {i: r for r, i in enumerate(semantic, 1)},
-        )
-        # log.debug("Orders by one ranking, or fuses both in hybrid mode")
-        order = self._order(keyword, semantic)
-        # log.debug("Returns the best passages with their ranks")
-        return [
-            Hit(self.passages[i], round(score, 6), ranks[0].get(i), ranks[1].get(i))
-            for i, score in order[:limit]
-        ]
+        # log.debug("Runs the search in a retrieval span")
+        with retrieval(question, top_k=limit, source=self.settings.spans_source) as span:
+            # log.debug("Ranks by shared words unless the mode is semantic")
+            keyword = [] if self.mode == SEMANTIC else self._keyword(question)
+            # log.debug("Ranks by meaning unless the mode is keyword")
+            semantic = [] if self.mode == KEYWORD else self._semantic(question)
+            # log.debug("Notes each passage's rank in each ranking")
+            ranks = (
+                {i: r for r, i in enumerate(keyword, 1)},
+                {i: r for r, i in enumerate(semantic, 1)},
+            )
+            # log.debug("Keeps the best passages, best first, with their ranks")
+            hits = [
+                Hit(self.passages[i], round(score, 6), ranks[0].get(i), ranks[1].get(i))
+                for i, score in self._order(keyword, semantic)[:limit]
+            ]
+            # log.debug("Records the mode and each passage found, by id and score")
+            set_values(span, {"retrieval.mode": self.mode})
+            # log.debug("Records what the search found")
+            documents(span, [(hit.passage.id, hit.score) for hit in hits])
+        # log.debug("Returns the passages")
+        return hits
 
     # log.debug("Defines the keyword ranking")
     def _keyword(self, question: str | None = None) -> list[int]:

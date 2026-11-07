@@ -5,7 +5,7 @@
 ########################################################################
 # Author:            Kevin Street
 # Created on:        2026-10-29
-# Last modified on:  2026-11-03
+# Last modified on:  2026-11-07
 #
 # The README diagrams as data. Redraw them with make diagrams; never
 # edit the SVGs by hand.
@@ -22,13 +22,18 @@ caption = "Grey arrows: what moves between parts. Blue: the one path that leaves
 
 [[diagram.zone]]
 box = [28, 150, 420, 132]
-title = "Browser"
-rule = "readers and approvers"
+title = "Clients"
+rule = "people and models"
 
 [[diagram.component]]
-box = [48, 190, 380, 76]
+box = [48, 190, 184, 76]
 name = "Web app"
-details = ["React and TypeScript: ask, sources, approver", "each checked quote highlighted in its passage"]
+details = ["ask, sources, approver", "quotes highlighted"]
+
+[[diagram.component]]
+box = [244, 190, 184, 76]
+name = "MCP client"
+details = ["Claude or any client", "four read-only tools"]
 
 [[diagram.component]]
 box = [612, 170, 360, 80]
@@ -43,7 +48,7 @@ rule = "your machine, localhost by default"
 [[diagram.component]]
 box = [48, 360, 208, 108]
 name = "API"
-details = ["FastAPI, /api/v1", "request ids and limits", "approver routes: token"]
+details = ["FastAPI: /api/v1, /mcp", "request ids and limits", "approver routes: token"]
 note = "SSO to build"
 
 [[diagram.component]]
@@ -71,9 +76,14 @@ points = [[488, 414], [512, 414]]
 points = [[720, 414], [744, 414]]
 
 [[diagram.arrow]]
-points = [[238, 266], [238, 316]]
+points = [[140, 266], [140, 316]]
 label = "questions, answers"
-at = [246, 296]
+at = [148, 296]
+
+[[diagram.arrow]]
+points = [[336, 266], [336, 316]]
+label = "tool calls"
+at = [344, 296]
 
 [[diagram.arrow]]
 points = [[440, 358], [440, 302], [792, 302], [792, 252]]

@@ -14,7 +14,7 @@ Case study: <https://kevindstreet.com/projects/grounded-employment-law-qa/>
 
 | | |
 | --- | --- |
-| Works today | The service, the web app, approver-only source changes with an audit log, the evaluation (offline and in CI, live by hand), the evaluation dashboard, and the figures and Tableau files the case study reads |
+| Works today | The service, the web app, approver-only source changes with an audit log, the evaluation (offline and in CI, live by hand), the evaluation dashboard, the figures and Tableau files the case study reads, an MCP server any MCP client can use, and spans of every question for Langfuse |
 | Measured | Live answers with `claude-sonnet-5-5` and retrieval in all three modes, on GitHub's runner on Oct 29, 2026, beside the offline baseline (below) |
 | Next | Questions asked in everyday words and false premises, where the live misses cluster; a demo of saved live answers on the case study |
 
@@ -37,6 +37,44 @@ For real answers, set `[llm] provider = "anthropic"` in `config/config.toml` and
 `APPROVER_TOKEN` there too. `make dashboard` serves the evaluation dashboard on
 http://127.0.0.1:8050 over the saved runs: compare up to three, see how each kind of question
 ended, and read every question a run got wrong.
+
+## Use it from Claude (MCP)
+
+The library is also an MCP server, so Claude Desktop, Claude Code or any MCP client can use it. It
+offers four tools, all read-only, and each approved source as a resource:
+
+| Tool | What it does |
+| --- | --- |
+| `ask` | Answers a question as the API does: from the sources only, every quote checked, or says why not |
+| `search_sources` | Finds the passages that best match a query, best first, with their scores |
+| `get_passage` | Returns one passage by its id |
+| `list_sources` | Lists every approved source with its provenance |
+| `source://{id}` | A resource: one source as Markdown, its provenance and then its text |
+
+A client that starts the server as a command runs it over stdio. In Claude Desktop's
+`claude_desktop_config.json`, with the path to your clone:
+
+```json
+{
+  "mcpServers": {
+    "grounded-qa": {
+      "command": "uv",
+      "args": ["run", "--directory", "/path/to/grounded-qa", "--project", "backend",
+               "python", "-m", "grounded_qa.mcp_server"]
+    }
+  }
+}
+```
+
+While the API runs (`make api`), it also serves the tools over Streamable HTTP at
+`http://127.0.0.1:8000/mcp`, for example for Claude Code:
+`claude mcp add --transport http grounded-qa http://127.0.0.1:8000/mcp`.
+
+The guard's rules hold here too. A search returns passages only from sources the guard passed, each
+passage is screened again on its way out, and a held-back source is listed with the number of lines
+the guard flagged but never their text, so nothing that reads like orders to a model reaches the
+client's model. `ask` calls the model, so every MCP client's questions together count against
+`[api] asks_per_minute`.
 
 ## Architecture at a glance
 
@@ -159,6 +197,7 @@ settings you are most likely to change:
 | `[eval] budget_usd` | `5.0`: a process stops calling the model past this spend | `config/config.toml` |
 | `[api] host`, `[api] port` | `127.0.0.1`, `8000` | `config/config.toml` |
 | `ANTHROPIC_API_KEY`, `APPROVER_TOKEN` | unset | `config/.env` only |
+| `LANGFUSE_PUBLIC_KEY`, `LANGFUSE_SECRET_KEY` | unset: spans stay off | `config/.env` only |
 
 Any setting can be overridden by an environment variable named for its section and key:
 `RETRIEVAL_MODE=hybrid`.
@@ -172,6 +211,13 @@ Any setting can be overridden by an environment variable named for its section a
   cost and the spend so far.
 - **Request id:** on every log line and in the `X-Request-ID` header of every response, so a
   reader's report leads straight to the log lines.
+- **Spans:** each question is one `answer` span holding its `retrieval` (the passages found, by id
+  and score), its `chat` call to the model (tokens, cost, stop reason) and its `verify` check (the
+  quotes kept), named as the OpenTelemetry GenAI conventions name them. An MCP call adds the SDK's
+  `tools/call` span above it, and an evaluation run adds one `eval` span per case with its scores.
+  Set `LANGFUSE_PUBLIC_KEY` and `LANGFUSE_SECRET_KEY` in `config/.env` and they go to Langfuse;
+  unset, spans stay off. A log line written inside a span carries its `trace_id`, and every span
+  carries the request id. Questions and answers stay off spans unless `[spans] content` is on.
 - **When something fails:** `GET /api/v1/health` shows the source count, mode, provider and model.
   Questions failing with 503 mean the model could not be reached or the process spent its budget
   (look for `model.unavailable`); a run of `unverified` answers means quotes were not found (look
@@ -182,7 +228,7 @@ Any setting can be overridden by an environment variable named for its section a
 
 ```sh
 make check   # ruff, mypy (strict), kds-standards, ESLint, Stylelint, Prettier, tsc
-make test    # 125 backend and 14 frontend tests
+make test    # 135 backend and 14 frontend tests
 make eval    # the offline evaluation
 ```
 
@@ -196,17 +242,19 @@ dependency audits, CodeQL and a secrets scan of the whole history.
 Secrets live only in `config/.env`; the approver routes are off until `APPROVER_TOKEN` (32
 characters or more) is set; the service listens on localhost by default; every source is checked
 against its SHA-256; injections are held back, fenced and checked; and every change to the sources
-is recorded in an append-only log. Report a vulnerability privately as described in
-[SECURITY.md](SECURITY.md), which also lists every control.
+is recorded in an append-only log. The MCP server only reads, never hands a held-back source's
+text to a client, and shares the API's limit on questions. Report a vulnerability privately as
+described in [SECURITY.md](SECURITY.md), which also lists every control.
 
 ## Project layout
 
 ```text
 grounded-qa/
 ├── backend/              the service, the evaluation and the dashboard (Python 3.12, uv)
-│   ├── src/grounded_qa/  config.py, core/ (the logic), api/ (FastAPI), evals/ (scorers, runner,
-│   │                     exports), dashboard/ (the Dash app, the case study's figures)
-│   └── tests/            125 tests, offline
+│   ├── src/grounded_qa/  config.py, core/ (the logic), api/ (FastAPI), mcp_server/ (the MCP
+│   │                     server), evals/ (scorers, runner, exports), dashboard/ (the Dash app,
+│   │                     the case study's figures)
+│   └── tests/            135 tests, offline
 ├── frontend/             the web app (React, TypeScript, Vite)
 │   ├── src/              pages/, components/, lib/, styles/, the API client, config.ts
 │   └── tests/            14 tests

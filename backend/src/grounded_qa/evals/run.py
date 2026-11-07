@@ -6,7 +6,7 @@
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-11-03
+Last modified on:  2026-11-07
 
 Runs an evaluation from the command line and writes its results:
 answers end to end, or retrieval alone.
@@ -37,9 +37,10 @@ from typing import Any, Final
 # Third-party
 from kds.args import missing, required
 from kds.evals import load_cases, run_eval
-from kds.logs import get_logger, setup_logging
+from kds.logs import flush_spans, get_logger, setup_logging, setup_spans
 
 # Local
+from grounded_qa import __version__
 from grounded_qa.config import SETTINGS, AppSettings, Mode, get_app_settings
 from grounded_qa.core.answer import Answerer
 from grounded_qa.core.chunk import Passage, split_all
@@ -323,6 +324,8 @@ def main(argv: list[str] | None = None) -> int:
     settings = get_app_settings()
     # log.debug("Sets up logging to the configured folder")
     setup_logging(settings)
+    # log.debug("Turns spans on, when they have somewhere to go")
+    setup_spans(settings, service=settings.spans_service, version=__version__)
     # log.debug("Runs the end-to-end evaluation")
     if args.command == ANSWERS:
         # log.debug("Uses the given mode, or the configured one")
@@ -335,6 +338,8 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     # log.debug("Prints the retrieval table")
     print(run_retrieval(settings, args.modes, args.name))
+    # log.debug("Sends any spans still waiting")
+    flush_spans()
     # log.debug("Returns success")
     return 0
 

@@ -49,6 +49,15 @@ app as well as restarting the service.
 | `[log] level` | `INFO` | `DEBUG`, `INFO`, `WARNING` or `ERROR` |
 | `[log] redact` | `true` | Removes emails, phone numbers and ID-like numbers from log lines |
 | `[log] trace` | `false` | Prints the logger lines (once switched on) as HH:MM:SS traces |
+| `[spans] keep` | `false` | Writes each evaluation run's spans beside its results, one per line |
+| `[spans] content` | `false` | Puts questions, prompts and answers on spans; for generated or public data only |
+| `[spans] public` | `false` | Lets anyone with a trace's link open it in Langfuse |
+| `[spans] service` | `grounded-qa` | The name spans are recorded under |
+| `[spans] source` | `approved-sources` | What a search span says it looked in |
+| `[langfuse] base_url` | `https://cloud.langfuse.com` | Where spans go once the Langfuse keys are set; `https://us.cloud.langfuse.com` for US data |
+| `[mcp] name` | `grounded-qa` | The MCP server's name, as clients list it |
+| `[mcp] path` | `/mcp` | Where the API serves the MCP server over Streamable HTTP |
+| `[mcp] client` | `mcp` | The name every MCP client's questions count under, for `[api] asks_per_minute` |
 | `[data] sources` | `data/sources` | The approved documents |
 | `[data] samples` | `data/samples` | Synthetic documents only the evaluation adds |
 | `[data] cases` | `data/evals/cases.jsonl` | The evaluation questions |
@@ -100,6 +109,7 @@ app as well as restarting the service.
 | `APPROVER_TOKEN` | The approver's token, at least 32 characters. Unset, the approver routes are off. |
 | `ANTHROPIC_API_KEY` | Needed when `[llm] provider = "anthropic"` |
 | `OPENAI_API_KEY`, `AZURE_OPENAI_API_KEY` | Needed only for those providers |
+| `LANGFUSE_PUBLIC_KEY`, `LANGFUSE_SECRET_KEY` | A Langfuse project's keys; with both set, spans go to Langfuse. Unset, spans stay off. |
 
 The web app has one build variable of its own, `VITE_API_BASE`, read in
 [`frontend/src/config.ts`](../frontend/src/config.ts); unset, the app calls `[api] prefix` on its

@@ -9,6 +9,29 @@
   when every check passes. One whose checks fail is labelled "needs a person" and waits. CI can now
   be called for a given commit, which is how the workflow checks one before it lands.
 
+## v0.3.0, Nov 7, 2026
+
+- **An MCP server:** any MCP client, such as Claude Desktop or Claude Code, can use the library.
+  Four read-only tools (`ask`, `search_sources`, `get_passage`, `list_sources`) and each approved
+  source as a `source://` resource, built on the MCP Python SDK 2.3 (protocol 2026-07-28).
+  `python -m grounded_qa.mcp_server` serves them over stdio, and the API serves them over
+  Streamable HTTP at `/mcp`. `ask` answers exactly as the API does, and every MCP client's
+  questions share `[api] asks_per_minute`. The guard holds here too: passages come only from
+  sources it passed and are screened again on their way out, and a held-back source is listed by
+  its count of flagged lines, never their text. Eight tests drive the server through a real MCP
+  client, in process and over HTTP.
+- **Spans:** each question is one `answer` span holding its `retrieval` (the passages found, by id
+  and score), its `chat` call (tokens, cost, stop reason) and its `verify` check (the quotes kept,
+  shown in Langfuse as a guardrail), named as the OpenTelemetry GenAI conventions name them. An MCP
+  call's `tools/call` span holds the answer span, and an evaluation run gives each case an `eval`
+  span with its scores. With `LANGFUSE_PUBLIC_KEY` and `LANGFUSE_SECRET_KEY` in `config/.env` they
+  go to Langfuse; unset, spans stay off. The live workflow sends them when those two repository
+  secrets are set and commits each run's spans beside its results. Two tests check the tree.
+- **The workbench:** utils v0.6.0 (spans), pinned at its new commit. New settings are in
+  `config/config.toml`: `[spans]`, `[langfuse]` and `[mcp]`.
+- **A question is tidied once,** in `core/text.py`, for the API and the MCP server alike.
+- 135 backend tests. The health report and the API schema say 0.3.0.
+
 ## v0.2.2, Nov 5, 2026
 
 - **Dependencies:** the web app moves to ESLint 10.14.0, eslint-plugin-jsdoc 65.4.2 and
