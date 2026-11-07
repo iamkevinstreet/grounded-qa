@@ -9,6 +9,15 @@
   when every check passes. One whose checks fail is labelled "needs a person" and waits. CI can now
   be called for a given commit, which is how the workflow checks one before it lands.
 
+## v0.3.1, Nov 7, 2026
+
+- **Spans:** the Anthropic SDK no longer adds a span of its own to each model call. That span
+  repeated the `chat` span's call, tokens included, so Langfuse listed every call twice, and it
+  carried the account's organization and workspace ids. The workbench moves to utils v0.6.1, which
+  builds the Anthropic client with the SDK's spans and trace headers off. The two spans files of
+  the Nov 7 live run, on the eval-results branch, have those spans removed too.
+- 135 backend tests. The health report and the API schema say 0.3.1.
+
 ## v0.3.0, Nov 7, 2026
 
 - **An MCP server:** any MCP client, such as Claude Desktop or Claude Code, can use the library.
