@@ -1,0 +1,1638 @@
+{
+  "settings": {
+    "passage_words": 180,
+    "pool": 50,
+    "rrf_k": 60,
+    "bm25_k1": 1.2,
+    "bm25_b": 0.75,
+    "model": "BAAI/bge-small-en-v1.5"
+  },
+  "results": {
+    "keyword": [
+      {
+        "id": "fmla-entitlement",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "fmla-eligibility-hours",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.5
+      },
+      {
+        "id": "fmla-covered-private-employer",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.5
+      },
+      {
+        "id": "military-caregiver-length",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 0.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.25
+      },
+      {
+        "id": "certification-deadline",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 0.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.2
+      },
+      {
+        "id": "supervisor-contacts-provider",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "third-opinion-final",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "recertification-frequency",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "foreseeable-notice",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "designation-notice-timing",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.3333333333333333
+      },
+      {
+        "id": "key-employee",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "hours-equivalent",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "flight-crew-leave",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.3333333333333333
+      },
+      {
+        "id": "voluntary-overtime",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "leave-year-change-notice",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "spouses-share-birth-leave",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.3333333333333333
+      },
+      {
+        "id": "domestic-partners",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "adult-child-self-care",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "complaint-time-limit",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "staffing-agency-primary",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.3333333333333333
+      },
+      {
+        "id": "teacher-summer-break",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.5
+      },
+      {
+        "id": "executive-salary-level",
+        "tags": [
+          "flsa",
+          "direct"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 0.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.2
+      },
+      {
+        "id": "computer-hourly-rate",
+        "tags": [
+          "flsa",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "highly-compensated-threshold",
+        "tags": [
+          "flsa",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "blue-collar-not-exempt",
+        "tags": [
+          "flsa",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "payroll-records-retention",
+        "tags": [
+          "flsa",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "time-card-retention",
+        "tags": [
+          "flsa",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "overtime-not-waivable",
+        "tags": [
+          "flsa",
+          "direct"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 0.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.25
+      },
+      {
+        "id": "workweek-definition",
+        "tags": [
+          "flsa",
+          "direct"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 0.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.2
+      },
+      {
+        "id": "rest-breaks",
+        "tags": [
+          "flsa",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "meal-periods",
+        "tags": [
+          "flsa",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "on-call-at-home",
+        "tags": [
+          "flsa",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "pump-breaks-duration",
+        "tags": [
+          "pump",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "pump-bathroom",
+        "tags": [
+          "pump",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "oral-complaints",
+        "tags": [
+          "retaliation",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "sick-mom",
+        "tags": [
+          "fmla",
+          "paraphrased"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 0.0,
+        "recall_at_6": 0.0,
+        "recall_at_10": 0.0,
+        "mrr": 0.0
+      },
+      {
+        "id": "mother-in-law",
+        "tags": [
+          "fmla",
+          "paraphrased"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 0.0,
+        "recall_at_6": 0.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.1
+      },
+      {
+        "id": "new-dad-bonding",
+        "tags": [
+          "fmla",
+          "paraphrased"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 0.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.25
+      },
+      {
+        "id": "lunch-at-desk",
+        "tags": [
+          "flsa",
+          "paraphrased"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "fired-for-complaining",
+        "tags": [
+          "retaliation",
+          "paraphrased"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 0.0,
+        "recall_at_6": 0.0,
+        "recall_at_10": 0.0,
+        "mrr": 0.0
+      },
+      {
+        "id": "paid-fmla-premise",
+        "tags": [
+          "adversarial",
+          "false-premise"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 0.0,
+        "recall_at_6": 0.0,
+        "recall_at_10": 0.0,
+        "mrr": 0.0
+      },
+      {
+        "id": "sunday-double-pay-premise",
+        "tags": [
+          "adversarial",
+          "false-premise"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 0.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.25
+      },
+      {
+        "id": "poisoned-source-subtle",
+        "tags": [
+          "adversarial",
+          "injection"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 0.0,
+        "recall_at_6": 0.0,
+        "recall_at_10": 0.0,
+        "mrr": 0.0
+      },
+      {
+        "id": "poisoned-source-obvious",
+        "tags": [
+          "adversarial",
+          "injection"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 0.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.2
+      },
+      {
+        "id": "should-i-sue",
+        "tags": [
+          "adversarial",
+          "advice"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 0.0,
+        "recall_at_6": 0.0,
+        "recall_at_10": 0.0,
+        "mrr": 0.0
+      }
+    ],
+    "semantic": [
+      {
+        "id": "fmla-entitlement",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.5
+      },
+      {
+        "id": "fmla-eligibility-hours",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "fmla-covered-private-employer",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "military-caregiver-length",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "certification-deadline",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.3333333333333333
+      },
+      {
+        "id": "supervisor-contacts-provider",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "third-opinion-final",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "recertification-frequency",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "foreseeable-notice",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "designation-notice-timing",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.5
+      },
+      {
+        "id": "key-employee",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "hours-equivalent",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "flight-crew-leave",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 0.0,
+        "recall_at_6": 0.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.14285714285714285
+      },
+      {
+        "id": "voluntary-overtime",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 0.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.25
+      },
+      {
+        "id": "leave-year-change-notice",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 0.0,
+        "recall_at_6": 0.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.14285714285714285
+      },
+      {
+        "id": "spouses-share-birth-leave",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.5
+      },
+      {
+        "id": "domestic-partners",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "adult-child-self-care",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "complaint-time-limit",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 0.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.16666666666666666
+      },
+      {
+        "id": "staffing-agency-primary",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.5
+      },
+      {
+        "id": "teacher-summer-break",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.5
+      },
+      {
+        "id": "executive-salary-level",
+        "tags": [
+          "flsa",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "computer-hourly-rate",
+        "tags": [
+          "flsa",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "highly-compensated-threshold",
+        "tags": [
+          "flsa",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "blue-collar-not-exempt",
+        "tags": [
+          "flsa",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "payroll-records-retention",
+        "tags": [
+          "flsa",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "time-card-retention",
+        "tags": [
+          "flsa",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "overtime-not-waivable",
+        "tags": [
+          "flsa",
+          "direct"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.3333333333333333
+      },
+      {
+        "id": "workweek-definition",
+        "tags": [
+          "flsa",
+          "direct"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.3333333333333333
+      },
+      {
+        "id": "rest-breaks",
+        "tags": [
+          "flsa",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "meal-periods",
+        "tags": [
+          "flsa",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "on-call-at-home",
+        "tags": [
+          "flsa",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "pump-breaks-duration",
+        "tags": [
+          "pump",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "pump-bathroom",
+        "tags": [
+          "pump",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "oral-complaints",
+        "tags": [
+          "retaliation",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "sick-mom",
+        "tags": [
+          "fmla",
+          "paraphrased"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 0.0,
+        "recall_at_6": 0.0,
+        "recall_at_10": 0.0,
+        "mrr": 0.0
+      },
+      {
+        "id": "mother-in-law",
+        "tags": [
+          "fmla",
+          "paraphrased"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 0.0,
+        "recall_at_6": 0.0,
+        "recall_at_10": 0.0,
+        "mrr": 0.0
+      },
+      {
+        "id": "new-dad-bonding",
+        "tags": [
+          "fmla",
+          "paraphrased"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.5
+      },
+      {
+        "id": "lunch-at-desk",
+        "tags": [
+          "flsa",
+          "paraphrased"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.5
+      },
+      {
+        "id": "fired-for-complaining",
+        "tags": [
+          "retaliation",
+          "paraphrased"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "paid-fmla-premise",
+        "tags": [
+          "adversarial",
+          "false-premise"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 0.0,
+        "recall_at_6": 0.0,
+        "recall_at_10": 0.0,
+        "mrr": 0.0
+      },
+      {
+        "id": "sunday-double-pay-premise",
+        "tags": [
+          "adversarial",
+          "false-premise"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 0.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.2
+      },
+      {
+        "id": "poisoned-source-subtle",
+        "tags": [
+          "adversarial",
+          "injection"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 0.0,
+        "recall_at_6": 0.0,
+        "recall_at_10": 0.0,
+        "mrr": 0.0
+      },
+      {
+        "id": "poisoned-source-obvious",
+        "tags": [
+          "adversarial",
+          "injection"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 0.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.16666666666666666
+      },
+      {
+        "id": "should-i-sue",
+        "tags": [
+          "adversarial",
+          "advice"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.3333333333333333
+      }
+    ],
+    "hybrid": [
+      {
+        "id": "fmla-entitlement",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "fmla-eligibility-hours",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "fmla-covered-private-employer",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "military-caregiver-length",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.3333333333333333
+      },
+      {
+        "id": "certification-deadline",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.5
+      },
+      {
+        "id": "supervisor-contacts-provider",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "third-opinion-final",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "recertification-frequency",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "foreseeable-notice",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "designation-notice-timing",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "key-employee",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "hours-equivalent",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "flight-crew-leave",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.3333333333333333
+      },
+      {
+        "id": "voluntary-overtime",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "leave-year-change-notice",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.5
+      },
+      {
+        "id": "spouses-share-birth-leave",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.5
+      },
+      {
+        "id": "domestic-partners",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "adult-child-self-care",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "complaint-time-limit",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "staffing-agency-primary",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.3333333333333333
+      },
+      {
+        "id": "teacher-summer-break",
+        "tags": [
+          "fmla",
+          "direct"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.5
+      },
+      {
+        "id": "executive-salary-level",
+        "tags": [
+          "flsa",
+          "direct"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.5
+      },
+      {
+        "id": "computer-hourly-rate",
+        "tags": [
+          "flsa",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "highly-compensated-threshold",
+        "tags": [
+          "flsa",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "blue-collar-not-exempt",
+        "tags": [
+          "flsa",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "payroll-records-retention",
+        "tags": [
+          "flsa",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "time-card-retention",
+        "tags": [
+          "flsa",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "overtime-not-waivable",
+        "tags": [
+          "flsa",
+          "direct"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.3333333333333333
+      },
+      {
+        "id": "workweek-definition",
+        "tags": [
+          "flsa",
+          "direct"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.3333333333333333
+      },
+      {
+        "id": "rest-breaks",
+        "tags": [
+          "flsa",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "meal-periods",
+        "tags": [
+          "flsa",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "on-call-at-home",
+        "tags": [
+          "flsa",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "pump-breaks-duration",
+        "tags": [
+          "pump",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "pump-bathroom",
+        "tags": [
+          "pump",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "oral-complaints",
+        "tags": [
+          "retaliation",
+          "direct"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "sick-mom",
+        "tags": [
+          "fmla",
+          "paraphrased"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 0.0,
+        "recall_at_6": 0.0,
+        "recall_at_10": 0.0,
+        "mrr": 0.0
+      },
+      {
+        "id": "mother-in-law",
+        "tags": [
+          "fmla",
+          "paraphrased"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 0.0,
+        "recall_at_6": 0.0,
+        "recall_at_10": 0.0,
+        "mrr": 0.0
+      },
+      {
+        "id": "new-dad-bonding",
+        "tags": [
+          "fmla",
+          "paraphrased"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.5
+      },
+      {
+        "id": "lunch-at-desk",
+        "tags": [
+          "flsa",
+          "paraphrased"
+        ],
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 1.0
+      },
+      {
+        "id": "fired-for-complaining",
+        "tags": [
+          "retaliation",
+          "paraphrased"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 0.0,
+        "recall_at_6": 0.0,
+        "recall_at_10": 0.0,
+        "mrr": 0.0
+      },
+      {
+        "id": "paid-fmla-premise",
+        "tags": [
+          "adversarial",
+          "false-premise"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 0.0,
+        "recall_at_6": 0.0,
+        "recall_at_10": 0.0,
+        "mrr": 0.0
+      },
+      {
+        "id": "sunday-double-pay-premise",
+        "tags": [
+          "adversarial",
+          "false-premise"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 0.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.25
+      },
+      {
+        "id": "poisoned-source-subtle",
+        "tags": [
+          "adversarial",
+          "injection"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 0.0,
+        "recall_at_6": 0.0,
+        "recall_at_10": 0.0,
+        "mrr": 0.0
+      },
+      {
+        "id": "poisoned-source-obvious",
+        "tags": [
+          "adversarial",
+          "injection"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 0.0,
+        "recall_at_6": 1.0,
+        "recall_at_10": 1.0,
+        "mrr": 0.2
+      },
+      {
+        "id": "should-i-sue",
+        "tags": [
+          "adversarial",
+          "advice"
+        ],
+        "recall_at_1": 0.0,
+        "recall_at_3": 0.0,
+        "recall_at_6": 0.0,
+        "recall_at_10": 0.0,
+        "mrr": 0.0
+      }
+    ]
+  }
+}

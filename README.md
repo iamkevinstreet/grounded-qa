@@ -15,7 +15,7 @@ Case study: <https://kevindstreet.com/projects/grounded-employment-law-qa/>
 | | |
 | --- | --- |
 | Works today | The service, the web app, approver-only source changes with an audit log, the evaluation (offline and in CI, live by hand), the evaluation dashboard, the figures and Tableau files the case study reads, an MCP server any MCP client can use, and spans of every question for Langfuse |
-| Measured | Live answers with `claude-sonnet-5-5` and retrieval in all three modes, on GitHub's runner on Oct 29, 2026, beside the offline baseline (below) |
+| Measured | Live answers with `claude-sonnet-5-5` and retrieval in all three modes, on GitHub's runner on Oct 29, 2026, rerun with traces on Nov 7, beside the offline baseline (below) |
 | Next | Questions asked in everyday words and false premises, where the live misses cluster; a demo of saved live answers on the case study |
 
 The sources are real public-domain documents. The two documents in `data/samples/` are made up, and
@@ -125,8 +125,8 @@ client's model. `ask` calls the model, so every MCP client's questions together 
 ## Results
 
 **Live answers** with `claude-sonnet-5-5` on GitHub's runner, Oct 29, 2026, 56 cases, from
-[live-hybrid-latest.md](data/evals/results/live-hybrid-latest.md) and
-[live-keyword-latest.md](data/evals/results/live-keyword-latest.md):
+[live-hybrid-20261029T122529Z.md](data/evals/results/live-hybrid-20261029T122529Z.md) and
+[live-keyword-20261029T122156Z.md](data/evals/results/live-keyword-20261029T122156Z.md):
 
 | Measure | Keyword | Hybrid | Target, set before the run |
 | --- | --- | --- | --- |
@@ -152,6 +152,18 @@ for word in the passage it cites, but about one citation in five points to a pas
 does not mark, usually a second section repeating the rule (the 15-day certification deadline
 appears in two sections of the same fact sheet) or one supporting a sentence the question did not
 ask about. The measure credits only marked passages, so it undercounts; it is reported as measured.
+
+**Rerun with traces**, Nov 7, 2026, the same model and 56 cases, from
+[live-hybrid-latest.md](data/evals/results/live-hybrid-latest.md) and
+[live-keyword-latest.md](data/evals/results/live-keyword-latest.md). Both modes missed the same five
+cases as above, so each was 88.9% correct; keyword search answered the everyday-words question it
+had missed. Every case that should be refused was refused. Citation precision was 81.5% with
+keyword search and 78.9% with hybrid, where two claims were cut because their quotes were not found
+word for word. The one forbidden-phrase hit, in keyword mode, is the check matching "whether you
+should sue" inside a refusal, not advice. The runs cost $0.46 and $0.45. Each case's trace, its
+search, model call and quote check, is kept beside the results, in
+[live-keyword-20261107T203620Z.spans.jsonl](data/evals/results/live-keyword-20261107T203620Z.spans.jsonl)
+and [live-hybrid-20261107T204014Z.spans.jsonl](data/evals/results/live-hybrid-20261107T204014Z.spans.jsonl).
 
 **Retrieval**, scored with no model on GitHub's runner: the share of questions whose evidence is in
 the top k passages, by keyword (BM25), by meaning (the local bge-small model), and both fused, from
