@@ -37,6 +37,10 @@ on:
         description: Stop calling the model once this much has been spent
         type: string
         default: "5"
+      judge:
+        description: Also grade each answered case with the judge model, beside the fixed checks
+        type: boolean
+        default: true
       trace_content:
         description: Put questions, prompts and answers on the spans (made-up questions)
         type: boolean
@@ -70,6 +74,7 @@ jobs:
       SPANS_KEEP: "true"
       SPANS_CONTENT: ${{ inputs.trace_content }}
       SPANS_PUBLIC: ${{ inputs.public_traces }}
+      EVAL_JUDGE: ${{ inputs.judge }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
 

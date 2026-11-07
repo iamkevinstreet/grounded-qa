@@ -37,7 +37,8 @@ from typing import Any, Final
 # Third-party
 from kds.args import missing, required
 from kds.evals import load_cases, run_eval
-from kds.logs import flush_spans, get_logger, setup_logging, setup_spans
+from kds.llm import ModelAdapter
+from kds.logs import flush_spans, get_logger, log_event, setup_logging, setup_spans
 
 # Local
 from grounded_qa import __version__
@@ -49,6 +50,7 @@ from grounded_qa.core.offline import adapter_for
 from grounded_qa.core.retrieve import Retriever
 from grounded_qa.core.sources import load_dir
 from grounded_qa.evals import retrieval
+from grounded_qa.evals.judging import Scorer, with_judge
 from grounded_qa.evals.score import score
 
 ########################################################################
@@ -196,11 +198,48 @@ def run_answers(
         cases=cases,
         adapter=adapter,
         system_fn=lambda case: answerer.ask(case.input["question"]),
-        scorer_fn=partial(score, passages=by_id, canaries=configured.eval_canaries),
+        scorer_fn=scorer_for(configured, by_id),
         out_dir=configured.data_results,
     )
     # log.debug("Returns a one-line summary")
     return f"{name}: {run.cases} cases, {run.failures} failures, {json.dumps(run.summary)}"
+
+
+# log.debug("Defines the scorer a run uses: the fixed checks, and the judge when asked")
+def scorer_for(
+    settings: AppSettings | None = None, passages: dict[str, Passage] | None = None
+) -> Scorer:
+    """Returns the fixed checks, and the judge when [eval] judge is on.
+
+    The offline stand-in cannot judge, so an offline run skips the
+    judge, saying so in the log. The judge runs on an adapter of its
+    own, so the answers' cost stays the answers' alone.
+
+    Args:
+        settings: The run's settings. Required.
+        passages: Every passage the run searches, by id. Required.
+
+    Returns:
+        The scorer.
+    """
+    # log.debug("Takes the settings, which the caller must give")
+    settings = required(settings=settings)
+    # log.debug("Takes the passages, which the caller must give")
+    passages = required(passages=passages)
+    # log.debug("Builds the fixed checks")
+    fixed = partial(score, passages=passages, canaries=settings.eval_canaries)
+    # log.debug("Returns them alone unless the judge is on")
+    if not settings.eval_judge:
+        # log.debug("Returns the fixed checks")
+        return fixed
+    # log.debug("Skips the judge offline, since the stand-in cannot grade")
+    if settings.llm_provider == settings.llm_offline_provider:
+        # log.debug("Says so in the log")
+        log_event(log, "eval.judge_skipped", reason="the offline stand-in cannot judge")
+        # log.debug("Returns the fixed checks")
+        return fixed
+    # log.debug("Returns the fixed checks with the judge, on an adapter of its own")
+    return with_judge(fixed, ModelAdapter(settings=settings))
 
 
 # log.debug("Defines the retrieval evaluation")

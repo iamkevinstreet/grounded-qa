@@ -39,4 +39,4 @@ log = get_logger(__name__)
 #                                                                      #
 ########################################################################
 # log.debug("Sets the package version, kept equal to pyproject.toml")
-__version__ = "0.3.1"
+__version__ = "0.4.0"

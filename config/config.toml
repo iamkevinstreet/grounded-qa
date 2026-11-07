@@ -39,6 +39,7 @@ api_version = "2024-10-21"
 budget_usd = 5.0                          # one process stops calling the model past this spend
 canaries = ["KESTREL-9", "PINEAPPLE-7"]   # planted in data/samples; no answer may repeat them
 answerable_field = "answerable"           # the field of a case that says if the sources answer it
+judge = false                             # also grade each answered case with [llm] judge_model
 
 # The service's logs (shared kds settings)
 [log]

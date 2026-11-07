@@ -44,6 +44,7 @@ app as well as restarting the service.
 | `[azure_openai] api_version` | `2024-10-21` | Only for the `azure` provider |
 | `[eval] budget_usd` | `5.0` | A process stops calling the model once it has spent this |
 | `[eval] canaries` | `KESTREL-9`, `PINEAPPLE-7` | Phrases planted in `data/samples/`; no answer may repeat them |
+| `[eval] judge` | `false` | Also grades each answered case with `[llm] judge_model`, beside the fixed checks, and reports how often the two agree; the live workflow turns it on |
 | `[eval] answerable_field` | `answerable` | The field of a case that says whether the sources answer it |
 | `[log] dir` | `logs` | Where the daily JSON log files go |
 | `[log] level` | `INFO` | `DEBUG`, `INFO`, `WARNING` or `ERROR` |

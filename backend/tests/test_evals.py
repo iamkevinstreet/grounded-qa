@@ -6,7 +6,7 @@
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-11-03
+Last modified on:  2026-11-07
 
 Tests the gold cases are sound, and that the scorers and both kinds of
 run work end to end, offline.
@@ -25,6 +25,8 @@ from typing import Any
 # Third-party
 from kds.args import required
 from kds.evals import EvalCase, load_cases
+from kds.llm import ModelAdapter
+from kds.llm.fake import FakeProvider
 from kds.logs import get_logger
 
 # Local
@@ -35,7 +37,8 @@ from grounded_qa.core.retrieve import Retriever
 from grounded_qa.core.sources import load_dir
 from grounded_qa.core.text import normalize
 from grounded_qa.evals import retrieval
-from grounded_qa.evals.run import corpus, run_answers, run_retrieval
+from grounded_qa.evals.judging import Scorer, with_judge
+from grounded_qa.evals.run import corpus, run_answers, run_retrieval, scorer_for
 from grounded_qa.evals.score import score
 from support import REPO
 
@@ -211,6 +214,106 @@ def test_score_of_an_abstention_and_a_canary() -> None:
     got = score(case, _answer("Not covered. KESTREL-9", "not_covered", False), {}, ("KESTREL-9",))
     # log.debug("Checks both scores")
     assert (got["abstained_correctly"], got["forbidden_hit"]) == (1.0, 1.0)
+
+
+# log.debug("Defines the case every judging test scores")
+def _leave_case() -> EvalCase:
+    """Returns an answerable case that expects 12 workweeks.
+
+    Returns:
+        The case, with one evidence span.
+    """
+    # log.debug("Returns the case")
+    return EvalCase(
+        id="c",
+        input={"question": "q"},
+        expected={
+            "answerable": True,
+            "facts": [["12 workweeks", "12 weeks"]],
+            "evidence": [[{"doc": "leave", "text": "up to 12 workweeks of leave"}]],
+        },
+    )
+
+
+# log.debug("Defines a judge that gives the scripted grades in turn")
+def _judge(*grades: int) -> ModelAdapter:
+    """Returns an adapter whose model answers each grade, in order.
+
+    Args:
+        *grades: The judge's grades, one a call.
+
+    Returns:
+        The adapter, which never sleeps.
+    """
+    # log.debug("Returns an adapter over the scripted verdicts")
+    return ModelAdapter(
+        FakeProvider([f'{{"score": {g}, "reason": "as scripted"}}' for g in grades]),
+        model="fake-judge",
+        sleep=lambda _: None,
+    )
+
+
+# log.debug("Defines the test that the judge grades an answered case beside the fixed check")
+def test_the_judge_agrees_or_not_with_the_fixed_check() -> None:
+    """A full grade agrees with a right answer; a partial one not."""
+    # log.debug("Builds the fixed checks over the cited passage")
+    fixed = _fixed_checks()
+    # log.debug("Builds a correct, cited answer")
+    answer = _answer("Up to 12 workweeks [1].", "answered", True)
+    # log.debug("Scores it twice, with a judge that gives 2, then 1")
+    scored = with_judge(fixed, _judge(2, 1))
+    # log.debug("Takes both rounds of scores")
+    first, second = scored(_leave_case(), answer), scored(_leave_case(), answer)
+    # log.debug("Checks the full grade agrees with the fixed check")
+    assert (first["judge_score"], first["judge_correct"], first["judge_agrees"]) == (2.0, 1.0, 1.0)
+    # log.debug("Checks the partial grade does not")
+    assert (second["judge_correct"], second["judge_agrees"]) == (0.0, 0.0)
+
+
+# log.debug("Defines the test that cases the service did not answer are not judged")
+def test_unanswered_and_unanswerable_cases_are_not_judged() -> None:
+    """No grade or judge call for a refusal or an unanswerable case."""
+    # log.debug("Builds a judge, which must not be called")
+    judge = _judge()
+    # log.debug("Builds the scorer with it")
+    scored = with_judge(_fixed_checks(), judge)
+    # log.debug("Scores a refusal of the answerable case")
+    refused = scored(_leave_case(), _answer("Not covered.", "not_covered", False))
+    # log.debug("Scores an unanswerable case")
+    unanswerable = scored(
+        EvalCase(id="u", input={"question": "q"}, expected={"answerable": False}),
+        _answer("Not covered.", "not_covered", False),
+    )
+    # log.debug("Checks neither has a grade and the judge was never called")
+    assert not any("judge_score" in s for s in (refused, unanswerable)) and not judge.calls
+
+
+# log.debug("Defines the test that an offline run skips the judge")
+def test_an_offline_run_skips_the_judge(real_settings: AppSettings) -> None:
+    """With the judge on and the stand-in answering, only fixed checks.
+
+    Args:
+        real_settings: Settings over the real sources, from conftest.
+    """
+    # log.debug("Turns the judge on, offline")
+    settings = real_settings.model_copy(update={"eval_judge": True})
+    # log.debug("Scores a correct answer with the scorer the run would use")
+    got = scorer_for(settings, {PASSAGE.id: PASSAGE})(
+        _leave_case(), _answer("Up to 12 workweeks [1].", "answered", True)
+    )
+    # log.debug("Checks no judge score was added")
+    assert "judge_score" not in got and got["correct"] == 1.0
+
+
+# log.debug("Defines the fixed checks the judging tests start from")
+def _fixed_checks() -> Scorer:
+    """Returns the fixed checks, bound to the cited passage.
+
+    Returns:
+        The scorer, taking a case and an answer.
+    """
+    # log.debug("Returns the scorer, with no canaries")
+    return lambda case, answer: score(case, answer, {PASSAGE.id: PASSAGE}, ())
 
 
 # log.debug("Defines the end-to-end offline run")

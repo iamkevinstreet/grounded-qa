@@ -9,6 +9,18 @@
   when every check passes. One whose checks fail is labelled "needs a person" and waits. CI can now
   be called for a given commit, which is how the workflow checks one before it lands.
 
+## v0.4.0, Nov 7, 2026
+
+- **A model judge beside the fixed checks:** with `[eval] judge` on, each answered case is also
+  graded 0, 1 or 2 by `[llm] judge_model` against the case's evidence, using the workbench's judge,
+  and the run reports `judge_score`, `judge_correct` (a full grade) and `judge_agrees`, how often the
+  judge and the fixed check say the same. The fixed check looks for one accepted phrasing of each
+  fact, so it can miss a right answer worded another way; the agreement rate says how often that
+  matters. A refusal is not judged, since it is wrong to both. The judge runs on an adapter of its
+  own, so the answers' cost stays theirs, and an offline run skips it. The live workflow turns it
+  on by default (`judge`). Three tests cover the grading, the cases left alone and the offline skip.
+- 138 backend tests. The health report and the API schema say 0.4.0.
+
 ## v0.3.1, Nov 7, 2026
 
 - **Spans:** the Anthropic SDK no longer adds a span of its own to each model call. That span

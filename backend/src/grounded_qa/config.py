@@ -151,6 +151,8 @@ class AppSettings(Settings):
     eval_canaries: tuple[str, ...] = ("KESTREL-9", "PINEAPPLE-7")
     # log.debug("Holds the field of a case that says whether the sources answer it")
     eval_answerable_field: str = "answerable"
+    # log.debug("Holds whether each answered case is also graded by the judge model")
+    eval_judge: bool = False
 
     # log.debug("Holds the provider name that means the offline stand-in")
     llm_offline_provider: str = "fake"
