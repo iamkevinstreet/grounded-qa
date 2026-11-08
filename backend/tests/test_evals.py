@@ -271,22 +271,36 @@ def test_the_judge_agrees_or_not_with_the_fixed_check() -> None:
 
 
 # log.debug("Defines the test of what the judge reads the answer against")
-def test_the_judge_reads_the_expected_facts_and_each_cited_passage_whole() -> None:
-    """The evidence, then the cited passage's whole text, once."""
-    # log.debug("Builds an answer that cites the passage")
-    answer = _answer("Up to 12 workweeks [1].", "answered", True)
-    # log.debug("Cites it a second time, under the same number")
-    twice = answer.model_copy(update={"citations": answer.citations * 2})
-    # log.debug("Writes the reference")
-    text = reference(_leave_case(), twice)
-    # log.debug("Checks the fact, the whole passage once, and their order")
-    assert (
-        text.count(PASSAGE.text),
-        text.index("12 workweeks of leave") < text.index(PASSAGE.text),
-    ) == (
-        1,
-        True,
+def test_the_judge_reads_each_part_and_each_cited_passage_under_all_its_numbers() -> None:
+    """Alternatives as one part; a passage cited twice shown once."""
+    # log.debug("Gives the case's one part a second source's wording")
+    case = EvalCase(
+        id="c",
+        input={"question": "q"},
+        expected={
+            "answerable": True,
+            "facts": [["12 workweeks"]],
+            "evidence": [
+                [
+                    {"doc": "leave", "text": "up to 12 workweeks of leave"},
+                    {"doc": "rights", "text": "12 workweeks of job-protected leave"},
+                ]
+            ],
+        },
     )
+    # log.debug("Builds an answer that cites the passage")
+    answer = _answer("Up to 12 workweeks [1], for eligible employees [2].", "answered", True)
+    # log.debug("Cites the same passage again, as [2]")
+    again = answer.citations[0].model_copy(update={"n": 2})
+    # log.debug("Writes the reference for the answer citing it twice")
+    text = reference(case, answer.model_copy(update={"citations": (*answer.citations, again)}))
+    # log.debug("Checks the one part with its alternative, then the passage once under both")
+    assert (
+        "1. up to 12 workweeks of leave\n   or: 12 workweeks of job-protected leave" in text,
+        text.count(PASSAGE.text),
+        f"[1][2] {PASSAGE.title}," in text,
+        text.index("job-protected") < text.index(PASSAGE.text),
+    ) == (True, 1, True, True)
 
 
 # log.debug("Defines the test that cases the service did not answer are not judged")

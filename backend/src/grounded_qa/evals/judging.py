@@ -14,7 +14,7 @@ so a run says how often the two agree.
 The fixed check, `correct`, looks for one accepted phrasing of every
 expected fact. It is repeatable by hand, but it can miss a right answer
 worded another way, and pass an answer that names the fact and gets the
-rest wrong. The judge reads the answer against two things, the facts a
+rest wrong. The judge reads the answer against two things, the parts a
 full answer gives (the case's evidence) and the whole text of every
 passage the answer cites, and grades it 0, 1 or 2 by the rubric below.
 
@@ -22,6 +22,14 @@ The cited passages are there because an answer may rightly say more
 than the one fact a case checks: the first judged run, on Nov 8, gave
 only the evidence quotes as the reference, and the judge marked 39 of
 40 right answers partial for true detail drawn from their own sources.
+
+The second run, the same day, found two faults in the reference, and
+the judge's reasons trace 13 of its 17 disagreements to them. Each
+passage carried only the first number citing it, so an answer citing
+one passage as [1] and [2] read as citing a passage not given; each
+now carries every number. And every evidence span was listed as a fact
+to give, though the spans of one group are alternatives, any one
+enough; each group is now one part, its spans joined by "or".
 
 - judge_score: the judge's grade.
 - judge_correct: 1 when the grade is 2, a full answer.
@@ -53,7 +61,7 @@ from kds.logs import get_logger
 
 # Local
 from grounded_qa.config import SETTINGS
-from grounded_qa.core.models import Answer
+from grounded_qa.core.models import Answer, Citation
 
 ########################################################################
 #                                                                      #
@@ -71,17 +79,21 @@ ANSWERABLE: Final = SETTINGS.eval_answerable_field
 ########################################################################
 # log.debug("Sets what a full, a partial and a wrong answer are, for the judge")
 RUBRIC = (
-    "The reference has two parts. EXPECTED holds the facts a full answer to the question "
-    "gives. CITED holds the whole text of every passage the answer cites; the answer's claims "
-    "may rest on these and nothing else. Score 2 when the answer gives every expected fact and "
-    "every claim it makes is supported by the cited passages. Score 1 when it gives only part "
-    "of the expected facts, or makes a claim the cited passages do not support. Score 0 when "
-    "it is wrong, or declines a question the expected facts answer."
+    "The reference has two parts. EXPECTED lists the parts of a full answer to the question, "
+    "one numbered part each; when a part lists alternatives joined by 'or', any one of them "
+    "meets it. CITED holds the whole text of every passage the answer cites, each headed by "
+    "every [n] the answer cites it by; the answer's claims may rest on these and nothing else. "
+    "Score 2 when the answer gives every expected part and every claim it makes is supported "
+    "by the cited passages. Score 1 when it gives only some of the expected parts, or makes a "
+    "claim the cited passages do not support. Score 0 when it is wrong, or declines a question "
+    "the expected parts answer."
 )
-# log.debug("Heads the facts a full answer gives, in the judge's reference")
-EXPECTED = "EXPECTED (the facts a full answer gives):"
+# log.debug("Heads the parts a full answer gives, in the judge's reference")
+EXPECTED = "EXPECTED (each part a full answer gives; any one alternative meets a part):"
+# log.debug("Joins the alternatives of one part, each on a line of its own")
+ALTERNATIVE = "\n   or: "
 # log.debug("Heads the passages the answer cites, in the judge's reference")
-CITED = "CITED (the whole text of each passage the answer cites):"
+CITED = "CITED (the whole text of each passage the answer cites, under every [n] citing it):"
 # log.debug("Stands in for the passages of an answer that cites none")
 NONE_CITED = "(none: the answer cites no passage)"
 # log.debug("Sets the grade that counts as a full answer")
@@ -167,7 +179,7 @@ def judged(
     adapter = required(adapter=adapter)
     # log.debug("Takes the fixed check's verdict, which the caller must give")
     fixed = required(fixed=fixed)
-    # log.debug("Asks the judge, with the expected facts and the cited passages")
+    # log.debug("Asks the judge, with the expected parts and the cited passages")
     verdict = judge(
         adapter,
         {
@@ -189,10 +201,15 @@ def judged(
 
 # log.debug("Defines what the judge reads the answer against")
 def reference(case: EvalCase | None = None, answer: Answer | None = None) -> str:
-    """Returns the expected facts, then each cited passage once, whole.
+    """Returns the expected parts, then each cited passage once, whole.
+
+    Each evidence group is one part of a full answer, met by any one of
+    its spans, so a group's spans are written as alternatives. Each
+    passage is headed by every number that cites it, so one passage
+    cited as [1] and [2] is not read as two, one of them missing.
 
     Args:
-        case: The case, whose evidence holds the expected facts.
+        case: The case, whose evidence holds the expected parts.
             Required.
         answer: The answer, whose citations name its passages.
             Required.
@@ -204,14 +221,38 @@ def reference(case: EvalCase | None = None, answer: Answer | None = None) -> str
     case = required(case=case)
     # log.debug("Takes the answer, which the caller must give")
     answer = required(answer=answer)
-    # log.debug("Lists the expected facts, one evidence span a line")
-    expected = "\n".join(span["text"] for group in case.expected["evidence"] for span in group)
-    # log.debug("Keeps each cited passage once, in the order first cited")
-    cited = {c.passage_id: c for c in reversed(answer.citations)}
-    # log.debug("Writes each passage under its citation number, title and section")
-    passages = "\n\n".join(
-        f"[{c.n}] {c.title}, {c.section}\n{c.passage}"
-        for c in sorted(cited.values(), key=lambda c: c.n)
+    # log.debug("Writes each evidence group as one numbered part, its spans as alternatives")
+    expected = "\n".join(
+        f"{number}. " + ALTERNATIVE.join(span["text"] for span in group)
+        for number, group in enumerate(case.expected["evidence"], start=1)
     )
+    # log.debug("Starts each passage's citations, in the order first cited")
+    cited: dict[str, list[Citation]] = {}
+    # log.debug("Walks the citations in number order")
+    for citation in sorted(answer.citations, key=lambda c: c.n):
+        # log.debug("Adds the citation to its passage's")
+        cited.setdefault(citation.passage_id, []).append(citation)
+    # log.debug("Writes each passage once, under every number that cites it")
+    passages = "\n\n".join(_passage(group) for group in cited.values())
     # log.debug("Returns both parts")
     return f"{EXPECTED}\n{expected}\n\n{CITED}\n{passages or NONE_CITED}"
+
+
+# log.debug("Defines one cited passage, as the judge reads it")
+def _passage(citations: list[Citation] | None = None) -> str:
+    """Returns one passage, headed by every number that cites it.
+
+    Args:
+        citations: The passage's citations, in number order. Required.
+
+    Returns:
+        The numbers, title and section, then the passage's whole text.
+    """
+    # log.debug("Takes the citations, which the caller must give")
+    citations = required(citations=citations)
+    # log.debug("Takes the passage's details from its first citation")
+    first = citations[0]
+    # log.debug("Writes every number that cites it, as the answer shows them")
+    numbers = "".join(f"[{c.n}]" for c in citations)
+    # log.debug("Returns the heading, then the passage")
+    return f"{numbers} {first.title}, {first.section}\n{first.passage}"

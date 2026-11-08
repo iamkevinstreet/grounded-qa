@@ -20,11 +20,19 @@
   own, so the answers' cost stays theirs, and an offline run skips it. The live workflow turns it
   on by default (`judge`). Four tests cover the grading, what the judge reads, the cases left alone
   and the offline skip.
-- **What the judge reads:** the facts a full answer gives (the case's evidence) and the whole text
-  of every passage the answer cites, each once. The first judged run, Nov 8, gave it only the
-  evidence quotes, and it marked 39 of 40 right answers partial for true detail drawn from their own
-  cited passages, so its agreement with the fixed check (2.5%) measured the reference, not the
-  answers. That run's fixed checks stand; the judge's figures wait for a rerun.
+- **What the judge reads:** each part of a full answer, one for each group of the case's evidence,
+  with the group's spans as alternatives (any one meets the part), and the whole text of every
+  passage the answer cites, once, headed by every number that cites it. Two judged runs on Nov 8
+  shaped this. The first gave the judge only the evidence quotes, and it marked 39 of 40 right
+  answers partial for true detail drawn from their own cited passages (agreement 2.5% in both
+  modes). The second gave it the cited passages, and agreement rose to 80% (keyword) and 77.5%
+  (hybrid), but the judge's reasons trace 13 of its 17 disagreements to two faults in that
+  reference: a passage cited as [1] and [2] carried only [1], so [2] read as a passage not given,
+  and a group's alternative spans read as separate facts to give. The other 4 are what a judge is
+  for: the sick-mom answers, in both modes, contain the words the fixed check looks for but never
+  say plainly that the leave is available, and two answers add a claim their cited passages do
+  not state. The fixed checks of both runs stand; the judge's figures wait for a run with this
+  reference.
 - 139 backend tests. The health report and the API schema say 0.4.0.
 
 ## v0.3.1, Nov 7, 2026
