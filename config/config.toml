@@ -5,7 +5,7 @@
 ########################################################################
 # Author:            Kevin Street
 # Created on:        2026-10-29
-# Last modified on:  2026-11-07
+# Last modified on:  2026-11-08
 #
 # Every setting the service, the dashboard and the web app read, at its
 # default, and every value two of their files share. No secrets: those
@@ -22,7 +22,7 @@
 [llm]
 provider = "fake"                         # anthropic | openai | azure | fake (offline stand-in)
 model = "claude-sonnet-5-5"               # the model that drafts answers
-judge_model = "claude-sonnet-5-5"         # unused here: answers are scored by fixed checks
+judge_model = "claude-sonnet-5-5"         # grades each answered case when [eval] judge is on
 embedding_model = "text-embedding-3-small"  # unused here: embeddings run locally
 max_tokens = 2048                         # the most tokens one answer may use
 temperature = 0.0                         # 0 keeps runs repeatable
@@ -40,6 +40,7 @@ budget_usd = 5.0                          # one process stops calling the model 
 canaries = ["KESTREL-9", "PINEAPPLE-7"]   # planted in data/samples; no answer may repeat them
 answerable_field = "answerable"           # the field of a case that says if the sources answer it
 judge = false                             # also grade each answered case with [llm] judge_model
+judge_budget_usd = 2.0                    # the judge's own limit, on top of budget_usd
 
 # The service's logs (shared kds settings)
 [log]

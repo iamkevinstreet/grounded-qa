@@ -5,7 +5,7 @@
 ########################################################################
 # Author:            Kevin Street
 # Created on:        2026-10-29
-# Last modified on:  2026-11-07
+# Last modified on:  2026-11-08
 #
 # Runs by hand: retrieval in all three modes, the answer evaluation
 # against a real model, then its figures, CSV files and index.
@@ -13,8 +13,9 @@
 name: eval-live
 
 # Retrieval needs no key: the embedding model runs on the runner. The answer evaluation uses the
-# ANTHROPIC_API_KEY repository secret, which never appears in logs (kds.logs redacts, and the
-# adapter stops at the budget). After the runs, the figures, the Tableau CSV files and the index
+# ANTHROPIC_API_KEY repository secret, which never appears in logs (kds.logs redacts; the answers
+# stop at budget_usd and the judge at its own [eval] judge_budget_usd, 2.0 in config/config.toml,
+# each per mode). After the runs, the figures, the Tableau CSV files and the index
 # the case study reads are built. Results are committed to the eval-results branch and uploaded
 # as an artifact; merging that branch into main publishes them.
 #
@@ -34,7 +35,7 @@ on:
         type: string
         default: claude-sonnet-5-5
       budget_usd:
-        description: Stop calling the model once this much has been spent
+        description: Stop answering once this much has been spent (the judge has its own limit)
         type: string
         default: "5"
       judge:

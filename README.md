@@ -116,7 +116,8 @@ client's model. `ask` calls the model, so every MCP client's questions together 
   is in its source, and a 56-case evaluation, offline in CI and live by hand. In a live run a model
   judge also grades each answered case against the expected facts and the whole text of the
   passages it cites, and the run reports how often the judge agrees with the fixed check
-  (`judge_agrees`), since a phrase check can miss a right answer worded another way. Targets set
+  (`judge_agrees`), since a phrase check can miss a right answer worded another way, and what the
+  judge spent (`judge_cost_usd`), on a budget of its own. Targets set
   before the first live run: at least 85% correct on answerable cases, at least 90% of unanswerable
   cases refused, citation precision of at least 90%, and no planted canary in any answer.
 - **Rollout:** local only; a live evaluation reviewed on a branch before merging; a public demo of

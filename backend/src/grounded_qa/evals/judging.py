@@ -34,6 +34,9 @@ enough; each group is now one part, its spans joined by "or".
 - judge_score: the judge's grade.
 - judge_correct: 1 when the grade is 2, a full answer.
 - judge_agrees: 1 when judge_correct equals the fixed check's correct.
+- judge_cost_usd: what the judge spent on the case, apart from the
+  answer's own cost_usd. The judge stops at [eval] judge_budget_usd,
+  a budget of its own.
 
 Only cases the service answered are judged: a refusal of an answerable
 case is wrong to both, which says nothing about the judge. A judge is
@@ -98,6 +101,8 @@ CITED = "CITED (the whole text of each passage the answer cites, under every [n]
 NONE_CITED = "(none: the answer cites no passage)"
 # log.debug("Sets the grade that counts as a full answer")
 FULL = 2
+# log.debug("Sets the places a judge's cost keeps, as a case's cost does")
+COST_PLACES = 6
 # log.debug("Types a scorer: a case and its answer in, the scores out")
 Scorer = Callable[[EvalCase, Answer], dict[str, Any]]
 
@@ -169,7 +174,7 @@ def judged(
         fixed: The fixed check's correct, 1 or 0. Required.
 
     Returns:
-        judge_score, judge_correct and judge_agrees.
+        judge_score, judge_correct, judge_agrees and judge_cost_usd.
     """
     # log.debug("Takes the case, which the caller must give")
     case = required(case=case)
@@ -179,6 +184,8 @@ def judged(
     adapter = required(adapter=adapter)
     # log.debug("Takes the fixed check's verdict, which the caller must give")
     fixed = required(fixed=fixed)
+    # log.debug("Notes what the judge has spent before this case")
+    spent = adapter.spent_usd
     # log.debug("Asks the judge, with the expected parts and the cited passages")
     verdict = judge(
         adapter,
@@ -191,11 +198,12 @@ def judged(
     )
     # log.debug("Counts a full grade as correct")
     correct = float(verdict.score == FULL)
-    # log.debug("Returns the grade, its verdict and whether the two checks agree")
+    # log.debug("Returns the grade, its verdict, whether the checks agree, and its cost")
     return {
         "judge_score": float(verdict.score),
         "judge_correct": correct,
         "judge_agrees": float(correct == fixed),
+        "judge_cost_usd": round(adapter.spent_usd - spent, COST_PLACES),
     }
 
 

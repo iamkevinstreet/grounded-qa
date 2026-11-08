@@ -6,7 +6,7 @@
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-11-07
+Last modified on:  2026-11-08
 
 Runs an evaluation from the command line and writes its results:
 answers end to end, or retrieval alone.
@@ -213,7 +213,8 @@ def scorer_for(
 
     The offline stand-in cannot judge, so an offline run skips the
     judge, saying so in the log. The judge runs on an adapter of its
-    own, so the answers' cost stays the answers' alone.
+    own, with a budget of its own, so the answers' cost and budget stay
+    the answers' alone.
 
     Args:
         settings: The run's settings. Required.
@@ -239,7 +240,9 @@ def scorer_for(
         # log.debug("Returns the fixed checks")
         return fixed
     # log.debug("Returns the fixed checks with the judge, on an adapter of its own")
-    return with_judge(fixed, ModelAdapter(settings=settings))
+    return with_judge(
+        fixed, ModelAdapter(settings=settings, budget_usd=settings.eval_judge_budget_usd)
+    )
 
 
 # log.debug("Defines the retrieval evaluation")

@@ -6,7 +6,7 @@
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-11-07
+Last modified on:  2026-11-08
 
 Loads the service's settings, the one place they are read: the shared
 kds settings plus the service's own data, retrieval, answer, evaluation,
@@ -153,6 +153,8 @@ class AppSettings(Settings):
     eval_answerable_field: str = "answerable"
     # log.debug("Holds whether each answered case is also graded by the judge model")
     eval_judge: bool = False
+    # log.debug("Holds the judge's own spending limit, on top of the answers' budget")
+    eval_judge_budget_usd: float = Field(default=2.0, gt=0)
 
     # log.debug("Holds the provider name that means the offline stand-in")
     llm_offline_provider: str = "fake"

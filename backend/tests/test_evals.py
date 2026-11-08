@@ -23,6 +23,7 @@ from __future__ import annotations
 from typing import Any
 
 # Third-party
+import pytest
 from kds.args import required
 from kds.evals import EvalCase, load_cases
 from kds.llm import ModelAdapter
@@ -260,14 +261,21 @@ def test_the_judge_agrees_or_not_with_the_fixed_check() -> None:
     fixed = _fixed_checks()
     # log.debug("Builds a correct, cited answer")
     answer = _answer("Up to 12 workweeks [1].", "answered", True)
-    # log.debug("Scores it twice, with a judge that gives 2, then 1")
-    scored = with_judge(fixed, _judge(2, 1))
+    # log.debug("Builds a judge that gives 2, then 1")
+    judge = _judge(2, 1)
+    # log.debug("Scores the answer twice with it")
+    scored = with_judge(fixed, judge)
     # log.debug("Takes both rounds of scores")
     first, second = scored(_leave_case(), answer), scored(_leave_case(), answer)
     # log.debug("Checks the full grade agrees with the fixed check")
     assert (first["judge_score"], first["judge_correct"], first["judge_agrees"]) == (2.0, 1.0, 1.0)
     # log.debug("Checks the partial grade does not")
     assert (second["judge_correct"], second["judge_agrees"]) == (0.0, 0.0)
+    # log.debug("Checks each grade carries what the judge spent on it, and nothing else")
+    assert (first["judge_cost_usd"] > 0, first["judge_cost_usd"] + second["judge_cost_usd"]) == (
+        True,
+        pytest.approx(judge.spent_usd, abs=1e-6),
+    )
 
 
 # log.debug("Defines the test of what the judge reads the answer against")

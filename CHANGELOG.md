@@ -18,8 +18,8 @@
   fact, so it can miss a right answer worded another way; the agreement rate says how often that
   matters. A refusal is not judged, since it is wrong to both. The judge runs on an adapter of its
   own, so the answers' cost stays theirs, and an offline run skips it. The live workflow turns it
-  on by default (`judge`). Four tests cover the grading, what the judge reads, the cases left alone
-  and the offline skip.
+  on by default (`judge`). Four tests cover the grading and its cost, what the judge reads, the
+  cases left alone and the offline skip.
 - **What the judge reads:** each part of a full answer, one for each group of the case's evidence,
   with the group's spans as alternatives (any one meets the part), and the whole text of every
   passage the answer cites, once, headed by every number that cites it. Two judged runs on Nov 8
@@ -33,6 +33,12 @@
   say plainly that the leave is available, and two answers add a claim their cited passages do
   not state. The fixed checks of both runs stand; the judge's figures wait for a run with this
   reference.
+- **What the judge costs:** each judged case records `judge_cost_usd`, what the judge spent on it,
+  apart from the answer's own `cost_usd`, and the judge stops at `[eval] judge_budget_usd` (2.0),
+  a budget of its own, so a judged run spends at most the two budgets together. Until now the
+  judge's spend showed only in the spans files, and the judge drew on a second copy of
+  `[eval] budget_usd`. In the Nov 8 rerun it spent $0.2456 (keyword) and $0.2449 (hybrid), 41 calls
+  each, about $0.006 a call, beside the answers' $0.4709 and $0.4740.
 - 139 backend tests. The health report and the API schema say 0.4.0.
 
 ## v0.3.1, Nov 7, 2026
