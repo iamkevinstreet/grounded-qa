@@ -6,7 +6,7 @@
 """
 Author:            Kevin Street
 Created on:        2026-11-07
-Last modified on:  2026-11-07
+Last modified on:  2026-11-08
 
 Grades each answered case with a model judge, beside the fixed checks,
 so a run says how often the two agree.
@@ -14,8 +14,14 @@ so a run says how often the two agree.
 The fixed check, `correct`, looks for one accepted phrasing of every
 expected fact. It is repeatable by hand, but it can miss a right answer
 worded another way, and pass an answer that names the fact and gets the
-rest wrong. The judge reads the answer against the case's evidence and
-grades it 0, 1 or 2 by the rubric below:
+rest wrong. The judge reads the answer against two things, the facts a
+full answer gives (the case's evidence) and the whole text of every
+passage the answer cites, and grades it 0, 1 or 2 by the rubric below.
+
+The cited passages are there because an answer may rightly say more
+than the one fact a case checks: the first judged run, on Nov 8, gave
+only the evidence quotes as the reference, and the judge marked 39 of
+40 right answers partial for true detail drawn from their own sources.
 
 - judge_score: the judge's grade.
 - judge_correct: 1 when the grade is 2, a full answer.
@@ -65,11 +71,19 @@ ANSWERABLE: Final = SETTINGS.eval_answerable_field
 ########################################################################
 # log.debug("Sets what a full, a partial and a wrong answer are, for the judge")
 RUBRIC = (
-    "Score 2 when the answer gives what the reference material says in answer to the "
-    "question and claims nothing the reference does not support. Score 1 when it gives part "
-    "of it, or adds a claim the reference does not support. Score 0 when it is wrong, or "
-    "declines a question the reference answers."
+    "The reference has two parts. EXPECTED holds the facts a full answer to the question "
+    "gives. CITED holds the whole text of every passage the answer cites; the answer's claims "
+    "may rest on these and nothing else. Score 2 when the answer gives every expected fact and "
+    "every claim it makes is supported by the cited passages. Score 1 when it gives only part "
+    "of the expected facts, or makes a claim the cited passages do not support. Score 0 when "
+    "it is wrong, or declines a question the expected facts answer."
 )
+# log.debug("Heads the facts a full answer gives, in the judge's reference")
+EXPECTED = "EXPECTED (the facts a full answer gives):"
+# log.debug("Heads the passages the answer cites, in the judge's reference")
+CITED = "CITED (the whole text of each passage the answer cites):"
+# log.debug("Stands in for the passages of an answer that cites none")
+NONE_CITED = "(none: the answer cites no passage)"
 # log.debug("Sets the grade that counts as a full answer")
 FULL = 2
 # log.debug("Types a scorer: a case and its answer in, the scores out")
@@ -153,12 +167,14 @@ def judged(
     adapter = required(adapter=adapter)
     # log.debug("Takes the fixed check's verdict, which the caller must give")
     fixed = required(fixed=fixed)
-    # log.debug("Gives the judge the case's evidence as the reference, one span a line")
-    reference = "\n".join(span["text"] for group in case.expected["evidence"] for span in group)
-    # log.debug("Asks the judge")
+    # log.debug("Asks the judge, with the expected facts and the cited passages")
     verdict = judge(
         adapter,
-        {"question": answer.question, "answer": answer.answer, "reference": reference},
+        {
+            "question": answer.question,
+            "answer": answer.answer,
+            "reference": reference(case, answer),
+        },
         RUBRIC,
     )
     # log.debug("Counts a full grade as correct")
@@ -169,3 +185,33 @@ def judged(
         "judge_correct": correct,
         "judge_agrees": float(correct == fixed),
     }
+
+
+# log.debug("Defines what the judge reads the answer against")
+def reference(case: EvalCase | None = None, answer: Answer | None = None) -> str:
+    """Returns the expected facts, then each cited passage once, whole.
+
+    Args:
+        case: The case, whose evidence holds the expected facts.
+            Required.
+        answer: The answer, whose citations name its passages.
+            Required.
+
+    Returns:
+        The reference text, in the two parts the rubric names.
+    """
+    # log.debug("Takes the case, which the caller must give")
+    case = required(case=case)
+    # log.debug("Takes the answer, which the caller must give")
+    answer = required(answer=answer)
+    # log.debug("Lists the expected facts, one evidence span a line")
+    expected = "\n".join(span["text"] for group in case.expected["evidence"] for span in group)
+    # log.debug("Keeps each cited passage once, in the order first cited")
+    cited = {c.passage_id: c for c in reversed(answer.citations)}
+    # log.debug("Writes each passage under its citation number, title and section")
+    passages = "\n\n".join(
+        f"[{c.n}] {c.title}, {c.section}\n{c.passage}"
+        for c in sorted(cited.values(), key=lambda c: c.n)
+    )
+    # log.debug("Returns both parts")
+    return f"{EXPECTED}\n{expected}\n\n{CITED}\n{passages or NONE_CITED}"

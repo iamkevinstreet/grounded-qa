@@ -18,8 +18,14 @@
   fact, so it can miss a right answer worded another way; the agreement rate says how often that
   matters. A refusal is not judged, since it is wrong to both. The judge runs on an adapter of its
   own, so the answers' cost stays theirs, and an offline run skips it. The live workflow turns it
-  on by default (`judge`). Three tests cover the grading, the cases left alone and the offline skip.
-- 138 backend tests. The health report and the API schema say 0.4.0.
+  on by default (`judge`). Four tests cover the grading, what the judge reads, the cases left alone
+  and the offline skip.
+- **What the judge reads:** the facts a full answer gives (the case's evidence) and the whole text
+  of every passage the answer cites, each once. The first judged run, Nov 8, gave it only the
+  evidence quotes, and it marked 39 of 40 right answers partial for true detail drawn from their own
+  cited passages, so its agreement with the fixed check (2.5%) measured the reference, not the
+  answers. That run's fixed checks stand; the judge's figures wait for a rerun.
+- 139 backend tests. The health report and the API schema say 0.4.0.
 
 ## v0.3.1, Nov 7, 2026
 

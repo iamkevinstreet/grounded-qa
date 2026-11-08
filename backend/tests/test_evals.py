@@ -6,7 +6,7 @@
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-11-07
+Last modified on:  2026-11-08
 
 Tests the gold cases are sound, and that the scorers and both kinds of
 run work end to end, offline.
@@ -37,7 +37,7 @@ from grounded_qa.core.retrieve import Retriever
 from grounded_qa.core.sources import load_dir
 from grounded_qa.core.text import normalize
 from grounded_qa.evals import retrieval
-from grounded_qa.evals.judging import Scorer, with_judge
+from grounded_qa.evals.judging import Scorer, reference, with_judge
 from grounded_qa.evals.run import corpus, run_answers, run_retrieval, scorer_for
 from grounded_qa.evals.score import score
 from support import REPO
@@ -268,6 +268,25 @@ def test_the_judge_agrees_or_not_with_the_fixed_check() -> None:
     assert (first["judge_score"], first["judge_correct"], first["judge_agrees"]) == (2.0, 1.0, 1.0)
     # log.debug("Checks the partial grade does not")
     assert (second["judge_correct"], second["judge_agrees"]) == (0.0, 0.0)
+
+
+# log.debug("Defines the test of what the judge reads the answer against")
+def test_the_judge_reads_the_expected_facts_and_each_cited_passage_whole() -> None:
+    """The evidence, then the cited passage's whole text, once."""
+    # log.debug("Builds an answer that cites the passage")
+    answer = _answer("Up to 12 workweeks [1].", "answered", True)
+    # log.debug("Cites it a second time, under the same number")
+    twice = answer.model_copy(update={"citations": answer.citations * 2})
+    # log.debug("Writes the reference")
+    text = reference(_leave_case(), twice)
+    # log.debug("Checks the fact, the whole passage once, and their order")
+    assert (
+        text.count(PASSAGE.text),
+        text.index("12 workweeks of leave") < text.index(PASSAGE.text),
+    ) == (
+        1,
+        True,
+    )
 
 
 # log.debug("Defines the test that cases the service did not answer are not judged")
