@@ -6,7 +6,7 @@
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-11-03
+Last modified on:  2026-11-09
 
 Tests each way a question can end: answered, not covered, unverified, or
 no passages at all.
@@ -160,6 +160,40 @@ def test_failed_claim_is_removed_and_the_rest_kept(settings: AppSettings) -> Non
         1,
         1,
     )
+
+
+# log.debug("Defines the test that markers numbering passages reach the reader as citations")
+def test_markers_numbering_passages_name_the_right_citations(settings: AppSettings) -> None:
+    """Two quotes of one passage, both [1]: each claim keeps its source.
+
+    Args:
+        settings: Settings over the two small test sources.
+    """
+    # log.debug("Scripts a draft that numbers passages, as the model did on Nov 9")
+    answerer, _ = _answerer(
+        settings,
+        {
+            "answer": (
+                "FMLA leave is job-protected and unpaid [1]. Employees may use paid leave at "
+                "the same time [1]. Eligible employees may take up to 12 workweeks [2]."
+            ),
+            "citations": [
+                {"passage_id": "leave#3", "quote": "FMLA is job-protected, unpaid leave"},
+                {
+                    "passage_id": "leave#3",
+                    "quote": "Employees may use paid leave at the same time",
+                },
+                {"passage_id": "leave#2", "quote": GOOD_QUOTE},
+            ],
+            "abstain": False,
+        },
+    )
+    # log.debug("Asks the question")
+    answer = answerer.ask(QUESTION)
+    # log.debug("Checks the last claim names the leave passage's citation, rewritten")
+    assert (answer.answer.count("[1, 2]"), answer.answer.endswith("workweeks [3].")) == (2, True)
+    # log.debug("Checks the third citation is that passage, and the answer says it was realigned")
+    assert (answer.citations[2].passage_id, answer.realigned) == ("leave#2", True)
 
 
 # log.debug("Defines the test that only shown passages may be cited")

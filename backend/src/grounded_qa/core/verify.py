@@ -6,7 +6,7 @@
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-11-03
+Last modified on:  2026-11-09
 
 Checks each quote is in the passage it cites, and removes the claims
 whose citations all failed: the model must show its evidence, word for
@@ -15,6 +15,11 @@ its quote appears in that passage, in order, after both are normalised
 (case, quote marks, dashes, spacing and Markdown marks do not count).
 An ellipsis may join parts of a quote; each part must be found, in
 order.
+
+Markers that number passages instead of citations are read as what
+they mean before the check (see align): on Nov 9, 5 of 80 live answers
+numbered them that way, and the judge marked 2 of them down for a claim
+that pointed at the wrong source.
 """
 
 ########################################################################
@@ -32,7 +37,7 @@ from kds.args import required
 from kds.logs import get_logger
 
 # Local
-from grounded_qa.core.text import normalize, plain_map, word_count
+from grounded_qa.core.text import normalize, plain_map, terms, word_count
 
 ########################################################################
 #                                                                      #
@@ -54,6 +59,8 @@ ELLIPSIS_RE = re.compile(r"\.\.\.|\u2026")
 TRIM = " .,;:\"'"
 # log.debug("Sets the fewest words in each part of a joined quote")
 MIN_PART_WORDS = 3
+# log.debug("Sets how a marker joins the numbers it names")
+NUMBER_JOIN = ", "
 # log.debug("Matches a citation marker such as [1] or [1, 2]")
 MARKER_RE = re.compile(r"\s*\[(\d+(?:\s*,\s*\d+)*)\]")
 # log.debug("Matches one claim: text up to its markers and punctuation")
@@ -172,7 +179,7 @@ def _marker(match: re.Match[str] | None = None, renumber: dict[int, int] | None 
     # log.debug("Maps each number that was kept")
     numbers = [renumber[int(n)] for n in match[1].split(",") if int(n) in renumber]
     # log.debug("Returns the new marker, or nothing when none were kept")
-    return f" [{', '.join(str(n) for n in numbers)}]" if numbers else ""
+    return f" [{NUMBER_JOIN.join(str(n) for n in numbers)}]" if numbers else ""
 
 
 # log.debug("Defines the closing text after the last marker")
@@ -197,3 +204,131 @@ def _tail(rest: str | None = None, kept: list[str] | None = None) -> str:
         return ""
     # log.debug("Returns the text, spaced from the claims before it")
     return (" " if kept else "") + " ".join(rest.split())
+
+
+# log.debug("Defines the citation numbers an answer's markers use")
+def marker_numbers(answer: str | None = None) -> set[int]:
+    """Returns every number the answer's [n] markers name.
+
+    Args:
+        answer: An answer with [n] markers. Required.
+
+    Returns:
+        The numbers, each once.
+    """
+    # log.debug("Takes the answer, which the caller must give")
+    answer = required(answer=answer)
+    # log.debug("Returns each number in each marker")
+    return {int(n) for m in MARKER_RE.finditer(answer) for n in m[1].split(",")}
+
+
+# log.debug("Defines how markers that number passages come to name citations")
+def align(
+    answer: str | None = None, cited: list[tuple[str, str]] | None = None
+) -> tuple[str, bool]:
+    """Returns the answer with markers that name its citations.
+
+    The model is told to number its citations in the order it lists
+    them, one number each. Sometimes it numbers passages instead: two
+    quotes from one passage are both [1] and a quote from the next
+    passage is [2], which as a citation number names the second quote.
+    When the markers use exactly one number for each passage, in the
+    order the passages are first cited, and the claims share at least
+    as many terms with those passages' quotes as with the citations the
+    numbers name, each marker is rewritten to name every citation of
+    its passage: [1] becomes [1, 2], and [2] becomes [3].
+
+    Args:
+        answer: The draft answer, with [n] markers. Required.
+        cited: Each draft citation's passage id and quote, in order.
+            Required.
+
+    Returns:
+        The answer, and whether its markers were rewritten.
+    """
+    # log.debug("Takes the answer, which the caller must give")
+    answer = required(answer=answer)
+    # log.debug("Takes the citations, which the caller must give")
+    cited = required(cited=cited)
+    # log.debug("Reads the numbers the markers use")
+    used = marker_numbers(answer)
+    # log.debug("Numbers the passages in the order first cited, each with its citations")
+    by_passage = {
+        number: [i for i, (pid, _) in enumerate(cited, start=1) if pid == passage]
+        for number, passage in enumerate(dict.fromkeys(pid for pid, _ in cited), start=1)
+    }
+    # log.debug("Leaves markers that number citations, or fit no other reading, as they are")
+    if used == set(range(1, len(cited) + 1)) or used != set(by_passage):
+        # log.debug("Returns the answer as it was")
+        return answer, False
+    # log.debug("Leaves them too when the claims fit the numbered citations better")
+    if _fit(answer, cited, by_passage) < _fit(answer, cited, {n: [n] for n in used}):
+        # log.debug("Returns the answer as it was")
+        return answer, False
+    # log.debug("Returns each marker naming every citation of its passage")
+    return MARKER_RE.sub(lambda m: _named(m, by_passage), answer), True
+
+
+# log.debug("Defines how well one reading of the markers fits the claims")
+def _fit(
+    answer: str | None = None,
+    cited: list[tuple[str, str]] | None = None,
+    reading: dict[int, list[int]] | None = None,
+) -> int:
+    """Returns how many terms the claims share with the quotes named.
+
+    Args:
+        answer: The draft answer, with [n] markers. Required.
+        cited: Each draft citation's passage id and quote, in order.
+            Required.
+        reading: The citations, by place in the list, each marker
+            number names. Required.
+
+    Returns:
+        For each number of each claim's markers, the most terms the
+        claim shares with one quote the number names, summed.
+    """
+    # log.debug("Takes the answer, which the caller must give")
+    answer = required(answer=answer)
+    # log.debug("Takes the citations, which the caller must give")
+    cited = required(cited=cited)
+    # log.debug("Takes the reading, which the caller must give")
+    reading = required(reading=reading)
+    # log.debug("Reads each quote's terms once")
+    quotes = [set(terms(quote)) for _, quote in cited]
+    # log.debug("Starts the count")
+    total = 0
+    # log.debug("Walks each claim, a span ending in markers")
+    for claim in CLAIM_RE.finditer(answer):
+        # log.debug("Reads the claim's terms, without its markers")
+        words = set(terms(MARKER_RE.sub("", claim[0])))
+        # log.debug("Adds, for each number, the best overlap with a quote it names")
+        total += sum(
+            max((len(words & quotes[i - 1]) for i in reading.get(n, [])), default=0)
+            for n in marker_numbers(claim[0])
+        )
+    # log.debug("Returns the count")
+    return total
+
+
+# log.debug("Defines one marker rewritten to name its passage's citations")
+def _named(
+    match: re.Match[str] | None = None, by_passage: dict[int, list[int]] | None = None
+) -> str:
+    """Returns the marker naming every citation of its passages.
+
+    Args:
+        match: A marker that numbers passages. Required.
+        by_passage: Each passage number's citations. Required.
+
+    Returns:
+        The marker, naming citations instead of passages.
+    """
+    # log.debug("Takes the marker found, which the caller must give")
+    match = required(match=match)
+    # log.debug("Takes the passages' citations, which the caller must give")
+    by_passage = required(by_passage=by_passage)
+    # log.debug("Lists each citation once, in order")
+    numbers = dict.fromkeys(i for n in match[1].split(",") for i in by_passage[int(n)])
+    # log.debug("Returns the new marker")
+    return f" [{NUMBER_JOIN.join(str(i) for i in numbers)}]"

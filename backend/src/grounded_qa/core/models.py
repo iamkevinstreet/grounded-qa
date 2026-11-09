@@ -6,7 +6,7 @@
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-11-03
+Last modified on:  2026-11-09
 
 The shapes answers take: the model's draft, and the checked answer the
 service returns. The model's output is parsed into `Draft` before
@@ -123,6 +123,8 @@ class Answer(BaseModel, frozen=True):
     citations: tuple[Citation, ...] = ()
     # log.debug("Holds how many citations failed the check and were dropped")
     dropped: int = 0
+    # log.debug("Holds whether markers that numbered passages were rewritten to name citations")
+    realigned: bool = False
     # log.debug("Holds the passages the model was shown")
     retrieved: tuple[Retrieved, ...] = ()
     # log.debug("Holds the model that drafted it, or none")

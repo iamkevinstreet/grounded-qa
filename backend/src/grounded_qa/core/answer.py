@@ -6,7 +6,7 @@
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-11-07
+Last modified on:  2026-11-09
 
 Answers a question from the approved sources only and abstains when they
 do not cover it.
@@ -40,7 +40,7 @@ from grounded_qa.config import AppSettings
 from grounded_qa.core import prompt
 from grounded_qa.core.models import Answer, Citation, Draft, Outcome, Retrieved
 from grounded_qa.core.retrieve import Hit
-from grounded_qa.core.verify import find_quote, prune
+from grounded_qa.core.verify import align, find_quote, prune
 
 ########################################################################
 #                                                                      #
@@ -205,12 +205,16 @@ class Answerer:
             return self._answer(question, UNVERIFIED_TEXT, UNVERIFIED, hits)
         # log.debug("Checks the quotes in a span Langfuse shows as a guardrail")
         with step(VERIFY, {GUARDRAIL_TYPE: GUARDRAIL}, quotes=len(draft.citations)) as span:
+            # log.debug("Reads markers that number passages as the citations they mean")
+            text, realigned = align(
+                draft.answer, [(c.passage_id, c.quote) for c in draft.citations]
+            )
             # log.debug("Checks each citation and numbers the ones that pass")
             citations, renumber = self._check(draft, hits)
-            # log.debug("Records how many quotes were found in their passages")
-            set_values(span, {"verify.kept": len(citations)})
+            # log.debug("Records the quotes found in their passages, and any markers rewritten")
+            set_values(span, {"verify.kept": len(citations), "verify.realigned": realigned})
         # log.debug("Keeps only the claims a checked citation supports")
-        text = prune(draft.answer, renumber)
+        text = prune(text, renumber)
         # log.debug("Names the outcome from the draft and the checks")
         outcome = self._outcome(draft, citations)
         # log.debug("Logs the outcome without the question's text")
@@ -220,6 +224,7 @@ class Answerer:
             outcome=outcome,
             cited=len(citations),
             dropped=len(draft.citations) - len(citations),
+            realigned=realigned,
             passages=[h.passage.id for h in hits],
             model=completion.model,
             cost_usd=completion.cost_usd,
@@ -233,6 +238,7 @@ class Answerer:
             hits,
             citations=citations,
             dropped=len(draft.citations) - len(citations),
+            realigned=realigned,
             model=completion.model,
         )
 

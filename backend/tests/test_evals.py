@@ -6,7 +6,7 @@
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-11-08
+Last modified on:  2026-11-09
 
 Tests the gold cases are sound, and that the scorers and both kinds of
 run work end to end, offline.
@@ -203,6 +203,8 @@ def test_score_of_a_correct_cited_answer() -> None:
         "recall_at_k": 1.0,
         "mrr": 1.0,
         "citation_precision": 1.0,
+        "markers_matched": 1.0,
+        "realigned": 0.0,
     }
 
 

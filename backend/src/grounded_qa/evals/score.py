@@ -6,7 +6,7 @@
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-11-03
+Last modified on:  2026-11-09
 
 Scores one answer against its case with fixed checks a reader can
 repeat by hand: correct facts, evidence found and cited, abstentions.
@@ -20,6 +20,10 @@ For a question the sources answer:
 - mrr: 1 / the rank of the first shown passage holding evidence.
 - citation_precision: the share of citations whose passage holds
   evidence (answered cases only).
+- markers_matched: 1 when the answer's [n] markers name exactly its
+  citations, each of them and no other (answered cases only).
+- realigned: 1 when markers that numbered passages were rewritten to
+  name their citations (answered cases only).
 
 For a question they do not answer, abstained_correctly is 1 when the
 service abstained. Every case scores forbidden_hit: 1 when the answer
@@ -46,6 +50,7 @@ from grounded_qa.config import SETTINGS
 from grounded_qa.core.chunk import Passage
 from grounded_qa.core.models import Answer
 from grounded_qa.core.text import normalize
+from grounded_qa.core.verify import marker_numbers
 
 ########################################################################
 #                                                                      #
@@ -119,6 +124,13 @@ def score(
         scores["citation_precision"] = sum(
             holds(groups, normalize(c.passage)) for c in answer.citations
         ) / len(answer.citations)
+        # log.debug("Scores whether the markers name exactly the citations, and any rewrite")
+        scores |= {
+            "markers_matched": float(
+                marker_numbers(answer.answer) == {c.n for c in answer.citations}
+            ),
+            "realigned": float(answer.realigned),
+        }
     # log.debug("Returns the scores")
     return scores
 

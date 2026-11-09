@@ -9,6 +9,32 @@
   when every check passes. One whose checks fail is labelled "needs a person" and waits. CI can now
   be called for a given commit, which is how the workflow checks one before it lands.
 
+## v0.4.1, Nov 9, 2026
+
+- **Markers name the right quotes.** The model is told to number its citations one per quote, in
+  the order it lists them, but sometimes numbers passages instead: two quotes from one passage both
+  `[1]`, a quote from the next passage `[2]`, which as a quote number points at the second quote of
+  the first passage. The judge found it on Nov 9: 5 of 80 live answers numbered their markers that
+  way, and 2 showed a claim's source as the wrong passage. Before the quote check, markers that use
+  exactly one number per passage are now rewritten to name every quote of their passage (`[1]`
+  becomes `[1, 2]`, `[2]` becomes `[3]`), unless the claims fit the quotes their numbers name
+  better. Each answer records whether it was rewritten (`realigned`, also on the `verify` span),
+  and the evaluation scores `markers_matched` and `realigned` for every answered case.
+- **Prompt 2026-11-09:** the rule on numbering says one number per quote, even for two quotes from
+  one passage.
+- **A case's time is the answer's alone** (utils v0.6.2). The evaluation used to stop its clock
+  after scoring, so with the judge on, each case's time included the judge's call: the Nov 9 run
+  file's medians were 4.3 s (keyword) and 3.8 s (hybrid), where the answers' own spans show 2.9 s
+  and 2.3 s. That run is not published, since the case study's speed chart would have shown the
+  answers slower than they were.
+- **Judge, measured with the reference of v0.4.0** (Nov 9, run 42559425011): agreement 92.5%
+  (keyword, 37 of 40) and 95.0% (hybrid, 38 of 40), up from 80% and 77.5%. Every disagreement is
+  the judge stricter than the fixed check, and each is real: `sick-mom` hedges yet holds the
+  checked words; `spouses-share-birth-leave` misdescribes the source's example;
+  `staffing-agency-primary` adds a step the passages do not state; and the two marker answers above.
+  The judge cost $0.16 a mode, about $0.004 a case, beside $0.47 and $0.46 for the answers.
+- 144 backend tests.
+
 ## v0.4.0, Nov 7, 2026
 
 - **A model judge beside the fixed checks:** with `[eval] judge` on, each answered case is also

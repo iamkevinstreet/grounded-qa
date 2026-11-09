@@ -6,7 +6,7 @@
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-11-07
+Last modified on:  2026-11-09
 
 The grounded Q&A package: answers employment-law questions from
 approved sources only, with every quote checked.
@@ -39,4 +39,4 @@ log = get_logger(__name__)
 #                                                                      #
 ########################################################################
 # log.debug("Sets the package version, kept equal to pyproject.toml")
-__version__ = "0.4.0"
+__version__ = "0.4.1"

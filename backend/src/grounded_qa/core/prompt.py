@@ -6,7 +6,7 @@
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-11-03
+Last modified on:  2026-11-09
 
 Writes what the model is sent: the fixed rules in the system message,
 then the fenced passages and the question in the user message.
@@ -46,7 +46,7 @@ log = get_logger(__name__)
 #                                                                      #
 ########################################################################
 # log.debug("Sets the prompt's version, recorded with every answer")
-VERSION = "2026-10-29"
+VERSION = "2026-11-09"
 # log.debug("Sets the rules the model answers by")
 SYSTEM = """\
 You answer questions about U.S. federal employment law using only the passages \
@@ -57,8 +57,9 @@ Rules:
 1. Use only the passages. Do not use outside knowledge, even when you are sure of it.
 2. Support every statement with a citation. For each citation, give the passage id \
 and copy an exact quote of at least {min_quote_words} words from that passage, \
-character for character. Put the citation's number in square brackets, like [1], \
-after the sentence it supports, numbering citations in the order you list them.
+character for character. Number the citations in the order you list them, one number \
+each, even when two quote the same passage: the first is [1], the second [2]. Put each \
+citation's number in square brackets after the sentence its quote supports.
 3. If the passages do not answer the question, set "abstain" to true and say in one \
 sentence what the passages do not cover. Do not guess.
 4. If the question assumes something the passages contradict, say so plainly and \

@@ -93,7 +93,9 @@ client's model. `ask` calls the model, so every MCP client's questions together 
 4. **Draft with the model:** the model returns JSON: the answer with `[n]` markers, a citation per
    marker (passage id and an exact quote), and whether it is abstaining.
 5. **Check every quote:** each quote must appear, word for word, in the passage it cites. A claim
-   whose quotes all fail is removed; an answer with no checked quote left is withheld.
+   whose quotes all fail is removed; an answer with no checked quote left is withheld. When the
+   model numbers its markers by passage rather than by quote, so that a marker would point at the
+   wrong source, each marker is rewritten to name its passage's quotes first.
 6. **Answer or say why not:** `answered`, with each quote highlighted in its passage; or
    `not_covered`, `unverified` or `no_passages`, each explained to the reader.
 
@@ -244,7 +246,7 @@ Any setting can be overridden by an environment variable named for its section a
 
 ```sh
 make check   # ruff, mypy (strict), kds-standards, ESLint, Stylelint, Prettier, tsc
-make test    # 139 backend and 14 frontend tests
+make test    # 144 backend and 14 frontend tests
 make eval    # the offline evaluation
 ```
 

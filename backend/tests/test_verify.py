@@ -6,10 +6,11 @@
 """
 Author:            Kevin Street
 Created on:        2026-10-29
-Last modified on:  2026-11-03
+Last modified on:  2026-11-09
 
-Tests the quote check and the removal of claims whose citations all
-failed.
+Tests the quote check, the removal of claims whose citations all
+failed, and markers that number passages read as the citations they
+mean.
 """
 
 ########################################################################
@@ -25,7 +26,7 @@ import pytest
 from kds.logs import get_logger
 
 # Local
-from grounded_qa.core.verify import find_quote, prune
+from grounded_qa.core.verify import align, find_quote, marker_numbers, prune
 
 ########################################################################
 #                                                                      #
@@ -46,6 +47,12 @@ PASSAGE = (
     "- Up to 26 workweeks of military caregiver leave.\n\n"
     "This term does not include parents \u201cin law.\u201d"
 )
+# log.debug("Sets the Nov 9 flight crew draft's citations: two from one passage, then another")
+FLIGHT_CREW = [
+    ("fs28i#14", "up to 72 days of FMLA leave in a 12-month period"),
+    ("fs28i#14", "up to 156 days of military caregiver leave during a single 12-month period"),
+    ("fs28#13", "Airline flight crew employees have special hours of service eligibility"),
+]
 
 
 ########################################################################
@@ -139,3 +146,45 @@ def test_prune_keeps_text_without_markers() -> None:
     """Text with no markers at all, such as an abstention, is kept."""
     # log.debug("Checks the text comes back unchanged")
     assert prune("The passages do not cover this.", {}) == "The passages do not cover this."
+
+
+# log.debug("Defines the test that markers numbering passages come to name citations")
+def test_markers_that_number_passages_are_read_as_their_citations() -> None:
+    """The Nov 9 draft: [2] meant the second passage, not quote 2."""
+    # log.debug("Aligns the draft as the model wrote it")
+    text, realigned = align(
+        "Crews get up to 72 days in a 12-month period [1]. Military caregiver leave is up to "
+        "156 days in a single 12-month period [1]. Flight crew employees have special hours "
+        "of service eligibility requirements [2].",
+        FLIGHT_CREW,
+    )
+    # log.debug("Checks each claim now names its own passage's citations")
+    assert (realigned, text.count("[1, 2]"), text.endswith("requirements [3].")) == (True, 2, True)
+
+
+# log.debug("Defines the test that markers numbering citations stay as they are")
+def test_markers_that_number_citations_are_left_alone() -> None:
+    """One number per quote, as the rules ask: nothing to rewrite."""
+    # log.debug("Writes a draft that numbers each quote")
+    draft = "Crews get 72 days [1]. Caregiver leave is 156 days [2]. Hours rules differ [3]."
+    # log.debug("Checks it comes back unchanged")
+    assert align(draft, FLIGHT_CREW) == (draft, False)
+
+
+# log.debug("Defines the test that a rewrite never moves a claim to a worse-fitting quote")
+def test_markers_stay_when_the_numbered_citations_fit_the_claims_better() -> None:
+    """[1] and [2] could be passages; the claims say quotes 1 and 2."""
+    # log.debug("Writes a draft whose second claim is quote 2's, with quote 3 left unused")
+    draft = (
+        "Crews get up to 72 days of FMLA leave in a 12-month period [1]. Military caregiver "
+        "leave is up to 156 days during a single 12-month period [2]."
+    )
+    # log.debug("Checks it comes back unchanged, the second claim still on quote 2")
+    assert align(draft, FLIGHT_CREW) == (draft, False)
+
+
+# log.debug("Defines the test that the numbers a marker names are read")
+def test_marker_numbers_reads_every_marker() -> None:
+    """Single and joined markers both count, each number once."""
+    # log.debug("Checks the numbers")
+    assert marker_numbers("A [1]. B [1, 3]. C.") == {1, 3}
