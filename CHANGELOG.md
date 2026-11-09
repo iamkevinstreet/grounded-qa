@@ -25,14 +25,19 @@
 - **A case's time is the answer's alone** (utils v0.6.2). The evaluation used to stop its clock
   after scoring, so with the judge on, each case's time included the judge's call: the Nov 9 run
   file's medians were 4.3 s (keyword) and 3.8 s (hybrid), where the answers' own spans show 2.9 s
-  and 2.3 s. That run is not published, since the case study's speed chart would have shown the
-  answers slower than they were.
+  and 2.3 s. That run (42559425011) is not published, since the case study's speed chart would have
+  shown the answers slower than they were.
 - **Judge, measured with the reference of v0.4.0** (Nov 9, run 42559425011): agreement 92.5%
   (keyword, 37 of 40) and 95.0% (hybrid, 38 of 40), up from 80% and 77.5%. Every disagreement is
   the judge stricter than the fixed check, and each is real: `sick-mom` hedges yet holds the
   checked words; `spouses-share-birth-leave` misdescribes the source's example;
   `staffing-agency-primary` adds a step the passages do not state; and the two marker answers above.
   The judge cost $0.16 a mode, about $0.004 a case, beside $0.47 and $0.46 for the answers.
+- **Measured on this version** (Nov 9, run 42661738484, published): every answer's markers named
+  exactly its citations in both modes, so none needed rewriting; the prompt's rule was enough. The
+  judge agreed with the fixed check on 39 of 40 answers in each mode (97.5%); the one disagreement,
+  in both, is `sick-mom`. The median time per case was 2.3 s in both modes, the answers' own, and the
+  run cost $1.23, $0.33 of it the judge's.
 - 144 backend tests.
 
 ## v0.4.0, Nov 7, 2026

@@ -14,8 +14,8 @@ Case study: <https://kevindstreet.com/projects/grounded-employment-law-qa/>
 
 | | |
 | --- | --- |
-| Works today | The service, the web app, approver-only source changes with an audit log, the evaluation (offline and in CI, live by hand), the evaluation dashboard, the figures and Tableau files the case study reads, an MCP server any MCP client can use, and spans of every question for Langfuse |
-| Measured | Live answers with `claude-sonnet-5-5` and retrieval in all three modes, on GitHub's runner on Oct 29, 2026, rerun with traces on Nov 7, beside the offline baseline (below) |
+| Works today | The service, the web app, approver-only source changes with an audit log, the evaluation (offline and in CI, live by hand, with a model judge beside the fixed checks), the evaluation dashboard, the figures and Tableau files the case study reads, an MCP server any MCP client can use, and spans of every question for Langfuse |
+| Measured | Live answers with `claude-sonnet-5-5` and retrieval in all three modes, on GitHub's runner on Oct 29, 2026, rerun with traces on Nov 7 and with the judge on Nov 9, beside the offline baseline (below) |
 | Next | Questions asked in everyday words and false premises, where the live misses cluster; a demo of saved live answers on the case study |
 
 The sources are real public-domain documents. The two documents in `data/samples/` are made up, and
@@ -160,16 +160,30 @@ appears in two sections of the same fact sheet) or one supporting a sentence the
 ask about. The measure credits only marked passages, so it undercounts; it is reported as measured.
 
 **Rerun with traces**, Nov 7, 2026, the same model and 56 cases, from
-[live-hybrid-latest.md](data/evals/results/live-hybrid-latest.md) and
-[live-keyword-latest.md](data/evals/results/live-keyword-latest.md). Both modes missed the same five
-cases as above, so each was 88.9% correct; keyword search answered the everyday-words question it
-had missed. Every case that should be refused was refused. Citation precision was 81.5% with
-keyword search and 78.9% with hybrid, where two claims were cut because their quotes were not found
-word for word. The one forbidden-phrase hit, in keyword mode, is the check matching "whether you
-should sue" inside a refusal, not advice. The runs cost $0.46 and $0.45. Each case's trace, its
-search, model call and quote check, is kept beside the results, in
+[live-hybrid-20261107T204014Z.md](data/evals/results/live-hybrid-20261107T204014Z.md) and
+[live-keyword-20261107T203620Z.md](data/evals/results/live-keyword-20261107T203620Z.md).
+Both modes missed the same five cases as above, so each was 88.9% correct; keyword search answered
+the everyday-words question it had missed. Every case that should be refused was refused. Citation
+precision was 81.5% with keyword search and 78.9% with hybrid, where two claims were cut because
+their quotes were not found word for word. The one forbidden-phrase hit, in keyword mode, is the
+check matching "whether you should sue" inside a refusal, not advice. The runs cost $0.46 and
+$0.45. Each case's trace, its search, model call and quote check, is kept beside the results, in
 [live-keyword-20261107T203620Z.spans.jsonl](data/evals/results/live-keyword-20261107T203620Z.spans.jsonl)
 and [live-hybrid-20261107T204014Z.spans.jsonl](data/evals/results/live-hybrid-20261107T204014Z.spans.jsonl).
+
+**Rerun with the judge**, Nov 9, 2026, v0.4.1, the same model and 56 cases, from
+[live-hybrid-latest.md](data/evals/results/live-hybrid-latest.md) and
+[live-keyword-latest.md](data/evals/results/live-keyword-latest.md). The fixed checks held: 88.9%
+correct in both modes with the same five misses, every case that should be refused refused,
+citation precision 81.9% with keyword search and 83.1% with hybrid, and no forbidden phrase. Every
+answer's `[n]` markers named exactly its citations. A judge model (`claude-sonnet-5-5`) then graded
+the 40 answered cases in each mode, and it agreed with the fixed check on 39 of 40 in both (97.5%).
+The one disagreement is the same case in both modes, `sick-mom`: the answer hedges ("I can't say
+whether you can take leave") where the sources say eligible employees can take leave to care for a
+parent, yet it holds the words the fixed check looks for. The median time per case was 2.3 s in
+both modes, the answer's own; the run cost $1.23 in all, $0.33 of it the judge's. The traces are in
+[live-keyword-20261109T171014Z.spans.jsonl](data/evals/results/live-keyword-20261109T171014Z.spans.jsonl)
+and [live-hybrid-20261109T171424Z.spans.jsonl](data/evals/results/live-hybrid-20261109T171424Z.spans.jsonl).
 
 **Retrieval**, scored with no model on GitHub's runner: the share of questions whose evidence is in
 the top k passages, by keyword (BM25), by meaning (the local bge-small model), and both fused, from

@@ -1,4 +1,4 @@
-# Retrieval: 20261107T203618Z
+# Retrieval: 20261109T171012Z
 
 | Mode | Questions | Recall@1 | Recall@3 | Recall@6 | Recall@10 | MRR |
 | --- | --- | --- | --- | --- | --- | --- |
