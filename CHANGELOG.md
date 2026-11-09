@@ -9,6 +9,25 @@
   when every check passes. One whose checks fail is labelled "needs a person" and waits. CI can now
   be called for a given commit, which is how the workflow checks one before it lands.
 
+## v0.4.2, Nov 9, 2026
+
+- **`sick-mom` needs the rule stated.** Its answers kept hedging: they cited an example of an
+  employee caring for his father, or said they could not say whether leave was available, yet held
+  "parent" and "serious health condition", the two phrasings the fixed check looked for, so the
+  check passed them where the judge did not. The case now also needs one phrasing that states the
+  rule, with "can" or "may" and "to care for" ("can take FMLA leave to care for", "can be used to
+  care for") or the sources' own "care for a child, spouse, or parent". A test holds it to three
+  Nov 9 answers: the one the judge graded right passes, and two hedges fail, though both hold the
+  first two groups. A phrasing check cannot read negation, so "I can't say whether you can take
+  leave to care for her" would still pass; that is left to the judge.
+- **Against earlier runs**, checking each run's `sick-mom` answer against the new case (the run
+  files keep the scores they were measured with): it now fails in both modes of the Nov 7 run and
+  of the published Nov 9 run (42661738484), which are 86.7% correct (39 of 45) in both modes rather
+  than 88.9%, and on that Nov 9 run the judge agrees with the fixed check on all 40 answers in both
+  modes. The Oct 29 run is unchanged. Over both Nov 9 runs, the fixed check now agrees with the
+  judge on all four `sick-mom` answers, up from one.
+- 145 backend tests.
+
 ## v0.4.1, Nov 9, 2026
 
 - **Markers name the right quotes.** The model is told to number its citations one per quote, in

@@ -185,6 +185,14 @@ both modes, the answer's own; the run cost $1.23 in all, $0.33 of it the judge's
 [live-keyword-20261109T171014Z.spans.jsonl](data/evals/results/live-keyword-20261109T171014Z.spans.jsonl)
 and [live-hybrid-20261109T171424Z.spans.jsonl](data/evals/results/live-hybrid-20261109T171424Z.spans.jsonl).
 
+**Since then**, v0.4.2: `sick-mom` also needs the rule stated, with "can" or "may" and "to care
+for" (as in "can take FMLA leave to care for") or the sources' own "care for a child, spouse, or
+parent", so an answer that only cites an example, or hedges, no longer passes on the right words.
+With each run's `sick-mom` answer checked against the new case, the Nov 7 and Nov 9 runs are 86.7%
+correct (39 of 45) in both modes rather than 88.9%, and on the Nov 9 run the judge agrees with the
+fixed check on all 40 answers in both modes. The Oct 29 run is unchanged. The run files keep the
+scores they were measured with.
+
 **Retrieval**, scored with no model on GitHub's runner: the share of questions whose evidence is in
 the top k passages, by keyword (BM25), by meaning (the local bge-small model), and both fused, from
 [data/evals/results/retrieval-latest.md](data/evals/results/retrieval-latest.md):
@@ -260,7 +268,7 @@ Any setting can be overridden by an environment variable named for its section a
 
 ```sh
 make check   # ruff, mypy (strict), kds-standards, ESLint, Stylelint, Prettier, tsc
-make test    # 144 backend and 14 frontend tests
+make test    # 145 backend and 14 frontend tests
 make eval    # the offline evaluation
 ```
 

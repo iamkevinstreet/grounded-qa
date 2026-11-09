@@ -40,7 +40,7 @@ from grounded_qa.core.text import normalize
 from grounded_qa.evals import retrieval
 from grounded_qa.evals.judging import Scorer, reference, with_judge
 from grounded_qa.evals.run import corpus, run_answers, run_retrieval, scorer_for
-from grounded_qa.evals.score import score
+from grounded_qa.evals.score import has_facts, score
 from support import REPO
 
 ########################################################################
@@ -78,6 +78,21 @@ PASSAGE = Passage(
     text="Eligible employees may take up to 12 workweeks of leave.",
     url="https://example.com/leave",
     revised="2026",
+)
+# log.debug("Sets a sick-mom answer the judge graded right, abridged (Nov 9, hybrid)")
+SICK_MOM_RULE = (
+    "The passages show that FMLA leave can be used to care for a parent with a serious health "
+    "condition. The passages don't say whether an ordinary illness qualifies, so they can't "
+    "confirm whether this applies to your situation."
+)
+# log.debug("Sets two sick-mom answers the judge graded down, abridged (Nov 9)")
+SICK_MOM_HEDGES = (
+    "The passages don't say whether you personally qualify, but they give a related example. An "
+    "employee in one example takes leave to care for his father, who has a serious health "
+    "condition [1]. They do not say whether a parent's illness always counts.",
+    "The passages don't directly answer this for a parent. Kayden's father has a serious health "
+    "condition [1], and Kayden uses FMLA leave to help him [2]. Because the passages don't list "
+    "who qualifies, I can't say whether you can take leave.",
 )
 
 
@@ -125,6 +140,21 @@ def test_cases_are_well_formed() -> None:
     )
     # log.debug("Checks every tag is one the reports know")
     assert {t for c in cases for t in c.tags} <= TAGS
+
+
+# log.debug("Defines the test that sick-mom needs the rule, not an example")
+def test_sick_mom_needs_the_rule_stated_not_an_example() -> None:
+    """The rule stated passes; a hedge with the right words fails."""
+    # log.debug("Takes the case's groups of accepted phrasings")
+    facts = next(c for c in _cases() if c.id == "sick-mom").expected["facts"]
+    # log.debug("Checks the rule stated passes, caveat and all")
+    assert has_facts(normalize(SICK_MOM_RULE), facts)
+    # log.debug("Checks each hedge the judge graded down")
+    for hedge in SICK_MOM_HEDGES:
+        # log.debug("Checks it holds the two groups that once passed it")
+        assert has_facts(normalize(hedge), facts[:2])
+        # log.debug("Checks it fails the case, as it never states the rule")
+        assert not has_facts(normalize(hedge), facts)
 
 
 # log.debug("Defines an answer for the scoring tests")
