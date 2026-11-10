@@ -114,7 +114,7 @@ client's model. `ask` calls the model, so every MCP client's questions together 
   model gives semantic and hybrid modes instead.
 - **Chosen solution:** retrieve, fence, draft as JSON, check every quote, and return only what held,
   over sources that carry their own SHA-256 and change only through audited approver routes.
-- **Test plan:** 139 backend and 14 frontend tests, a test proving every expected answer's evidence
+- **Test plan:** 145 backend and 14 frontend tests, a test proving every expected answer's evidence
   is in its source, and a 56-case evaluation, offline in CI and live by hand. In a live run a model
   judge also grades each answered case against the expected facts and the whole text of the
   passages it cites, and the run reports how often the judge agrees with the fixed check
@@ -294,7 +294,7 @@ grounded-qa/
 │   ├── src/grounded_qa/  config.py, core/ (the logic), api/ (FastAPI), mcp_server/ (the MCP
 │   │                     server), evals/ (scorers, runner, exports), dashboard/ (the Dash app,
 │   │                     the case study's figures)
-│   └── tests/            139 tests, offline
+│   └── tests/            145 tests, offline
 ├── frontend/             the web app (React, TypeScript, Vite)
 │   ├── src/              pages/, components/, lib/, styles/, the API client, config.ts
 │   └── tests/            14 tests
